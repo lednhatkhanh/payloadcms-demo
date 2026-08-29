@@ -365,29 +365,17 @@ async function lookupPageByPath(
   return page ? mapManagedPage(page) : undefined
 }
 
-async function getPublishedPageByPath(
-  segments: readonly string[],
-): Promise<ManagedPage | undefined> {
-  'use cache'
-  cacheLife('minutes')
-  cacheTag('pages', `page:${segments.join('/')}`)
-  return lookupPageByPath(segments, false)
-}
-
 export async function getPageByPath(
   segments: readonly string[],
   draft = false,
 ): Promise<ManagedPage | undefined> {
   if (segments.length === 0) return undefined
-  return draft ? lookupPageByPath(segments, true) : getPublishedPageByPath(segments)
+  return lookupPageByPath(segments, draft)
 }
 
-async function getPublishedPageChildrenByParentSlug(
+async function getPageChildrenByParentSlug(
   parentSlug: string,
 ): Promise<readonly ManagedPageSummary[]> {
-  'use cache'
-  cacheLife('minutes')
-  cacheTag('pages', `pages:${parentSlug}`)
   const payload = await getPayload({ config })
   const parentResult = await payload.find({
     collection: 'pages',
@@ -418,7 +406,7 @@ async function getPublishedPageChildrenByParentSlug(
 export async function getPublishedPageChildren(
   parentSlug: string,
 ): Promise<readonly ManagedPageSummary[]> {
-  return getPublishedPageChildrenByParentSlug(parentSlug)
+  return getPageChildrenByParentSlug(parentSlug)
 }
 
 export async function getPagePathById(id: number): Promise<string | undefined> {

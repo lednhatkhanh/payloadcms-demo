@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { getPayload } from 'payload'
 import type { News, Page } from './generated/payload-types'
 import config from './payload.config'
+import type { EditorialRole, WorkflowState } from './workflow'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
 
@@ -353,12 +354,74 @@ type PageSeed = {
   readonly lead: string
   readonly layout: Page['layout']
   readonly parent?: number
+  readonly reviewNote?: string
+  readonly reviewRequestedBy?: number
+  readonly reviewedBy?: number
   readonly slug: string
   readonly status: 'draft' | 'published'
   readonly title: string
+  readonly workflowState?: WorkflowState
 }
 
 const payload = await getPayload({ config })
+
+type DemoUser = {
+  readonly email: string
+  readonly name: string
+  readonly role: EditorialRole
+}
+
+const demoUserPassword = 'Abc123@@'
+
+const demoAdmin: DemoUser = { email: 'admin@dispatch.demo', name: 'Alex Admin', role: 'admin' }
+const demoEditor: DemoUser = { email: 'editor@dispatch.demo', name: 'Maya Editor', role: 'editor' }
+const demoReviewer: DemoUser = {
+  email: 'reviewer@dispatch.demo',
+  name: 'Rowan Reviewer',
+  role: 'reviewer',
+}
+const demoPublisher: DemoUser = {
+  email: 'publisher@dispatch.demo',
+  name: 'Parker Publisher',
+  role: 'publisher',
+}
+
+async function upsertDemoUser(user: DemoUser): Promise<number> {
+  const existing = await payload.find({
+    collection: 'users',
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
+    where: { email: { equals: user.email } },
+  })
+
+  if (existing.docs[0]) {
+    const updated = await payload.update({
+      collection: 'users',
+      data: { name: user.name, password: demoUserPassword, roles: [user.role] },
+      id: existing.docs[0].id,
+      overrideAccess: true,
+    })
+    return updated.id
+  }
+
+  const created = await payload.create({
+    collection: 'users',
+    data: {
+      email: user.email,
+      name: user.name,
+      password: demoUserPassword,
+      roles: [user.role],
+    },
+    overrideAccess: true,
+  })
+  return created.id
+}
+
+await upsertDemoUser(demoAdmin)
+const editorId = await upsertDemoUser(demoEditor)
+const reviewerId = await upsertDemoUser(demoReviewer)
+await upsertDemoUser(demoPublisher)
 
 async function getSeedMediaId(image: SeedMedia): Promise<number> {
   const filePath = path.join(currentDirectory, 'seed-media', image.directory, image.filename)
@@ -411,6 +474,7 @@ const newsIds = await Promise.all(
           ...data,
           heroMedia,
           publishedAt: new Date().toISOString(),
+          workflowState: 'approved',
           _status: 'published',
         },
         draft: false,
@@ -426,6 +490,7 @@ const newsIds = await Promise.all(
         ...data,
         heroMedia,
         publishedAt: new Date().toISOString(),
+        workflowState: 'approved',
         _status: 'published',
       },
       draft: false,
@@ -434,6 +499,88 @@ const newsIds = await Promise.all(
     return created.id
   }),
 )
+
+type WorkflowNewsSeed = {
+  readonly body: News['body']
+  readonly category: 'company' | 'ideas' | 'people' | 'product'
+  readonly excerpt: string
+  readonly heroMedia: number
+  readonly reviewNote?: string
+  readonly reviewRequestedBy: number
+  readonly reviewedBy?: number
+  readonly slug: string
+  readonly title: string
+  readonly workflowState: Extract<WorkflowState, 'approved' | 'in-review'>
+}
+
+async function upsertWorkflowNews(data: WorkflowNewsSeed): Promise<void> {
+  const existing = await payload.find({
+    collection: 'news',
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
+    where: { slug: { equals: data.slug } },
+  })
+  const newsData = {
+    ...data,
+    publishedAt: new Date().toISOString(),
+    _status: 'draft' as const,
+  }
+
+  if (existing.docs[0]) {
+    await payload.update({
+      collection: 'news',
+      data: newsData,
+      draft: true,
+      id: existing.docs[0].id,
+      overrideAccess: true,
+    })
+    return
+  }
+
+  await payload.create({
+    collection: 'news',
+    data: newsData,
+    draft: true,
+    overrideAccess: true,
+  })
+}
+
+const [reviewQueueImage, publishingQueueImage] = await Promise.all([
+  getSeedMediaId(stories[3].image),
+  getSeedMediaId(stories[8].image),
+])
+
+await Promise.all([
+  upsertWorkflowNews({
+    body: lexicalBody([
+      'This draft is ready for a reviewer to check before it becomes a public Dispatch story.',
+      'It demonstrates the simple request-review state without exposing the editorial queue on the public site.',
+    ]),
+    category: 'product',
+    excerpt: 'A draft story deliberately placed in the review queue for the Payload workflow demo.',
+    heroMedia: reviewQueueImage,
+    reviewRequestedBy: editorId,
+    slug: 'review-queue-demo-story',
+    title: 'A story ready for review',
+    workflowState: 'in-review',
+  }),
+  upsertWorkflowNews({
+    body: lexicalBody([
+      'This draft has already been approved by a reviewer and is waiting for a publisher to use Payload’s normal Publish action.',
+      'The workflow state shows who has acted without replacing Payload’s draft and published statuses.',
+    ]),
+    category: 'product',
+    excerpt: 'An approved draft kept ready for the publisher in the Payload workflow demo.',
+    heroMedia: publishingQueueImage,
+    reviewNote: 'Ready for the publishing check.',
+    reviewRequestedBy: editorId,
+    reviewedBy: reviewerId,
+    slug: 'publisher-queue-demo-story',
+    title: 'A story ready to publish',
+    workflowState: 'approved',
+  }),
+])
 
 await Promise.all(
   locations.map(async (location) => {
@@ -480,8 +627,12 @@ async function upsertPage(data: PageSeed): Promise<number> {
     lead: data.lead,
     layout: data.layout,
     ...(data.parent === undefined ? {} : { parent: data.parent }),
+    ...(data.reviewNote === undefined ? {} : { reviewNote: data.reviewNote }),
+    ...(data.reviewRequestedBy === undefined ? {} : { reviewRequestedBy: data.reviewRequestedBy }),
+    ...(data.reviewedBy === undefined ? {} : { reviewedBy: data.reviewedBy }),
     slug: data.slug,
     title: data.title,
+    workflowState: data.workflowState ?? (data.status === 'published' ? 'approved' : 'draft'),
     _status: data.status,
   }
 
@@ -613,9 +764,33 @@ await upsertPage({
     ),
   ],
   parent: companyPageId,
+  reviewRequestedBy: editorId,
   slug: 'working-note',
   status: 'draft',
   title: 'Working note for preview',
+  workflowState: 'in-review',
+})
+
+await upsertPage({
+  lead: 'An approved draft that gives the publisher a safe, visible item to publish during the demo.',
+  layout: [
+    richTextPageBlock([
+      'This page has passed review and is intentionally still a draft. Sign in as the publisher to use Payload’s usual Publish action after checking its preview.',
+      'The status is visible in the Pages list alongside the person who requested and completed the review.',
+    ]),
+    imagePageBlock(
+      routesImage,
+      'The publisher-ready draft still uses the same approved editorial image block.',
+    ),
+  ],
+  parent: companyPageId,
+  reviewNote: 'Approved for the publisher to release.',
+  reviewRequestedBy: editorId,
+  reviewedBy: reviewerId,
+  slug: 'publisher-ready-note',
+  status: 'draft',
+  title: 'Publisher-ready note',
+  workflowState: 'approved',
 })
 
 await upsertPage({

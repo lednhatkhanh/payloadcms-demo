@@ -32,7 +32,9 @@ function mediaHref(media: Media): string | undefined {
   return media.url ?? undefined
 }
 
-export function PageBlocks({ blocks }: { readonly blocks: Page['layout'] }) {
+export function PageBlocks({ blocks }: { readonly blocks: Page['layout'] | undefined }) {
+  if (!Array.isArray(blocks)) return null
+
   return blocks.map((block) => {
     if (block.blockType === 'richText') {
       return (

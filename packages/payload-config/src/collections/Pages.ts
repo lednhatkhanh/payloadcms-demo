@@ -1,7 +1,13 @@
 import { slugField, type Block, type CollectionConfig, type Validate } from 'payload'
 
-import { authenticated, publishedOrAuthenticated } from '../access'
+import {
+  administrator,
+  editorialCreator,
+  editorialParticipant,
+  publishedOrAuthenticated,
+} from '../access'
 import { pagePreviewUrl } from '../preview'
+import { editorialWorkflowFields, enforceEditorialWorkflow } from '../workflow'
 
 const reservedPageSlugs = new Set([
   '_next',
@@ -131,13 +137,20 @@ const pageLinksBlock: Block = {
 export const Pages: CollectionConfig = {
   slug: 'pages',
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: editorialCreator,
+    delete: administrator,
     read: publishedOrAuthenticated,
-    update: authenticated,
+    update: editorialParticipant,
   },
   admin: {
-    defaultColumns: ['title', 'parent', '_status', 'updatedAt'],
+    components: {
+      edit: {
+        PublishButton: '../../../apps/cms/src/components/WorkflowActionButton#WorkflowActionButton',
+      },
+    },
+    defaultColumns: ['title', 'workflowState', '_status', 'updatedAt'],
+    description:
+      'Workflow: editor requests review, reviewer approves or requests changes, publisher uses Payload’s Publish action.',
     group: 'Content',
     livePreview: {
       breakpoints: [
@@ -194,7 +207,9 @@ export const Pages: CollectionConfig = {
           'Choose from the five approved page blocks. Each block maps to an existing public-site component.',
       },
     },
+    ...editorialWorkflowFields,
   ],
+  hooks: { beforeChange: [enforceEditorialWorkflow] },
   timestamps: true,
   trash: true,
   versions: { drafts: { autosave: true } },

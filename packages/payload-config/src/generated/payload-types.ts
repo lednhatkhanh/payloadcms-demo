@@ -138,6 +138,10 @@ export interface UserAuthOperations {
 export interface User {
   id: number;
   name: string;
+  /**
+   * Use one clear responsibility per demo account: editor, reviewer, publisher, or admin.
+   */
+  roles: ('admin' | 'editor' | 'reviewer' | 'publisher')[];
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -195,6 +199,8 @@ export interface Media {
   };
 }
 /**
+ * Workflow: editor requests review, reviewer approves or requests changes, publisher uses Payload’s Publish action.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news".
  */
@@ -229,6 +235,22 @@ export interface News {
   category: 'company' | 'product' | 'people' | 'ideas';
   publishedAt: string;
   featured?: boolean | null;
+  /**
+   * Read-only. Use the role-specific action control in the document toolbar to change workflow state.
+   */
+  workflowState: 'draft' | 'in-review' | 'changes-requested' | 'approved';
+  /**
+   * Optional context from the reviewer for the editor or publisher.
+   */
+  reviewNote?: string | null;
+  /**
+   * Set automatically when an editor requests review.
+   */
+  reviewRequestedBy?: (number | null) | User;
+  /**
+   * Set automatically when a reviewer responds.
+   */
+  reviewedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -261,6 +283,8 @@ export interface Location {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Workflow: editor requests review, reviewer approves or requests changes, publisher uses Payload’s Publish action.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -364,6 +388,22 @@ export interface Page {
         blockType: 'pageLinks';
       }
   )[];
+  /**
+   * Read-only. Use the role-specific action control in the document toolbar to change workflow state.
+   */
+  workflowState: 'draft' | 'in-review' | 'changes-requested' | 'approved';
+  /**
+   * Optional context from the reviewer for the editor or publisher.
+   */
+  reviewNote?: string | null;
+  /**
+   * Set automatically when an editor requests review.
+   */
+  reviewRequestedBy?: (number | null) | User;
+  /**
+   * Set automatically when a reviewer responds.
+   */
+  reviewedBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -495,6 +535,7 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -568,6 +609,10 @@ export interface NewsSelect<T extends boolean = true> {
   category?: T;
   publishedAt?: T;
   featured?: T;
+  workflowState?: T;
+  reviewNote?: T;
+  reviewRequestedBy?: T;
+  reviewedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -656,6 +701,10 @@ export interface PagesSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  workflowState?: T;
+  reviewNote?: T;
+  reviewRequestedBy?: T;
+  reviewedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

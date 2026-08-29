@@ -1,17 +1,30 @@
 import { slugField, type CollectionConfig } from 'payload'
 
-import { authenticated, publishedOrAuthenticated } from '../access'
+import {
+  administrator,
+  editorialCreator,
+  editorialParticipant,
+  publishedOrAuthenticated,
+} from '../access'
+import { editorialWorkflowFields, enforceEditorialWorkflow } from '../workflow'
 
 export const News: CollectionConfig = {
   slug: 'news',
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: editorialCreator,
+    delete: administrator,
     read: publishedOrAuthenticated,
-    update: authenticated,
+    update: editorialParticipant,
   },
   admin: {
-    defaultColumns: ['title', 'category', 'publishedAt', '_status'],
+    components: {
+      edit: {
+        PublishButton: '../../../apps/cms/src/components/WorkflowActionButton#WorkflowActionButton',
+      },
+    },
+    defaultColumns: ['title', 'workflowState', '_status', 'updatedAt'],
+    description:
+      'Workflow: editor requests review, reviewer approves or requests changes, publisher uses Payload’s Publish action.',
     useAsTitle: 'title',
   },
   defaultSort: '-publishedAt',
@@ -49,7 +62,9 @@ export const News: CollectionConfig = {
       admin: { date: { pickerAppearance: 'dayAndTime' }, position: 'sidebar' },
     },
     { name: 'featured', type: 'checkbox', defaultValue: false, admin: { position: 'sidebar' } },
+    ...editorialWorkflowFields,
   ],
+  hooks: { beforeChange: [enforceEditorialWorkflow] },
   timestamps: true,
   versions: { drafts: { autosave: true } },
 }
