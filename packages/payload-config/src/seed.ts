@@ -633,63 +633,192 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
   )
 
   type NewsTranslation = {
-    readonly body: News['body']
     readonly excerpt: string
     readonly locale: Exclude<ContentLocale, 'en'>
+    readonly slug: string
     readonly title: string
   }
 
   const seededNewsTranslations: readonly NewsTranslation[] = [
     {
-      body: lexicalBody([
-        'Una consulta de envío es una solicitud de ayuda, no una promesa de información operativa en tiempo real. Un contexto claro ayuda a los visitantes a saber qué compartir y qué ocurrirá después.',
-        'The Dispatch puede explicar el recorrido de un formulario en lenguaje sencillo y, al mismo tiempo, mantener claros los límites operativos.',
-      ]),
       excerpt:
         'El contexto editorial puede explicar un proceso de consulta en lenguaje sencillo sin confundir una consulta con el seguimiento en tiempo real.',
       locale: 'es',
+      slug: 'a-clearer-way-to-begin-a-shipment-enquiry',
       title: 'Una forma más clara de iniciar una consulta de envío',
     },
     {
-      body: lexicalBody([
-        '配送に関するお問い合わせは、支援を求めるためのものであり、リアルタイムの運航情報を約束するものではありません。明確な文脈があれば、訪問者は共有すべき情報と次の流れを理解できます。',
-        'The Dispatch は、運用上の境界を明確に保ちながら、フォームの流れをわかりやすい言葉で説明できます。',
-      ]),
       excerpt:
         '編集上の文脈は、お問い合わせとリアルタイム追跡を混同させずに、フォームの流れをわかりやすく説明できます。',
       locale: 'jp',
+      slug: 'a-clearer-way-to-begin-a-shipment-enquiry',
       title: '配送に関するお問い合わせを、より明確に始める方法',
     },
     {
-      body: lexicalBody([
-        'Una demostración de sala de prensa resulta útil cuando hace visible la propiedad del contenido y el ciclo de publicación sin presentar afirmaciones que no se puedan respaldar.',
-        'El sitio público y el espacio editorial siguen siendo aplicaciones distintas con un único modelo de contenido compartido.',
-      ]),
       excerpt:
         'Borradores, contexto de publicación, medios, categorías y texto enriquecido se reúnen en una superficie editorial enfocada.',
       locale: 'es',
+      slug: 'what-a-published-editorial-review-can-show',
       title: 'Lo que puede mostrar una revisión editorial publicada',
     },
     {
-      body: lexicalBody([
-        'ニュースルームのデモは、裏付けのない主張をせずに、コンテンツの責任範囲と公開までの流れを可視化できるときに役立ちます。',
-        '公開サイトと編集ワークスペースは別々のアプリケーションですが、同じコンテンツモデルを共有しています。',
-      ]),
       excerpt:
         '下書き、公開時の文脈、メディア、カテゴリー、リッチテキストを、焦点の定まったニュースルーム画面にまとめます。',
       locale: 'jp',
+      slug: 'what-a-published-editorial-review-can-show',
       title: '公開された編集レビューで示せること',
+    },
+    {
+      excerpt:
+        'Una actualización breve puede ofrecer contexto antes de invitar al visitante a dar el siguiente paso.',
+      locale: 'es',
+      slug: 'a-quieter-arrival-for-the-next-dispatch-edition',
+      title: 'Una llegada más tranquila para la próxima edición de The Dispatch',
+    },
+    {
+      excerpt: '短い更新でも、次の行動を促す前に必要な文脈を伝えられます。',
+      locale: 'jp',
+      slug: 'a-quieter-arrival-for-the-next-dispatch-edition',
+      title: '次の The Dispatch 号を静かに届ける',
+    },
+    {
+      excerpt:
+        'Un flujo editorial puede aclarar el estado, el contexto y las responsabilidades de una historia publicada.',
+      locale: 'es',
+      slug: 'what-changes-when-publishing-has-a-clear-owner',
+      title: 'Qué cambia cuando la publicación tiene una responsabilidad clara',
+    },
+    {
+      excerpt: '編集ワークフローは、公開記事の状態、背景、責任をわかりやすくします。',
+      locale: 'jp',
+      slug: 'what-changes-when-publishing-has-a-clear-owner',
+      title: '公開の責任者が明確になると何が変わるか',
+    },
+    {
+      excerpt:
+        'Las rutas públicas claras empiezan con decisiones compartidas sobre lo que una persona debe entender antes de enviar un mensaje.',
+      locale: 'es',
+      slug: 'the-people-behind-a-more-useful-first-question',
+      title: 'Las personas detrás de una primera pregunta más útil',
+    },
+    {
+      excerpt:
+        '明確な公開導線は、メッセージを送る前に訪問者が知るべきことを協力して決めるところから始まります。',
+      locale: 'jp',
+      slug: 'the-people-behind-a-more-useful-first-question',
+      title: 'より役立つ最初の質問を支える人々',
+    },
+    {
+      excerpt:
+        'Una entrada clara para un sitio de envíos compacto, sin presentar consejos operativos sin respaldo.',
+      locale: 'es',
+      slug: 'choosing-a-service-path-for-a-demonstration-brief',
+      title: 'Elegir una ruta de servicio para una demostración',
+    },
+    {
+      excerpt: '根拠のない運用アドバイスを示さない、コンパクトな配送サイトの読みやすい入口です。',
+      locale: 'jp',
+      slug: 'choosing-a-service-path-for-a-demonstration-brief',
+      title: 'デモの要件に合わせてサービス導線を選ぶ',
+    },
+    {
+      excerpt:
+        'Una estructura de información compacta ayuda a pasar de una pregunta amplia a una ruta pública más útil.',
+      locale: 'es',
+      slug: 'a-route-map-for-choosing-the-next-useful-action',
+      title: 'Un mapa de rutas para elegir la próxima acción útil',
+    },
+    {
+      excerpt: 'コンパクトな情報設計が、幅広い配送の質問から役立つ公開導線への移動を支えます。',
+      locale: 'jp',
+      slug: 'a-route-map-for-choosing-the-next-useful-action',
+      title: '次に役立つ行動を選ぶためのルートマップ',
+    },
+    {
+      excerpt:
+        'Una nota de empresa serena puede presentar un cambio y dejar clara la siguiente acción sin exagerar la historia.',
+      locale: 'es',
+      slug: 'a-public-update-with-room-to-breathe',
+      title: 'Una actualización pública con espacio para respirar',
+    },
+    {
+      excerpt: '落ち着いた企業のお知らせは、内容を誇張せず変更と次の行動を明確に伝えられます。',
+      locale: 'jp',
+      slug: 'a-public-update-with-room-to-breathe',
+      title: '余白のある公開アップデート',
+    },
+    {
+      excerpt:
+        'Una vista de producto enfocada puede mostrar la preparación editorial sin convertir la sala de prensa pública en un panel interno.',
+      locale: 'es',
+      slug: 'a-publishing-queue-with-clear-status',
+      title: 'Una cola de publicación con estado claro',
+    },
+    {
+      excerpt:
+        '公開ニュースルームを内部ダッシュボードにせず、編集準備の状況を示せるプロダクト画面です。',
+      locale: 'jp',
+      slug: 'a-publishing-queue-with-clear-status',
+      title: '状態が明確な公開キュー',
+    },
+    {
+      excerpt:
+        'Un pequeño taller interfuncional puede convertir una pregunta amplia en una ruta pública más fácil de entender y usar.',
+      locale: 'es',
+      slug: 'the-workshop-behind-a-clearer-enquiry',
+      title: 'El taller detrás de una consulta más clara',
+    },
+    {
+      excerpt: '小さな部門横断ワークショップが、幅広い質問を使いやすい公開導線へと変えます。',
+      locale: 'jp',
+      slug: 'the-workshop-behind-a-clearer-enquiry',
+      title: 'より明確なお問い合わせを支えるワークショップ',
+    },
+    {
+      excerpt:
+        'Publicar una historia útil depende de conservar su significado desde el borrador hasta la lectura pública.',
+      locale: 'es',
+      slug: 'the-editorial-handoff-that-keeps-context-intact',
+      title: 'El relevo editorial que conserva el contexto',
+    },
+    {
+      excerpt: '役立つ記事の公開には、下書きから公開閲覧まで意味を保ち続けることが必要です。',
+      locale: 'jp',
+      slug: 'the-editorial-handoff-that-keeps-context-intact',
+      title: '文脈を保つ編集の引き継ぎ',
+    },
+    {
+      excerpt:
+        'Un conjunto breve de preguntas puede ayudar a elegir una ruta de servicio sin fingir que una página general resuelve todo.',
+      locale: 'es',
+      slug: 'a-small-framework-for-the-next-useful-choice',
+      title: 'Un pequeño marco para la próxima decisión útil',
+    },
+    {
+      excerpt:
+        '簡潔な問いかけの組み合わせが、一般ページですべてを解決できるふりをせずにサービス導線を選ぶ助けになります。',
+      locale: 'jp',
+      slug: 'a-small-framework-for-the-next-useful-choice',
+      title: '次の役立つ選択のための小さな枠組み',
     },
   ]
 
-  await Promise.all(
-    seededNewsTranslations.map(async (translation, index) => {
-      const id = newsIds[Math.floor(index / 2)]
-      if (!id) return
+  async function seedNewsTranslations(index = 0): Promise<void> {
+    const translation = seededNewsTranslations[index]
+    if (!translation) return
+
+    const storyIndex = stories.findIndex((story) => story.slug === translation.slug)
+    const id = storyIndex === -1 ? undefined : newsIds[storyIndex]
+    if (id) {
       await payload.update({
         collection: 'news',
         data: {
-          body: translation.body,
+          body: lexicalBody([
+            translation.excerpt,
+            translation.locale === 'es'
+              ? 'Esta historia ilustrativa explica una ruta pública clara sin presentar información operativa en tiempo real.'
+              : 'この記事は、リアルタイムの運用情報を示さず、わかりやすい公開導線を説明するための例です。',
+          ]),
           excerpt: translation.excerpt,
           title: translation.title,
         },
@@ -698,8 +827,12 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         locale: translation.locale,
         overrideAccess: true,
       })
-    }),
-  )
+    }
+
+    await seedNewsTranslations(index + 1)
+  }
+
+  await seedNewsTranslations()
 
   type WorkflowNewsSeed = {
     readonly body: News['body']
@@ -815,6 +948,78 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
       })
     }),
   )
+
+  const seededLocationTranslations = [
+    {
+      description:
+        'Un registro con una región de medios principal y una etiqueta enfocada en transporte marítimo.',
+      locale: 'es' as const,
+      slug: 'port-city-record',
+      title: 'Registro de ciudad portuaria',
+    },
+    {
+      description: '先導メディア領域と、海上輸送に焦点を当てたタグを持つ記録です。',
+      locale: 'jp' as const,
+      slug: 'port-city-record',
+      title: '港湾都市の記録',
+    },
+    {
+      description:
+        'Un registro intermodal enfocado con una ruta de soluciones logísticas fácil de entender.',
+      locale: 'es' as const,
+      slug: 'inland-hub-record',
+      title: 'Registro de centro interior',
+    },
+    {
+      description:
+        '読みやすい物流ソリューション導線を備えた、焦点の定まった複合一貫輸送の記録です。',
+      locale: 'jp' as const,
+      slug: 'inland-hub-record',
+      title: '内陸ハブの記録',
+    },
+    {
+      description:
+        'Un único registro puede usar etiquetas controladas para conectar más de una ruta de servicio.',
+      locale: 'es' as const,
+      slug: 'regional-point-record',
+      title: 'Registro de punto regional',
+    },
+    {
+      description: 'ひとつの記録でも、管理されたタグによって複数のサービス導線につなげられます。',
+      locale: 'jp' as const,
+      slug: 'regional-point-record',
+      title: '地域拠点の記録',
+    },
+  ]
+
+  async function seedLocationTranslations(index = 0): Promise<void> {
+    const translation = seededLocationTranslations[index]
+    if (!translation) return
+
+    const result = await payload.find({
+      collection: 'locations',
+      depth: 0,
+      limit: 1,
+      locale: 'all',
+      overrideAccess: true,
+      where: { slug: { equals: translation.slug } },
+    })
+    const location = result.docs[0]
+    if (location) {
+      await payload.update({
+        collection: 'locations',
+        data: { description: translation.description, title: translation.title },
+        draft: false,
+        id: location.id,
+        locale: translation.locale,
+        overrideAccess: true,
+      })
+    }
+
+    await seedLocationTranslations(index + 1)
+  }
+
+  await seedLocationTranslations()
 
   async function upsertPage(data: PageSeed): Promise<number> {
     const existing = await payload.find({

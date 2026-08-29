@@ -1,8 +1,13 @@
 'use client'
 
-import { contentLocales, isContentLocale } from '@repo/payload-config/locales'
+import {
+  contentLocaleCookie,
+  contentLocaleCookieMaxAge,
+  contentLocales,
+  isContentLocale,
+} from '@repo/payload-config/locales'
 import { SelectField } from '@repo/ui/form'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import type { Key } from 'react'
 
 function localePath(locale: string, pathname: string): string {
@@ -18,11 +23,11 @@ function selectedLocale(pathname: string): string {
 
 export function LanguageSelector() {
   const pathname = usePathname()
-  const router = useRouter()
 
   function changeLanguage(key: Key | null) {
     if (typeof key !== 'string' || !isContentLocale(key)) return
-    router.replace(localePath(key, pathname))
+    document.cookie = `${contentLocaleCookie}=${key}; Max-Age=${contentLocaleCookieMaxAge}; Path=/; SameSite=Lax`
+    window.location.replace(localePath(key, pathname))
   }
 
   return (

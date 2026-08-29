@@ -1,19 +1,23 @@
 import {
+  contentLocaleCookie,
+  contentLocaleCookieMaxAge,
   defaultContentLocale,
   isContentLocale,
   type ContentLocale,
 } from '@repo/payload-config/locales'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const localeCookie = 'dispatch-locale'
-
 function localeForRequest(request: NextRequest): ContentLocale {
-  const savedLocale = request.cookies.get(localeCookie)?.value
+  const savedLocale = request.cookies.get(contentLocaleCookie)?.value
   return isContentLocale(savedLocale) ? savedLocale : defaultContentLocale
 }
 
 function localeResponse(response: NextResponse, locale: ContentLocale): NextResponse {
-  response.cookies.set(localeCookie, locale, { sameSite: 'lax' })
+  response.cookies.set(contentLocaleCookie, locale, {
+    maxAge: contentLocaleCookieMaxAge,
+    path: '/',
+    sameSite: 'lax',
+  })
   return response
 }
 

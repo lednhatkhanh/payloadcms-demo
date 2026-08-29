@@ -20,10 +20,16 @@ const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
 export default buildConfig({
   admin: {
     components: {
-      beforeDashboard: ['./admin/WorkflowInbox#WorkflowInbox'],
+      afterNavLinks: ['./admin/WorkflowNavLink#WorkflowNavLink'],
       graphics: {
         Icon: './admin/Logo#Icon',
         Logo: './admin/Logo#Logo',
+      },
+      views: {
+        workflow: {
+          Component: './admin/WorkflowInbox#WorkflowInboxView',
+          path: '/workflow',
+        },
       },
     },
     importMap: { baseDir: currentDirectory },

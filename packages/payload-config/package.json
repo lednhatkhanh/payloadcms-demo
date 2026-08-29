@@ -16,8 +16,11 @@
   },
   "dependencies": {
     "@payloadcms/db-postgres": "catalog:",
+    "@payloadcms/next": "catalog:",
     "@payloadcms/richtext-lexical": "catalog:",
+    "@payloadcms/ui": "catalog:",
     "@repo/contracts": "workspace:*",
+    "next": "catalog:",
     "payload": "catalog:",
     "react": "catalog:",
     "sharp": "catalog:"

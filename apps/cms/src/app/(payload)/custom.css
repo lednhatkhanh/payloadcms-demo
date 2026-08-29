@@ -4,8 +4,11 @@
 .workflow-inbox {
   border: 1px solid var(--theme-elevation-200);
   border-radius: var(--style-radius-m);
-  margin-bottom: calc(var(--base) * 2);
   padding: calc(var(--base) * 1.5);
+}
+
+.workflow-inbox__view {
+  padding: var(--gutter-h);
 }
 
 .workflow-inbox__heading {

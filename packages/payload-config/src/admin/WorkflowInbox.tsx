@@ -1,4 +1,7 @@
-import type { Payload } from 'payload'
+import { DefaultTemplate } from '@payloadcms/next/templates'
+import { SetStepNav } from '@payloadcms/ui'
+import { redirect } from 'next/navigation'
+import type { AdminViewServerProps, Payload } from 'payload'
 
 type EditorialCollection = 'news' | 'pages'
 type WorkflowRequestState = 'approved' | 'changes-requested' | 'in-review' | 'translation-requested'
@@ -141,5 +144,39 @@ export async function WorkflowInbox({
         <p className="workflow-inbox__empty">No workflow requests are waiting for you.</p>
       )}
     </section>
+  )
+}
+
+export function WorkflowInboxView({ initPageResult, params, searchParams }: AdminViewServerProps) {
+  const {
+    locale,
+    permissions,
+    req: { i18n, payload, user },
+    visibleEntities,
+  } = initPageResult
+  const adminPath = payload.config.routes.admin
+  const optionalTemplateProps = {
+    ...(locale === undefined ? {} : { locale }),
+    ...(params === undefined ? {} : { params }),
+    ...(searchParams === undefined ? {} : { searchParams }),
+  }
+
+  if (!user || !permissions.canAccessAdmin) redirect(`${adminPath}/unauthorized`)
+
+  return (
+    <DefaultTemplate
+      i18n={i18n}
+      payload={payload}
+      permissions={permissions}
+      user={user}
+      visibleEntities={visibleEntities}
+      viewType="workflow"
+      {...optionalTemplateProps}
+    >
+      <SetStepNav nav={[{ label: 'My requests' }]} />
+      <div className="workflow-inbox__view">
+        <WorkflowInbox payload={payload} user={user} />
+      </div>
+    </DefaultTemplate>
   )
 }

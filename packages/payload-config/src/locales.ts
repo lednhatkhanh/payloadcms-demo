@@ -4,6 +4,10 @@ export type ContentLocale = (typeof contentLocales)[number]
 
 export const defaultContentLocale: ContentLocale = 'en'
 
+export const contentLocaleCookie = 'dispatch-locale'
+
+export const contentLocaleCookieMaxAge = 60 * 60 * 24 * 365
+
 export const contentLocaleLabels: Record<ContentLocale, string> = {
   en: 'English',
   es: 'Español',
