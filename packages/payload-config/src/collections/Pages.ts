@@ -158,14 +158,16 @@ export const Pages: CollectionConfig = {
         { height: 900, label: 'Desktop', name: 'desktop', width: 1440 },
       ],
       openByDefault: true,
-      url: ({ data }) => {
+      url: ({ data, locale }) => {
         const id = data.id
-        return typeof id === 'number' || typeof id === 'string' ? pagePreviewUrl(id) : null
+        return typeof id === 'number' || typeof id === 'string'
+          ? pagePreviewUrl(id, locale.code)
+          : null
       },
     },
-    preview: (data) => {
+    preview: (data, { locale }) => {
       const id = data.id
-      return typeof id === 'number' || typeof id === 'string' ? pagePreviewUrl(id) : null
+      return typeof id === 'number' || typeof id === 'string' ? pagePreviewUrl(id, locale) : null
     },
     useAsTitle: 'title',
   },

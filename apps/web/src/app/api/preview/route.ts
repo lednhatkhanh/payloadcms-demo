@@ -1,4 +1,5 @@
 import { pagePreviewToken } from '@repo/payload-config/preview'
+import { defaultContentLocale, isContentLocale } from '@repo/payload-config/locales'
 import { draftMode } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -8,6 +9,10 @@ function previewId(value: string | null): number | undefined {
   if (!value) return undefined
   const id = Number(value)
   return Number.isSafeInteger(id) && id > 0 ? id : undefined
+}
+
+function previewLocale(value: string | null) {
+  return isContentLocale(value ?? undefined) ? value : defaultContentLocale
 }
 
 export async function GET(request: Request) {
@@ -24,7 +29,7 @@ export async function GET(request: Request) {
 
   const preview = await draftMode()
   preview.enable()
-  const destination = new URL(`/en${path}`, request.url)
+  const destination = new URL(`/${previewLocale(searchParams.get('locale'))}${path}`, request.url)
   destination.searchParams.set('id', String(id))
   destination.searchParams.set('preview', pagePreviewToken)
   return NextResponse.redirect(destination)

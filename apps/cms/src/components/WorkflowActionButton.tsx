@@ -8,6 +8,7 @@ import {
   useDocumentInfo,
   useForm,
   useFormFields,
+  useLocale,
 } from '@payloadcms/ui'
 import { formatAdminURL } from 'payload/shared'
 
@@ -73,22 +74,26 @@ function isWorkflowActionKey(value: unknown): value is WorkflowAction['key'] {
 function actionPath(
   collectionSlug: string,
   id: number | string | undefined,
+  locale: string,
   publish: boolean | undefined,
 ): `/${string}` {
+  const localeQuery = `locale=${encodeURIComponent(locale)}`
+
   if (id) {
     return publish
-      ? `/${collectionSlug}/${id}?depth=0`
-      : `/${collectionSlug}/${id}?depth=0&draft=true&fallback-locale=null`
+      ? `/${collectionSlug}/${id}?depth=0&${localeQuery}`
+      : `/${collectionSlug}/${id}?depth=0&${localeQuery}&draft=true&fallback-locale=null`
   }
 
   return publish
-    ? `/${collectionSlug}?depth=0`
-    : `/${collectionSlug}?depth=0&draft=true&fallback-locale=null`
+    ? `/${collectionSlug}?depth=0&${localeQuery}`
+    : `/${collectionSlug}?depth=0&${localeQuery}&draft=true&fallback-locale=null`
 }
 
 export function WorkflowActionButton() {
   const { config } = useConfig()
   const { user } = useAuth()
+  const { code: locale } = useLocale()
   const { collectionSlug, id } = useDocumentInfo()
   const { submit } = useForm()
   const workflowState = useFormFields(([fields]) => workflowStateFrom(fields.workflowState?.value))
@@ -102,7 +107,7 @@ export function WorkflowActionButton() {
       await submit({
         action: formatAdminURL({
           apiRoute: config.routes.api,
-          path: actionPath(collectionSlug, id, action.publish),
+          path: actionPath(collectionSlug, id, locale, action.publish),
         }),
         method: id ? 'PATCH' : 'POST',
         overrides: {
@@ -111,7 +116,7 @@ export function WorkflowActionButton() {
         },
       })
     },
-    [collectionSlug, config.routes.api, id, submit],
+    [collectionSlug, config.routes.api, id, locale, submit],
   )
 
   const actions: readonly WorkflowAction[] = (() => {
