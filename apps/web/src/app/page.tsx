@@ -7,6 +7,7 @@ import {
   ServiceCard,
   StoryCard,
   StoryCardContent,
+  StoryCardFooter,
   StoryCardMedia,
   StoryCardMeta,
   Tag,
@@ -334,7 +335,7 @@ function HomepageStoryCard({
   )
 
   return (
-    <StoryCard featured={featured} href={`/news/${article.slug}`}>
+    <StoryCard featured={featured} href={`/news/${article.slug}`} label={`Read ${article.title}`}>
       {featured ? (
         <div>
           <Text color="muted" variant="kicker">
@@ -354,7 +355,9 @@ function HomepageStoryCard({
           <StoryCardContent>{story}</StoryCardContent>
         </>
       ) : null}
-      <StoryCardMeta>{meta}</StoryCardMeta>
+      <StoryCardFooter>
+        <StoryCardMeta>{meta}</StoryCardMeta>
+      </StoryCardFooter>
     </StoryCard>
   )
 }

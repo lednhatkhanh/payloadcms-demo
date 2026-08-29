@@ -1,12 +1,22 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { ArticleBody, CardMedia } from '@repo/ui/card'
-import { CalendarDays, Icon } from '@repo/ui/icon'
-import { Cluster, Container, Section, Stack } from '@repo/ui/layout'
+import { ArticleBody, ArticleHeroMedia, ArticleProvenance } from '@repo/ui/card'
+import { ArrowRight, CalendarDays, Icon } from '@repo/ui/icon'
+import {
+  ArticleLayout,
+  Cluster,
+  Container,
+  LocationDetailGrid,
+  Section,
+  Stack,
+  Surface,
+} from '@repo/ui/layout'
+import { Link } from '@repo/ui/link'
 import { Text } from '@repo/ui/text'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
+import { SiteFooter } from '@/components/SiteFooter'
 import { getNewsBySlug } from '@/lib/content'
 
 type PageProps = { readonly params: Promise<{ slug: string }> }
@@ -21,22 +31,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default function NewsDetailPage({ params }: PageProps) {
   return (
-    <>
+    <article>
       <Section space="compact">
-        <Container size="content">
-          <Text color="brand" testId="story-shell" variant="label">
-            The Dispatch / Story
-          </Text>
+        <Container>
+          <Stack gap="xl">
+            <Text color="brand" testId="story-shell" variant="label">
+              The Dispatch / Story
+            </Text>
+            <Suspense fallback={<ArticleHeroLoadingState />}>
+              <ArticleHero params={params} />
+            </Suspense>
+          </Stack>
         </Container>
       </Section>
-      <Suspense fallback={<ArticleSkeleton />}>
-        <Article params={params} />
+      <Suspense fallback={null}>
+        <ArticleDetails params={params} />
       </Suspense>
-    </>
+    </article>
   )
 }
 
-async function Article({ params }: PageProps) {
+async function ArticleHero({ params }: PageProps) {
   const { slug } = await params
   const article = await getNewsBySlug(slug)
   if (!article) notFound()
@@ -45,44 +60,95 @@ async function Article({ params }: PageProps) {
   )
 
   return (
-    <article>
-      <Container size="content">
-        <Stack gap="xl">
-          <Stack gap="md">
-            <Text color="brand" variant="label">
-              {article.category}
-            </Text>
-            <Text as="h1" variant="h1">
-              {article.title}
-            </Text>
-            <Text color="muted" variant="lead">
-              {article.excerpt}
-            </Text>
-            <Cluster>
-              <Icon source={CalendarDays} size="sm" tone="muted" />
-              <Text color="muted" variant="small">
-                {published}
-              </Text>
-            </Cluster>
-          </Stack>
-          <CardMedia alt={article.hero.alt} src={article.hero.url} />
-          <ArticleBody>
-            <RichText data={article.body} />
-          </ArticleBody>
-        </Stack>
-      </Container>
-    </article>
+    <Stack gap="xl">
+      <Stack gap="md">
+        <Text as="h1" variant="h1">
+          {article.title}
+        </Text>
+        <Text color="muted" variant="lead">
+          {article.excerpt}
+        </Text>
+        <Cluster>
+          <Icon source={CalendarDays} size="sm" tone="muted" />
+          <Text color="muted" variant="small">
+            {published}
+          </Text>
+        </Cluster>
+      </Stack>
+      <ArticleHeroMedia alt={article.hero.alt} src={article.hero.url} />
+    </Stack>
   )
 }
 
-function ArticleSkeleton() {
+async function ArticleDetails({ params }: PageProps) {
+  const { slug } = await params
+  const article = await getNewsBySlug(slug)
+  if (!article) notFound()
+
   return (
-    <Container size="content">
-      <Stack gap="lg">
-        <Text color="muted" variant="lead">
-          Loading the story…
-        </Text>
-      </Stack>
-    </Container>
+    <>
+      <Section space="compact">
+        <Container>
+          <ArticleLayout>
+            <ArticleBody>
+              <RichText data={article.body} />
+            </ArticleBody>
+            <ArticleProvenance>
+              <Stack gap="md">
+                <Text as="strong" variant="label">
+                  Published story
+                </Text>
+                <Text color="muted" variant="small">
+                  Illustrative newsroom content managed in the CMS. It does not report live
+                  operations, customer outcomes, or service availability.
+                </Text>
+                <Link href="/news" variant="inline">
+                  All stories <Icon source={ArrowRight} size="sm" />
+                </Link>
+              </Stack>
+            </ArticleProvenance>
+          </ArticleLayout>
+        </Container>
+      </Section>
+
+      <Surface border="subtle" tone="soft">
+        <Section space="compact">
+          <Container>
+            <LocationDetailGrid>
+              <Stack gap="md">
+                <Text color="brand" variant="label">
+                  Next step
+                </Text>
+                <Text as="h2" variant="h2">
+                  Move from context to the right public route.
+                </Text>
+              </Stack>
+              <Stack gap="lg">
+                <Text color="muted">
+                  The newsroom can frame a topic. The service and form routes then provide a clear
+                  place to continue the conversation.
+                </Text>
+                <Link href="/#services" variant="inline">
+                  Explore shipping <Icon source={ArrowRight} size="sm" />
+                </Link>
+              </Stack>
+            </LocationDetailGrid>
+          </Container>
+        </Section>
+      </Surface>
+
+      <SiteFooter
+        body="A compact footer entry for the demo’s newsletter flow. Subscription content and submission handling are managed separately."
+        title="Editorial updates, when they are published."
+      />
+    </>
+  )
+}
+
+function ArticleHeroLoadingState() {
+  return (
+    <Text color="muted" variant="lead">
+      Loading the story…
+    </Text>
   )
 }

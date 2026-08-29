@@ -120,7 +120,7 @@ export function Section({ as: Component = 'section', children, id, space }: Sect
 }
 
 export function NewsGrid({ children }: { readonly children: ReactNode }) {
-  return <div className="grid gap-space-lg md:grid-cols-2 lg:grid-cols-3">{children}</div>
+  return <div className="grid gap-space-lg md:grid-cols-2">{children}</div>
 }
 
 export function Split({ children }: { readonly children: ReactNode }) {
@@ -196,6 +196,14 @@ export function FilterGroup({ children }: { readonly children: ReactNode }) {
 export function LocationDetailGrid({ children }: { readonly children: ReactNode }) {
   return (
     <div className="grid items-start gap-space-2xl lg:grid-cols-location-detail lg:gap-space-3xl">
+      {children}
+    </div>
+  )
+}
+
+export function ArticleLayout({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="grid items-start gap-space-2xl lg:grid-cols-article lg:gap-space-3xl">
       {children}
     </div>
   )

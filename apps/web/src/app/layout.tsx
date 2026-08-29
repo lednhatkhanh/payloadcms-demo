@@ -1,21 +1,15 @@
 import '@repo/ui/styles.css'
 
 import { UiProvider } from '@repo/ui/providers'
-import { JetBrains_Mono, Manrope } from 'next/font/google'
+import { Noto_Sans } from 'next/font/google'
 import type { Metadata } from 'next'
 
 import { SiteHeader } from '@/components/SiteHeader'
 
-const manrope = Manrope({
+const notoSans = Noto_Sans({
   display: 'swap',
   subsets: ['latin'],
-  variable: '--font-manrope',
-})
-
-const jetBrainsMono = JetBrains_Mono({
-  display: 'swap',
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
+  variable: '--font-noto-sans',
 })
 
 export const metadata: Metadata = {
@@ -27,12 +21,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { readonly children: React.ReactNode }) {
   return (
-    <html
-      className={`${manrope.variable} ${jetBrainsMono.variable}`}
-      data-scroll-behavior="smooth"
-      dir="ltr"
-      lang="en-US"
-    >
+    <html className={notoSans.variable} data-scroll-behavior="smooth" dir="ltr" lang="en-US">
       <body>
         <UiProvider>
           <SiteHeader />

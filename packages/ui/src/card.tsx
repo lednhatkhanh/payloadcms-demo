@@ -143,6 +143,23 @@ export function CardMedia({
   )
 }
 
+export function ArticleHeroMedia({ alt, src }: { readonly alt: string; readonly src: string }) {
+  return (
+    <figure>
+      <div className="relative aspect-video overflow-hidden bg-brand-100">
+        <Image
+          alt={alt}
+          className="object-cover"
+          fill
+          preload
+          sizes="(min-width: 1024px) 83rem, 100vw"
+          src={src}
+        />
+      </div>
+    </figure>
+  )
+}
+
 export function ArticleBody({ children }: { readonly children: ReactNode }) {
   return <div className="article-body">{children}</div>
 }
@@ -164,7 +181,13 @@ export function StoryCardContent({ children }: { readonly children: ReactNode })
 }
 
 export function StoryCardMeta({ children }: { readonly children: ReactNode }) {
-  return <p className="mt-space-lg font-mono text-meta text-muted">{children}</p>
+  return <p className="font-mono text-meta text-muted">{children}</p>
+}
+
+export function StoryCardFooter({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="mt-space-lg flex items-center justify-between gap-space-md">{children}</div>
+  )
 }
 
 export function StoryCardMedia({ alt, src }: { readonly alt: string; readonly src: string }) {
@@ -185,10 +208,12 @@ export function StoryCard({
   children,
   featured = false,
   href,
+  label,
 }: {
   readonly children: ReactNode
   readonly featured?: boolean
   readonly href?: string
+  readonly label?: string
 }) {
   const card = (
     <article
@@ -203,11 +228,50 @@ export function StoryCard({
   )
 
   return href ? (
-    <Link href={href} variant="card">
+    <Link {...(label ? { 'aria-label': label } : {})} href={href} variant="card">
       {card}
     </Link>
   ) : (
     card
+  )
+}
+
+export function FeaturedStoryCard({
+  alt,
+  children,
+  href,
+  label,
+  src,
+}: {
+  readonly alt: string
+  readonly children: ReactNode
+  readonly href: string
+  readonly label: string
+  readonly src: string
+}) {
+  return (
+    <Link aria-label={label} href={href} variant="card">
+      <article className="group grid min-h-card-story-featured overflow-hidden rounded-lg border border-neutral-200 bg-surface-soft shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none lg:grid-cols-featured-story">
+        <div className="relative min-h-media-story overflow-hidden bg-brand-100">
+          <Image
+            alt={alt}
+            className="object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none"
+            fill
+            sizes="(min-width: 1024px) 42vw, 100vw"
+            src={src}
+          />
+        </div>
+        <div className="flex flex-col justify-center p-space-xl sm:p-space-2xl">{children}</div>
+      </article>
+    </Link>
+  )
+}
+
+export function ArticleProvenance({ children }: { readonly children: ReactNode }) {
+  return (
+    <aside className="rounded-lg border border-neutral-200 bg-surface p-space-lg shadow-card">
+      {children}
+    </aside>
   )
 }
 

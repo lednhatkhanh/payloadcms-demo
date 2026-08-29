@@ -35,7 +35,7 @@ export function SiteHeader() {
             <Link href="/locations" onPress={closeMenu} variant="navigation">
               Locations
             </Link>
-            <Link href="/#dispatch" onPress={closeMenu} variant="navigation">
+            <Link href="/news" onPress={closeMenu} variant="navigation">
               The Dispatch
             </Link>
             <Link href="/#about" onPress={closeMenu} variant="navigation">

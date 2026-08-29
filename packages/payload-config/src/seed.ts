@@ -78,6 +78,60 @@ const stories = [
     ]),
   },
   {
+    legacySlug: 'how-a-new-edition-arrives',
+    title: 'A quieter arrival for the next Dispatch edition',
+    slug: 'a-quieter-arrival-for-the-next-dispatch-edition',
+    excerpt:
+      'A short illustration of how a company update can arrive with context before it asks a visitor to take the next step.',
+    category: 'company' as const,
+    image: {
+      alt: 'Container vessel entering a calm working harbor beneath an overcast dawn sky',
+      directory: 'news' as const,
+      filename: 'news-harbor-arrival.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'A useful company update gives people enough context to understand why it matters before it sends them on to another route.',
+      'For this demonstration, the editorial layer stays illustrative: it can explain the shape of an update without claiming a live operational event.',
+    ]),
+  },
+  {
+    legacySlug: 'making-publishing-ownership-visible',
+    title: 'What changes when publishing has a clear owner',
+    slug: 'what-changes-when-publishing-has-a-clear-owner',
+    excerpt:
+      'An editorial workflow can make the status, context, and responsibilities behind a published story easier to understand.',
+    category: 'product' as const,
+    image: {
+      alt: 'Editorial notes and an unbranded tablet arranged on a desk beside a harbor window',
+      directory: 'news' as const,
+      filename: 'news-editorial-workflow.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'Publishing is easier to trust when the public page makes a clear distinction between a polished story and the workflow that brought it there.',
+      'This demonstration uses the CMS to keep ownership, draft state, media, and public presentation connected without exposing editorial internals.',
+    ]),
+  },
+  {
+    legacySlug: 'people-behind-a-useful-first-question',
+    title: 'The people behind a more useful first question',
+    slug: 'the-people-behind-a-more-useful-first-question',
+    excerpt:
+      'Clear public routes begin with collaborative choices about what a visitor needs to understand before they send a message.',
+    category: 'people' as const,
+    image: {
+      alt: 'Colleagues reviewing unbranded route maps and an enquiry brief in a harbor-side meeting room',
+      directory: 'news' as const,
+      filename: 'news-collaboration.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'A good enquiry route is the result of people agreeing on what a visitor needs to know, what can be asked, and what should not be implied.',
+      'That shared work turns a short public form into a clearer invitation to begin a conversation.',
+    ]),
+  },
+  {
     legacySlug: 'the-people-behind-the-first-edition',
     title: 'Choosing a service path for a demonstration brief',
     slug: 'choosing-a-service-path-for-a-demonstration-brief',
@@ -93,6 +147,114 @@ const stories = [
     body: lexicalBody([
       'A compact shipping demo can orient visitors through a small number of clear paths before asking them to make a decision.',
       'That structure offers enough context for a useful enquiry without suggesting coverage, performance, or operational advice.',
+    ]),
+  },
+  {
+    legacySlug: 'a-route-map-for-the-next-action',
+    title: 'A route map for choosing the next useful action',
+    slug: 'a-route-map-for-choosing-the-next-useful-action',
+    excerpt:
+      'A compact information structure can help a visitor move from a broad shipping question to a more useful public route.',
+    category: 'ideas' as const,
+    image: {
+      alt: 'Abstract paper route diagram and unbranded shipping booklet beside a harbor window',
+      directory: 'news' as const,
+      filename: 'news-route-map.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'A route map does not need to answer every shipping question. It only needs to make the next useful question easier to find.',
+      'That constraint keeps the public experience specific and useful without presenting illustrative content as operational advice.',
+    ]),
+  },
+  {
+    legacySlug: 'a-public-update-with-room-to-breathe',
+    title: 'A public update with room to breathe',
+    slug: 'a-public-update-with-room-to-breathe',
+    excerpt:
+      'A calm company note can introduce a change, explain its boundaries, and leave the next action clear without overstating the story.',
+    category: 'company' as const,
+    image: {
+      alt: 'Unbranded shipping bulletin beside a window overlooking a working harbor',
+      directory: 'news' as const,
+      filename: 'news-public-update.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'Company updates work best when they make room for the context that helps readers understand why the note exists.',
+      'This illustrative story shows how a public update can stay clear about what it does and does not describe.',
+    ]),
+  },
+  {
+    legacySlug: 'a-publishing-queue-with-clear-status',
+    title: 'A publishing queue with clear status',
+    slug: 'a-publishing-queue-with-clear-status',
+    excerpt:
+      'A focused product view can make editorial readiness visible without turning the public newsroom into an internal dashboard.',
+    category: 'product' as const,
+    image: {
+      alt: 'Unbranded editorial planning board and tablet on a clean desk',
+      directory: 'news' as const,
+      filename: 'news-publishing-queue.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'A publishing queue gives an editorial team a shared place to see what is being prepared and what is ready to be reviewed.',
+      'The public story only needs the finished result, while the product can keep the underlying status clear for its owners.',
+    ]),
+  },
+  {
+    legacySlug: 'the-workshop-behind-a-clearer-enquiry',
+    title: 'The workshop behind a clearer enquiry',
+    slug: 'the-workshop-behind-a-clearer-enquiry',
+    excerpt:
+      'A small cross-functional workshop can turn a broad visitor question into a public route that is easier to understand and use.',
+    category: 'people' as const,
+    image: {
+      alt: 'Small team discussing paper route maps at a bright meeting table',
+      directory: 'news' as const,
+      filename: 'news-enquiry-workshop.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'A clearer enquiry starts with people agreeing on the information a visitor can reasonably provide and the answer they can expect next.',
+      'That conversation keeps a public form focused on beginning a helpful exchange rather than simulating live service information.',
+    ]),
+  },
+  {
+    legacySlug: 'the-editorial-handoff-that-keeps-context-intact',
+    title: 'The editorial handoff that keeps context intact',
+    slug: 'the-editorial-handoff-that-keeps-context-intact',
+    excerpt:
+      'Publishing a useful story depends on people carrying its meaning from a working draft to a calm, public reading experience.',
+    category: 'people' as const,
+    image: {
+      alt: 'Two colleagues reviewing an unbranded printed story layout beside a harbor window',
+      directory: 'news' as const,
+      filename: 'news-editorial-handoff.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'An editorial handoff is more than a change of ownership. It is a chance to preserve the context that makes a short story useful to a reader.',
+      'The illustration stays intentionally modest: it describes collaboration without claiming a specific operational process.',
+    ]),
+  },
+  {
+    legacySlug: 'a-small-framework-for-the-next-useful-choice',
+    title: 'A small framework for the next useful choice',
+    slug: 'a-small-framework-for-the-next-useful-choice',
+    excerpt:
+      'A concise set of prompts can help a visitor choose a service route without pretending that a general page can resolve every question.',
+    category: 'ideas' as const,
+    image: {
+      alt: 'Paper route-choice notes and a pencil arranged beside a simple harbor chart',
+      directory: 'news' as const,
+      filename: 'news-route-choice.png',
+    },
+    featured: false,
+    body: lexicalBody([
+      'A useful public framework starts by narrowing the decision to the next question a visitor can answer with confidence.',
+      'That approach keeps the navigation honest and creates a natural bridge from editorial context to a focused public route.',
     ]),
   },
 ] as const
@@ -271,7 +433,7 @@ await payload.updateGlobal({
     aboutTitle: 'A small set of useful paths',
     aboutBody:
       'The homepage leads with essential options instead of turning the demo into a general page builder.',
-    featuredNews: newsIds,
+    featuredNews: newsIds.slice(0, 3),
     contactTitle: 'Point each question to the right form.',
     contactBody:
       'The demo distinguishes a general message, a quote request, and a shipment enquiry without presenting real-time tracking.',

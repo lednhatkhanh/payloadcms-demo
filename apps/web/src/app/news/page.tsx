@@ -1,51 +1,197 @@
-import { Container, NewsGrid, Section, Stack, Surface } from '@repo/ui/layout'
-import { Text } from '@repo/ui/text'
+import { CardLinkAffordance, FeaturedStoryCard } from '@repo/ui/card'
+import { ArrowRight, Icon } from '@repo/ui/icon'
+import {
+  Cluster,
+  Container,
+  FilterGroup,
+  LocationToolbar,
+  NewsGrid,
+  Section,
+  SectionIntro,
+  Stack,
+  Surface,
+} from '@repo/ui/layout'
+import { Link } from '@repo/ui/link'
+import { Accent, Text } from '@repo/ui/text'
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 
 import { NewsCard } from '@/components/NewsCard'
-import { getPublishedNews } from '@/lib/content'
+import { SiteFooter } from '@/components/SiteFooter'
+import { getPublishedNews, type NewsSummary } from '@/lib/content'
 
 export const metadata: Metadata = {
   description: 'Company, product, people, and ideas from The Dispatch.',
   title: 'News',
 }
 
-export default async function NewsPage() {
-  const news = await getPublishedNews()
+type NewsCategory = 'company' | 'product' | 'people' | 'ideas'
+
+type PageProps = { readonly searchParams: Promise<{ readonly category?: string }> }
+
+const filters: readonly { readonly label: string; readonly value: 'all' | NewsCategory }[] = [
+  { label: 'All stories', value: 'all' },
+  { label: 'Company', value: 'company' },
+  { label: 'Product', value: 'product' },
+  { label: 'People', value: 'people' },
+  { label: 'Ideas', value: 'ideas' },
+]
+
+function isNewsCategory(value: string | undefined): value is NewsCategory {
+  return value === 'company' || value === 'product' || value === 'people' || value === 'ideas'
+}
+
+function hrefForFilter(filter: 'all' | NewsCategory): string {
+  return filter === 'all' ? '/news' : `/news?category=${filter}`
+}
+
+export default function NewsPage({ searchParams }: PageProps) {
   return (
     <>
       <Section space="hero">
         <Container>
           <Stack gap="lg">
-            <Text color="brand" variant="label">
-              The newsroom
+            <Text color="brand" variant="dispatchMark">
+              The Dispatch / Newsroom
             </Text>
             <Text as="h1" testId="news-shell" variant="h1">
-              Every story, in one clear record.
+              The clearer side of <Accent>shipping.</Accent>
             </Text>
             <Text color="muted" variant="lead">
-              Company news, product decisions, and the ideas behind the work.
+              A small editorial layer for this private demo: published illustrative stories about
+              public routes, managed content, and the conversations they support.
             </Text>
           </Stack>
         </Container>
       </Section>
-      <Surface tone="surface">
-        <Section>
+
+      <Section space="compact">
+        <Container>
+          <Suspense fallback={<NewsListingLoadingState />}>
+            <NewsListing searchParams={searchParams} />
+          </Suspense>
+        </Container>
+      </Section>
+
+      <Surface border="subtle" tone="soft">
+        <Section space="compact">
           <Container>
-            {news.length > 0 ? (
-              <NewsGrid>
-                {news.map((article) => (
-                  <NewsCard article={article} key={article.slug} />
-                ))}
-              </NewsGrid>
-            ) : (
-              <Surface border="subtle" padding="lg" radius="lg" tone="soft">
-                <Text color="muted">No published stories yet.</Text>
-              </Surface>
-            )}
+            <SectionIntro>
+              <Stack gap="md">
+                <Text color="brand" variant="label">
+                  The Dispatch
+                </Text>
+                <Text as="h2" variant="h2">
+                  Read the story, then follow the right public route.
+                </Text>
+              </Stack>
+              <Stack gap="lg">
+                <Text color="muted">
+                  The newsroom stays adjacent to the company experience: it can provide context and
+                  long-form reading without turning editorial content into operational proof.
+                </Text>
+                <Link href="/" variant="inline">
+                  Return to the homepage <Icon source={ArrowRight} size="sm" />
+                </Link>
+              </Stack>
+            </SectionIntro>
           </Container>
         </Section>
       </Surface>
+
+      <SiteFooter
+        body="A compact footer entry for the demo’s newsletter flow. Subscription content and submission handling are managed separately."
+        title="Editorial updates, when they are published."
+      />
     </>
+  )
+}
+
+async function NewsListing({ searchParams }: PageProps) {
+  const news = await getPublishedNews()
+  const { category } = await searchParams
+  const selectedFilter = isNewsCategory(category) ? category : 'all'
+  const filteredNews =
+    selectedFilter === 'all' ? news : news.filter((article) => article.category === selectedFilter)
+  const featuredStory = filteredNews.at(0)
+  const remainingStories = featuredStory ? filteredNews.slice(1) : []
+
+  return (
+    <Stack gap="2xl">
+      <LocationToolbar>
+        <Text color="muted" variant="small">
+          Only published illustrative stories appear here. The Dispatch is the newsroom, not the
+          company identity or a record of real operations.
+        </Text>
+        <FilterGroup>
+          {filters.map((filter) => (
+            <Link
+              active={filter.value === selectedFilter}
+              aria-current={filter.value === selectedFilter ? 'page' : undefined}
+              href={hrefForFilter(filter.value)}
+              key={filter.value}
+              variant="filter"
+            >
+              {filter.label}
+            </Link>
+          ))}
+        </FilterGroup>
+      </LocationToolbar>
+
+      {featuredStory ? (
+        <FeaturedStory article={featuredStory} />
+      ) : (
+        <Surface border="subtle" padding="lg" radius="lg" tone="soft">
+          <Text color="muted">No published illustrative stories match this category.</Text>
+        </Surface>
+      )}
+
+      {remainingStories.length > 0 ? (
+        <NewsGrid>
+          {remainingStories.map((article) => (
+            <NewsCard article={article} key={article.slug} />
+          ))}
+        </NewsGrid>
+      ) : null}
+    </Stack>
+  )
+}
+
+function FeaturedStory({ article }: { readonly article: NewsSummary }) {
+  return (
+    <FeaturedStoryCard
+      alt={article.hero.alt}
+      href={`/news/${article.slug}`}
+      label={`Read ${article.title}`}
+      src={article.hero.url}
+    >
+      <Stack gap="md">
+        <Text color="brand" variant="kicker">
+          {article.category} / Featured
+        </Text>
+        <Text as="h2" variant="h2">
+          {article.title}
+        </Text>
+        <Text color="muted" variant="lead">
+          {article.excerpt}
+        </Text>
+        <Cluster>
+          <Text color="muted" variant="meta">
+            Illustrative published story · CMS-managed
+          </Text>
+        </Cluster>
+        <CardLinkAffordance>
+          Read story <Icon source={ArrowRight} size="sm" />
+        </CardLinkAffordance>
+      </Stack>
+    </FeaturedStoryCard>
+  )
+}
+
+function NewsListingLoadingState() {
+  return (
+    <Surface border="subtle" padding="lg" radius="lg" tone="soft">
+      <Text color="muted">Loading published illustrative stories…</Text>
+    </Surface>
   )
 }

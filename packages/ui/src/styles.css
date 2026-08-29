@@ -45,8 +45,8 @@
   --color-inverse: #ffffff;
   --color-inverse-muted: color-mix(in srgb, var(--color-inverse) 76%, transparent);
 
-  --font-sans: var(--font-manrope), 'Manrope', sans-serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: var(--font-noto-sans), 'Noto Sans', sans-serif;
+  --font-mono: var(--font-noto-sans), 'Noto Sans', sans-serif;
   --container-site: 83rem;
 
   --spacing-space-2xs: 0.25rem;
@@ -130,8 +130,10 @@
   --grid-template-columns-section-intro: minmax(0, 1fr) minmax(16rem, 0.64fr);
   --grid-template-columns-enquiry: minmax(0, 1.1fr) minmax(17rem, 0.68fr);
   --grid-template-columns-editorial: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+  --grid-template-columns-featured-story: minmax(0, 0.85fr) minmax(0, 1.15fr);
   --grid-template-columns-form-action: minmax(0, 1fr) auto;
   --grid-template-columns-location-detail: minmax(0, 1fr) minmax(17rem, 0.56fr);
+  --grid-template-columns-article: minmax(0, 1fr) minmax(17rem, 0.43fr);
   --grid-template-columns-newsletter: minmax(0, 1fr) minmax(20rem, 0.75fr);
 
   --shadow-card: 0 1rem 3rem color-mix(in oklch, var(--color-neutral-950) 8%, transparent);
@@ -289,10 +291,6 @@
     border: 0.16rem solid color-mix(in oklch, var(--color-surface) 72%, transparent);
     border-bottom: 0;
     content: '';
-  }
-
-  .story-card-content h3 {
-    max-width: 17ch;
   }
 
   @media (max-width: 640px) {
