@@ -24,6 +24,18 @@ pnpm dev
 
 The first visit to Payload Admin creates the initial administrator account.
 
+## Payload Admin import map
+
+Payload Admin uses a generated import map for its configured components. `pnpm dev` generates it automatically before starting the CMS, so a normal local start needs no extra command.
+
+After changing the Payload Admin configuration or its custom components while the dev server is already running, regenerate the map and restart the CMS:
+
+```bash
+pnpm --filter @repo/cms generate:importmap
+```
+
+The CMS build already generates both Payload types and the import map before running `next build`.
+
 ## Quality checks
 
 ```bash
