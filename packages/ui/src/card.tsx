@@ -181,7 +181,7 @@ export function StoryCardContent({ children }: { readonly children: ReactNode })
 }
 
 export function StoryCardMeta({ children }: { readonly children: ReactNode }) {
-  return <p className="font-mono text-meta text-muted">{children}</p>
+  return <div className="font-mono text-meta text-muted">{children}</div>
 }
 
 export function StoryCardFooter({ children }: { readonly children: ReactNode }) {

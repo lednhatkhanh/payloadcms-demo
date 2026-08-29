@@ -233,6 +233,35 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_homepage_v_published_locale_idx" ON "_homepage_v" USING btree ("published_locale");
   CREATE INDEX "pages_rels_pages_id_idx" ON "pages_rels" USING btree ("pages_id","locale");
   CREATE INDEX "_pages_v_rels_pages_id_idx" ON "_pages_v_rels" USING btree ("pages_id","locale");
+  INSERT INTO "media_locales" ("alt", "_locale", "_parent_id")
+  SELECT "alt", 'en', "id" FROM "media"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  INSERT INTO "news_locales" ("title", "excerpt", "body", "_locale", "_parent_id")
+  SELECT "title", "excerpt", "body", 'en', "id" FROM "news"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  INSERT INTO "_news_v_locales" ("version_title", "version_excerpt", "version_body", "_locale", "_parent_id")
+  SELECT "version_title", "version_excerpt", "version_body", 'en', "id" FROM "_news_v"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  INSERT INTO "locations_locales" ("title", "description", "_locale", "_parent_id")
+  SELECT "title", "description", 'en', "id" FROM "locations"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  INSERT INTO "_locations_v_locales" ("version_title", "version_description", "_locale", "_parent_id")
+  SELECT "version_title", "version_description", 'en', "id" FROM "_locations_v"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  INSERT INTO "pages_locales" ("title", "lead", "_locale", "_parent_id")
+  SELECT "title", "lead", 'en', "id" FROM "pages"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  INSERT INTO "_pages_v_locales" ("version_title", "version_lead", "_locale", "_parent_id")
+  SELECT "version_title", "version_lead", 'en', "id" FROM "_pages_v"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  INSERT INTO "homepage_locales" ("eyebrow", "hero_title", "hero_body", "primary_cta_label", "secondary_cta_label", "about_title", "about_body", "contact_title", "contact_body", "newsletter_title", "newsletter_body", "_locale", "_parent_id")
+  SELECT "eyebrow", "hero_title", "hero_body", "primary_cta_label", "secondary_cta_label", "about_title", "about_body", "contact_title", "contact_body", "newsletter_title", "newsletter_body", 'en', "id" FROM "homepage"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  INSERT INTO "_homepage_v_locales" ("version_eyebrow", "version_hero_title", "version_hero_body", "version_primary_cta_label", "version_secondary_cta_label", "version_about_title", "version_about_body", "version_contact_title", "version_contact_body", "version_newsletter_title", "version_newsletter_body", "_locale", "_parent_id")
+  SELECT "version_eyebrow", "version_hero_title", "version_hero_body", "version_primary_cta_label", "version_secondary_cta_label", "version_about_title", "version_about_body", "version_contact_title", "version_contact_body", "version_newsletter_title", "version_newsletter_body", 'en', "id" FROM "_homepage_v"
+  ON CONFLICT ("_locale", "_parent_id") DO NOTHING;
+  UPDATE "pages_rels" SET "locale" = 'en' WHERE "locale" IS NULL;
+  UPDATE "_pages_v_rels" SET "locale" = 'en' WHERE "locale" IS NULL;
   ALTER TABLE "media" DROP COLUMN "alt";
   ALTER TABLE "news" DROP COLUMN "title";
   ALTER TABLE "news" DROP COLUMN "excerpt";
@@ -245,7 +274,9 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "_locations_v" DROP COLUMN "version_title";
   ALTER TABLE "_locations_v" DROP COLUMN "version_description";
   ALTER TABLE "pages" DROP COLUMN "lead";
+  ALTER TABLE "pages" DROP COLUMN "title";
   ALTER TABLE "_pages_v" DROP COLUMN "version_lead";
+  ALTER TABLE "_pages_v" DROP COLUMN "version_title";
   ALTER TABLE "homepage" DROP COLUMN "eyebrow";
   ALTER TABLE "homepage" DROP COLUMN "hero_title";
   ALTER TABLE "homepage" DROP COLUMN "hero_body";

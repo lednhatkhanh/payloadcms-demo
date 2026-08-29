@@ -366,558 +366,76 @@ type PageSeed = {
 
 const payload = await getPayload({ config })
 
-type DemoUser = {
-  readonly email: string
-  readonly name: string
-  readonly role: EditorialRole
-}
-
-const demoUserPassword = 'Abc123@@'
-
-const demoAdmin: DemoUser = { email: 'admin@dispatch.demo', name: 'Alex Admin', role: 'admin' }
-const demoEditor: DemoUser = { email: 'editor@dispatch.demo', name: 'Maya Editor', role: 'editor' }
-const demoReviewer: DemoUser = {
-  email: 'reviewer@dispatch.demo',
-  name: 'Rowan Reviewer',
-  role: 'reviewer',
-}
-const demoTranslator: DemoUser = {
-  email: 'translator@dispatch.demo',
-  name: 'Jordan Translator',
-  role: 'translator',
-}
-const demoPublisher: DemoUser = {
-  email: 'publisher@dispatch.demo',
-  name: 'Parker Publisher',
-  role: 'publisher',
-}
-
-async function upsertDemoUser(user: DemoUser): Promise<number> {
-  const existing = await payload.find({
-    collection: 'users',
-    depth: 0,
-    limit: 1,
-    overrideAccess: true,
-    where: { email: { equals: user.email } },
-  })
-
-  if (existing.docs[0]) {
-    const updated = await payload.update({
-      collection: 'users',
-      data: { name: user.name, password: demoUserPassword, roles: [user.role] },
-      id: existing.docs[0].id,
-      overrideAccess: true,
-    })
-    return updated.id
-  }
-
-  const created = await payload.create({
-    collection: 'users',
-    data: {
-      email: user.email,
-      name: user.name,
-      password: demoUserPassword,
-      roles: [user.role],
-    },
-    overrideAccess: true,
-  })
-  return created.id
-}
-
-await upsertDemoUser(demoAdmin)
-const editorId = await upsertDemoUser(demoEditor)
-const reviewerId = await upsertDemoUser(demoReviewer)
-await upsertDemoUser(demoTranslator)
-await upsertDemoUser(demoPublisher)
-
-async function getSeedMediaId(image: SeedMedia): Promise<number> {
-  const filePath = path.join(currentDirectory, 'seed-media', image.directory, image.filename)
-  const existing = await payload.find({
-    collection: 'media',
-    depth: 0,
-    limit: 1,
-    overrideAccess: true,
-    where: { filename: { equals: image.filename } },
-  })
-  if (existing.docs[0]) {
-    const updated = await payload.update({
-      collection: 'media',
-      data: { alt: image.alt },
-      filePath,
-      id: existing.docs[0].id,
-      overwriteExistingFiles: true,
-      overrideAccess: true,
-    })
-    return updated.id
-  }
-
-  const created = await payload.create({
-    collection: 'media',
-    data: { alt: image.alt },
-    filePath,
-    overrideAccess: true,
-  })
-  return created.id
-}
-
-const newsIds = await Promise.all(
-  stories.map(async (story) => {
-    const { image, legacySlug, ...data } = story
-    const heroMedia = await getSeedMediaId(image)
-    const existing = await payload.find({
-      collection: 'news',
-      depth: 0,
-      limit: 1,
-      overrideAccess: true,
-      where: {
-        or: [{ slug: { equals: data.slug } }, { slug: { equals: legacySlug } }],
-      },
-    })
-
-    if (existing.docs[0]) {
-      const updated = await payload.update({
+async function repairLocalizedContent(): Promise<void> {
+  await Promise.all([
+    ...stories.map(async (story) => {
+      const existing = await payload.find({
         collection: 'news',
-        data: {
-          ...data,
-          heroMedia,
-          publishedAt: new Date().toISOString(),
-          workflowState: 'approved',
-          _status: 'published',
+        depth: 0,
+        limit: 1,
+        locale: 'all',
+        overrideAccess: true,
+        where: {
+          or: [{ slug: { equals: story.slug } }, { slug: { equals: story.legacySlug } }],
         },
+      })
+      const record = existing.docs[0]
+      if (!record) return
+      await payload.update({
+        collection: 'news',
+        data: { body: story.body, excerpt: story.excerpt, title: story.title },
         draft: false,
-        id: existing.docs[0].id,
+        id: record.id,
+        locale: 'en',
         overrideAccess: true,
       })
-      return updated.id
-    }
-
-    const created = await payload.create({
-      collection: 'news',
-      data: {
-        ...data,
-        heroMedia,
-        publishedAt: new Date().toISOString(),
-        workflowState: 'approved',
-        _status: 'published',
-      },
-      draft: false,
-      overrideAccess: true,
-    })
-    return created.id
-  }),
-)
-
-type NewsTranslation = {
-  readonly body: News['body']
-  readonly excerpt: string
-  readonly locale: Exclude<ContentLocale, 'en'>
-  readonly title: string
-}
-
-const seededNewsTranslations: readonly NewsTranslation[] = [
-  {
-    body: lexicalBody([
-      'Una consulta de envío es una solicitud de ayuda, no una promesa de información operativa en tiempo real. Un contexto claro ayuda a los visitantes a saber qué compartir y qué ocurrirá después.',
-      'The Dispatch puede explicar el recorrido de un formulario en lenguaje sencillo y, al mismo tiempo, mantener claros los límites operativos.',
-    ]),
-    excerpt:
-      'El contexto editorial puede explicar un proceso de consulta en lenguaje sencillo sin confundir una consulta con el seguimiento en tiempo real.',
-    locale: 'es',
-    title: 'Una forma más clara de iniciar una consulta de envío',
-  },
-  {
-    body: lexicalBody([
-      '配送に関するお問い合わせは、支援を求めるためのものであり、リアルタイムの運航情報を約束するものではありません。明確な文脈があれば、訪問者は共有すべき情報と次の流れを理解できます。',
-      'The Dispatch は、運用上の境界を明確に保ちながら、フォームの流れをわかりやすい言葉で説明できます。',
-    ]),
-    excerpt:
-      '編集上の文脈は、お問い合わせとリアルタイム追跡を混同させずに、フォームの流れをわかりやすく説明できます。',
-    locale: 'jp',
-    title: '配送に関するお問い合わせを、より明確に始める方法',
-  },
-  {
-    body: lexicalBody([
-      'Una demostración de sala de prensa resulta útil cuando hace visible la propiedad del contenido y el ciclo de publicación sin presentar afirmaciones que no se puedan respaldar.',
-      'El sitio público y el espacio editorial siguen siendo aplicaciones distintas con un único modelo de contenido compartido.',
-    ]),
-    excerpt:
-      'Borradores, contexto de publicación, medios, categorías y texto enriquecido se reúnen en una superficie editorial enfocada.',
-    locale: 'es',
-    title: 'Lo que puede mostrar una revisión editorial publicada',
-  },
-  {
-    body: lexicalBody([
-      'ニュースルームのデモは、裏付けのない主張をせずに、コンテンツの責任範囲と公開までの流れを可視化できるときに役立ちます。',
-      '公開サイトと編集ワークスペースは別々のアプリケーションですが、同じコンテンツモデルを共有しています。',
-    ]),
-    excerpt:
-      '下書き、公開時の文脈、メディア、カテゴリー、リッチテキストを、焦点の定まったニュースルーム画面にまとめます。',
-    locale: 'jp',
-    title: '公開された編集レビューで示せること',
-  },
-]
-
-await Promise.all(
-  seededNewsTranslations.map(async (translation, index) => {
-    const id = newsIds[Math.floor(index / 2)]
-    if (!id) return
-    await payload.update({
-      collection: 'news',
-      data: {
-        body: translation.body,
-        excerpt: translation.excerpt,
-        title: translation.title,
-      },
-      draft: false,
-      id,
-      locale: translation.locale,
-      overrideAccess: true,
-    })
-  }),
-)
-
-type WorkflowNewsSeed = {
-  readonly body: News['body']
-  readonly category: 'company' | 'ideas' | 'people' | 'product'
-  readonly excerpt: string
-  readonly heroMedia: number
-  readonly reviewNote?: string
-  readonly reviewRequestedBy: number
-  readonly reviewedBy?: number
-  readonly slug: string
-  readonly title: string
-  readonly workflowState: Extract<WorkflowState, 'approved' | 'in-review'>
-}
-
-async function upsertWorkflowNews(data: WorkflowNewsSeed): Promise<void> {
-  const existing = await payload.find({
-    collection: 'news',
-    depth: 0,
-    limit: 1,
-    overrideAccess: true,
-    where: { slug: { equals: data.slug } },
-  })
-  const newsData = {
-    ...data,
-    publishedAt: new Date().toISOString(),
-    _status: 'draft' as const,
-  }
-
-  if (existing.docs[0]) {
-    await payload.update({
-      collection: 'news',
-      data: newsData,
-      draft: true,
-      id: existing.docs[0].id,
-      overrideAccess: true,
-    })
-    return
-  }
-
-  await payload.create({
-    collection: 'news',
-    data: newsData,
-    draft: true,
-    overrideAccess: true,
-  })
-}
-
-const [reviewQueueImage, publishingQueueImage] = await Promise.all([
-  getSeedMediaId(stories[3].image),
-  getSeedMediaId(stories[8].image),
-])
-
-await Promise.all([
-  upsertWorkflowNews({
-    body: lexicalBody([
-      'This draft is ready for a reviewer to check before it becomes a public Dispatch story.',
-      'It demonstrates the simple request-review state without exposing the editorial queue on the public site.',
-    ]),
-    category: 'product',
-    excerpt: 'A draft story deliberately placed in the review queue for the Payload workflow demo.',
-    heroMedia: reviewQueueImage,
-    reviewRequestedBy: editorId,
-    slug: 'review-queue-demo-story',
-    title: 'A story ready for review',
-    workflowState: 'in-review',
-  }),
-  upsertWorkflowNews({
-    body: lexicalBody([
-      'This draft has already been approved by a reviewer and is waiting for a publisher to use Payload’s normal Publish action.',
-      'The workflow state shows who has acted without replacing Payload’s draft and published statuses.',
-    ]),
-    category: 'product',
-    excerpt: 'An approved draft kept ready for the publisher in the Payload workflow demo.',
-    heroMedia: publishingQueueImage,
-    reviewNote: 'Ready for the publishing check.',
-    reviewRequestedBy: editorId,
-    reviewedBy: reviewerId,
-    slug: 'publisher-queue-demo-story',
-    title: 'A story ready to publish',
-    workflowState: 'approved',
-  }),
-])
-
-await Promise.all(
-  locations.map(async (location) => {
-    const { image, ...data } = location
-    const heroMedia = await getSeedMediaId(image)
-    const existing = await payload.find({
-      collection: 'locations',
-      depth: 0,
-      limit: 1,
-      overrideAccess: true,
-      where: { slug: { equals: location.slug } },
-    })
-
-    if (existing.docs[0]) {
+    }),
+    ...locations.map(async (location) => {
+      const existing = await payload.find({
+        collection: 'locations',
+        depth: 0,
+        limit: 1,
+        locale: 'all',
+        overrideAccess: true,
+        where: { slug: { equals: location.slug } },
+      })
+      const record = existing.docs[0]
+      if (!record) return
       await payload.update({
         collection: 'locations',
-        data: { ...data, heroMedia, _status: 'published' },
+        data: { description: location.description, title: location.title },
         draft: false,
-        id: existing.docs[0].id,
+        id: record.id,
+        locale: 'en',
         overrideAccess: true,
       })
-      return
-    }
+    }),
+  ])
 
-    await payload.create({
-      collection: 'locations',
-      data: { ...data, heroMedia, _status: 'published' },
-      draft: false,
-      overrideAccess: true,
-    })
-  }),
-)
-
-async function upsertPage(data: PageSeed): Promise<number> {
-  const existing = await payload.find({
-    collection: 'pages',
-    depth: 0,
-    limit: 1,
-    overrideAccess: true,
-    where: { slug: { equals: data.slug } },
-  })
-  const draft = data.status === 'draft'
-  const pageData = {
-    lead: data.lead,
-    layout: data.layout,
-    ...(data.parent === undefined ? {} : { parent: data.parent }),
-    ...(data.reviewNote === undefined ? {} : { reviewNote: data.reviewNote }),
-    ...(data.reviewRequestedBy === undefined ? {} : { reviewRequestedBy: data.reviewRequestedBy }),
-    ...(data.reviewedBy === undefined ? {} : { reviewedBy: data.reviewedBy }),
-    slug: data.slug,
-    title: data.title,
-    workflowState: data.workflowState ?? (data.status === 'published' ? 'approved' : 'draft'),
-    _status: data.status,
-  }
-
-  if (existing.docs[0]) {
-    const updated = await payload.update({
-      collection: 'pages',
-      data: pageData,
-      draft,
-      id: existing.docs[0].id,
-      overrideAccess: true,
-    })
-    return updated.id
-  }
-
-  const created = await payload.create({
-    collection: 'pages',
-    data: pageData,
-    draft,
+  await payload.updateGlobal({
+    slug: 'homepage',
+    data: {
+      aboutBody:
+        'The homepage leads with essential options instead of turning the demo into a general page builder.',
+      aboutTitle: 'A small set of useful paths',
+      contactBody:
+        'The demo distinguishes a general message, a quote request, and a shipment enquiry without presenting real-time tracking.',
+      contactTitle: 'Point each question to the right form.',
+      eyebrow: 'A public-site demonstration',
+      heroBody:
+        'A focused demonstration of service paths, illustrative locations, editorial updates, and the right enquiry.',
+      heroTitle: 'Shipping, made clearer.',
+      newsletterBody: 'A compact footer entry for the demo’s newsletter flow.',
+      newsletterTitle: 'Editorial updates, when they are published.',
+      primaryCta: { href: '/#enquiry', label: 'Start an enquiry' },
+      secondaryCta: { href: '/news', label: 'Visit the newsroom' },
+    },
+    draft: false,
+    locale: 'en',
     overrideAccess: true,
   })
-  return created.id
-}
 
-const [companyImage, workingImage, standardsImage, routesImage] = await Promise.all([
-  getSeedMediaId(stories[0].image),
-  getSeedMediaId(stories[2].image),
-  getSeedMediaId(stories[4].image),
-  getSeedMediaId(stories[6].image),
-])
-
-const companyPageId = await upsertPage({
-  lead: 'A CMS-managed parent page that demonstrates grouped content, reusable blocks, and careful public routing without a custom template for every page.',
-  layout: [
-    richTextPageBlock([
-      'The Company section is a compact content group for this demonstration. Its purpose is to show that editors can add and arrange rich text inside a clear public hierarchy without reaching for freeform styles.',
-      'Every section below is a named Payload block that maps to a shared site component. Editors own the message and the order; the interface keeps the visual system intact.',
-    ]),
-    imagePageBlock(
-      companyImage,
-      'Illustrative editorial media managed in the same CMS library as the newsroom images.',
-    ),
-  ],
-  slug: 'company',
-  status: 'published',
-  title: 'Company',
-})
-
-const waysOfWorkingPageId = await upsertPage({
-  lead: 'A small illustration of how clear routes, bounded claims, and an editorial perspective can make a public shipping site easier to use.',
-  layout: [
-    richTextPageBlock([
-      'Useful public journeys begin by naming the next question rather than pretending to complete an operational task on a marketing page.',
-      'For this demo, every path stays illustrative. It can explain a form, a service route, or a publishing decision without claiming live coverage or availability.',
-    ]),
-    featurePageBlock(
-      'A clear route begins with context.',
-      'Editors can pair a managed image with one focused action while the shared feature block keeps reading order, spacing, and responsive behavior consistent.',
-      workingImage,
-      'Explore the enquiry route',
-      '/#enquiry',
-    ),
-    calloutPageBlock(
-      'Start with the right question.',
-      'The enquiry route is the public place to continue a shipping conversation when a visitor is ready to share context.',
-      'Start an enquiry',
-      '/#enquiry',
-    ),
-  ],
-  parent: companyPageId,
-  slug: 'ways-of-working',
-  status: 'published',
-  title: 'Ways of working',
-})
-
-const editorialStandardsPageId = await upsertPage({
-  lead: 'The Dispatch uses a calm, illustrative editorial voice to make context visible without presenting a demonstration as a live operating record.',
-  layout: [
-    richTextPageBlock([
-      'A published story should be clear about what it can explain. In this demonstration, the newsroom provides useful context around public routes and CMS-managed content.',
-      'It does not report live operations, customer outcomes, or service availability. Those boundaries are part of making editorial information more trustworthy.',
-    ]),
-    imagePageBlock(
-      standardsImage,
-      'Illustrative newsroom media, selected from the shared library rather than uploaded directly into a page.',
-    ),
-    calloutPageBlock(
-      'Read the latest Dispatch stories.',
-      'Browse the CMS-managed newsroom to see the same draft and publishing workflow applied to illustrative updates.',
-      'Visit the newsroom',
-      '/news',
-    ),
-  ],
-  parent: companyPageId,
-  slug: 'editorial-standards',
-  status: 'published',
-  title: 'Editorial standards',
-})
-
-const publicRoutesPageId = await upsertPage({
-  lead: 'A practical note on how a compact demo can steer a visitor toward a clear public action without turning every page into a form.',
-  layout: [
-    richTextPageBlock([
-      'The public site works best when its pages have a single job: offer enough context for a visitor to choose their next useful action.',
-      'That makes room for focused service and enquiry pages while allowing editorial pages to remain readable and calm.',
-    ]),
-    featurePageBlock(
-      'One flexible feature, still a fixed pattern.',
-      'The feature block gives editors room for an image, short explanation, and clear action without allowing arbitrary column systems, styles, or components.',
-      routesImage,
-      'Visit the newsroom',
-      '/news',
-    ),
-  ],
-  parent: companyPageId,
-  slug: 'public-routes',
-  status: 'published',
-  title: 'Public routes',
-})
-
-await upsertPage({
-  lead: 'An unpublished example page for testing Payload drafts, autosave, version history, and the live-preview iframe before editorial content is published.',
-  layout: [
-    richTextPageBlock([
-      'This draft is intentionally not visible to public visitors. Open it from the Pages collection to confirm that Payload can update the live preview while the published site remains unchanged.',
-    ]),
-    imagePageBlock(
-      workingImage,
-      'A draft can use the same approved media block before it is published.',
-    ),
-  ],
-  parent: companyPageId,
-  reviewRequestedBy: editorId,
-  slug: 'working-note',
-  status: 'draft',
-  title: 'Working note for preview',
-  workflowState: 'in-review',
-})
-
-await upsertPage({
-  lead: 'An approved draft that gives the publisher a safe, visible item to publish during the demo.',
-  layout: [
-    richTextPageBlock([
-      'This page has passed review and is intentionally still a draft. Sign in as the publisher to use Payload’s usual Publish action after checking its preview.',
-      'The status is visible in the Pages list alongside the person who requested and completed the review.',
-    ]),
-    imagePageBlock(
-      routesImage,
-      'The publisher-ready draft still uses the same approved editorial image block.',
-    ),
-  ],
-  parent: companyPageId,
-  reviewNote: 'Approved for the publisher to release.',
-  reviewRequestedBy: editorId,
-  reviewedBy: reviewerId,
-  slug: 'publisher-ready-note',
-  status: 'draft',
-  title: 'Publisher-ready note',
-  workflowState: 'approved',
-})
-
-await upsertPage({
-  lead: 'A CMS-managed parent page that demonstrates grouped content, reusable blocks, and careful public routing without a custom template for every page.',
-  layout: [
-    richTextPageBlock([
-      'The Company section is a compact content group for this demonstration. Its purpose is to show that editors can add and arrange rich text inside a clear public hierarchy without reaching for freeform styles.',
-      'Every section below is a named Payload block that maps to a shared site component. Editors own the message and the order; the interface keeps the visual system intact.',
-    ]),
-    imagePageBlock(
-      companyImage,
-      'Illustrative editorial media managed in the same CMS library as the newsroom images.',
-    ),
-    pageLinksBlock(
-      'Explore the company pages',
-      'Each link below is a related CMS page rendered with the shared story-card component.',
-      [waysOfWorkingPageId, editorialStandardsPageId, publicRoutesPageId],
-    ),
-  ],
-  slug: 'company',
-  status: 'published',
-  title: 'Company',
-})
-
-await payload.updateGlobal({
-  slug: 'homepage',
-  data: {
-    eyebrow: 'A public-site demonstration',
-    heroTitle: 'Shipping, made clearer.',
-    heroBody:
-      'A focused demonstration of service paths, illustrative locations, editorial updates, and the right enquiry.',
-    heroMedia: await getSeedMediaId(homepageHero),
-    primaryCta: { label: 'Start an enquiry', href: '/#enquiry' },
-    secondaryCta: { label: 'Visit the newsroom', href: '/news' },
-    aboutTitle: 'A small set of useful paths',
-    aboutBody:
-      'The homepage leads with essential options instead of turning the demo into a general page builder.',
-    featuredNews: newsIds.slice(0, 3),
-    contactTitle: 'Point each question to the right form.',
-    contactBody:
-      'The demo distinguishes a general message, a quote request, and a shipment enquiry without presenting real-time tracking.',
-    newsletterTitle: 'Editorial updates, when they are published.',
-    newsletterBody: 'A compact footer entry for the demo’s newsletter flow.',
-    _status: 'published',
-  },
-  draft: false,
-  overrideAccess: true,
-})
-
-await Promise.all([
-  payload.updateGlobal({
+  await payload.updateGlobal({
     slug: 'homepage',
     data: {
       aboutBody:
@@ -933,14 +451,15 @@ await Promise.all([
       newsletterBody:
         'Una entrada de pie de página compacta para el flujo de boletines de la demostración.',
       newsletterTitle: 'Actualizaciones editoriales, cuando se publican.',
-      primaryCta: { label: 'Iniciar una consulta', href: '/#enquiry' },
-      secondaryCta: { label: 'Visitar la sala de prensa', href: '/news' },
+      primaryCta: { href: '/#enquiry', label: 'Iniciar una consulta' },
+      secondaryCta: { href: '/news', label: 'Visitar la sala de prensa' },
     },
     draft: false,
     locale: 'es',
     overrideAccess: true,
-  }),
-  payload.updateGlobal({
+  })
+
+  await payload.updateGlobal({
     slug: 'homepage',
     data: {
       aboutBody:
@@ -955,13 +474,623 @@ await Promise.all([
       heroTitle: '配送を、もっとわかりやすく。',
       newsletterBody: 'デモのニュースレターフロー用に用意した、簡潔なフッター項目です。',
       newsletterTitle: '公開時に届く、編集アップデート。',
-      primaryCta: { label: 'お問い合わせを始める', href: '/#enquiry' },
-      secondaryCta: { label: 'ニュースルームを見る', href: '/news' },
+      primaryCta: { href: '/#enquiry', label: 'お問い合わせを始める' },
+      secondaryCta: { href: '/news', label: 'ニュースルームを見る' },
     },
     draft: false,
     locale: 'jp',
     overrideAccess: true,
-  }),
-])
+  })
+}
 
-await payload.destroy()
+if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
+  await repairLocalizedContent()
+  await payload.destroy()
+} else {
+  type DemoUser = {
+    readonly email: string
+    readonly name: string
+    readonly role: EditorialRole
+  }
+
+  const demoUserPassword = 'Abc123@@'
+
+  const demoAdmin: DemoUser = { email: 'admin@dispatch.demo', name: 'Alex Admin', role: 'admin' }
+  const demoEditor: DemoUser = {
+    email: 'editor@dispatch.demo',
+    name: 'Maya Editor',
+    role: 'editor',
+  }
+  const demoReviewer: DemoUser = {
+    email: 'reviewer@dispatch.demo',
+    name: 'Rowan Reviewer',
+    role: 'reviewer',
+  }
+  const demoTranslator: DemoUser = {
+    email: 'translator@dispatch.demo',
+    name: 'Jordan Translator',
+    role: 'translator',
+  }
+  const demoPublisher: DemoUser = {
+    email: 'publisher@dispatch.demo',
+    name: 'Parker Publisher',
+    role: 'publisher',
+  }
+
+  async function upsertDemoUser(user: DemoUser): Promise<number> {
+    const existing = await payload.find({
+      collection: 'users',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      where: { email: { equals: user.email } },
+    })
+
+    if (existing.docs[0]) {
+      const updated = await payload.update({
+        collection: 'users',
+        data: { name: user.name, password: demoUserPassword, roles: [user.role] },
+        id: existing.docs[0].id,
+        overrideAccess: true,
+      })
+      return updated.id
+    }
+
+    const created = await payload.create({
+      collection: 'users',
+      data: {
+        email: user.email,
+        name: user.name,
+        password: demoUserPassword,
+        roles: [user.role],
+      },
+      overrideAccess: true,
+    })
+    return created.id
+  }
+
+  await upsertDemoUser(demoAdmin)
+  const editorId = await upsertDemoUser(demoEditor)
+  const reviewerId = await upsertDemoUser(demoReviewer)
+  await upsertDemoUser(demoTranslator)
+  await upsertDemoUser(demoPublisher)
+
+  async function getSeedMediaId(image: SeedMedia): Promise<number> {
+    const filePath = path.join(currentDirectory, 'seed-media', image.directory, image.filename)
+    const existing = await payload.find({
+      collection: 'media',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      where: { filename: { equals: image.filename } },
+    })
+    if (existing.docs[0]) {
+      const updated = await payload.update({
+        collection: 'media',
+        data: { alt: image.alt },
+        filePath,
+        id: existing.docs[0].id,
+        overwriteExistingFiles: true,
+        overrideAccess: true,
+      })
+      return updated.id
+    }
+
+    const created = await payload.create({
+      collection: 'media',
+      data: { alt: image.alt },
+      filePath,
+      overrideAccess: true,
+    })
+    return created.id
+  }
+
+  const newsIds = await Promise.all(
+    stories.map(async (story) => {
+      const { image, legacySlug, ...data } = story
+      const heroMedia = await getSeedMediaId(image)
+      const existing = await payload.find({
+        collection: 'news',
+        depth: 0,
+        limit: 1,
+        overrideAccess: true,
+        where: {
+          or: [{ slug: { equals: data.slug } }, { slug: { equals: legacySlug } }],
+        },
+      })
+
+      if (existing.docs[0]) {
+        const updated = await payload.update({
+          collection: 'news',
+          data: {
+            ...data,
+            heroMedia,
+            publishedAt: new Date().toISOString(),
+            workflowState: 'approved',
+            _status: 'published',
+          },
+          draft: false,
+          id: existing.docs[0].id,
+          overrideAccess: true,
+        })
+        return updated.id
+      }
+
+      const created = await payload.create({
+        collection: 'news',
+        data: {
+          ...data,
+          heroMedia,
+          publishedAt: new Date().toISOString(),
+          workflowState: 'approved',
+          _status: 'published',
+        },
+        draft: false,
+        overrideAccess: true,
+      })
+      return created.id
+    }),
+  )
+
+  type NewsTranslation = {
+    readonly body: News['body']
+    readonly excerpt: string
+    readonly locale: Exclude<ContentLocale, 'en'>
+    readonly title: string
+  }
+
+  const seededNewsTranslations: readonly NewsTranslation[] = [
+    {
+      body: lexicalBody([
+        'Una consulta de envío es una solicitud de ayuda, no una promesa de información operativa en tiempo real. Un contexto claro ayuda a los visitantes a saber qué compartir y qué ocurrirá después.',
+        'The Dispatch puede explicar el recorrido de un formulario en lenguaje sencillo y, al mismo tiempo, mantener claros los límites operativos.',
+      ]),
+      excerpt:
+        'El contexto editorial puede explicar un proceso de consulta en lenguaje sencillo sin confundir una consulta con el seguimiento en tiempo real.',
+      locale: 'es',
+      title: 'Una forma más clara de iniciar una consulta de envío',
+    },
+    {
+      body: lexicalBody([
+        '配送に関するお問い合わせは、支援を求めるためのものであり、リアルタイムの運航情報を約束するものではありません。明確な文脈があれば、訪問者は共有すべき情報と次の流れを理解できます。',
+        'The Dispatch は、運用上の境界を明確に保ちながら、フォームの流れをわかりやすい言葉で説明できます。',
+      ]),
+      excerpt:
+        '編集上の文脈は、お問い合わせとリアルタイム追跡を混同させずに、フォームの流れをわかりやすく説明できます。',
+      locale: 'jp',
+      title: '配送に関するお問い合わせを、より明確に始める方法',
+    },
+    {
+      body: lexicalBody([
+        'Una demostración de sala de prensa resulta útil cuando hace visible la propiedad del contenido y el ciclo de publicación sin presentar afirmaciones que no se puedan respaldar.',
+        'El sitio público y el espacio editorial siguen siendo aplicaciones distintas con un único modelo de contenido compartido.',
+      ]),
+      excerpt:
+        'Borradores, contexto de publicación, medios, categorías y texto enriquecido se reúnen en una superficie editorial enfocada.',
+      locale: 'es',
+      title: 'Lo que puede mostrar una revisión editorial publicada',
+    },
+    {
+      body: lexicalBody([
+        'ニュースルームのデモは、裏付けのない主張をせずに、コンテンツの責任範囲と公開までの流れを可視化できるときに役立ちます。',
+        '公開サイトと編集ワークスペースは別々のアプリケーションですが、同じコンテンツモデルを共有しています。',
+      ]),
+      excerpt:
+        '下書き、公開時の文脈、メディア、カテゴリー、リッチテキストを、焦点の定まったニュースルーム画面にまとめます。',
+      locale: 'jp',
+      title: '公開された編集レビューで示せること',
+    },
+  ]
+
+  await Promise.all(
+    seededNewsTranslations.map(async (translation, index) => {
+      const id = newsIds[Math.floor(index / 2)]
+      if (!id) return
+      await payload.update({
+        collection: 'news',
+        data: {
+          body: translation.body,
+          excerpt: translation.excerpt,
+          title: translation.title,
+        },
+        draft: false,
+        id,
+        locale: translation.locale,
+        overrideAccess: true,
+      })
+    }),
+  )
+
+  type WorkflowNewsSeed = {
+    readonly body: News['body']
+    readonly category: 'company' | 'ideas' | 'people' | 'product'
+    readonly excerpt: string
+    readonly heroMedia: number
+    readonly reviewNote?: string
+    readonly reviewRequestedBy: number
+    readonly reviewedBy?: number
+    readonly slug: string
+    readonly title: string
+    readonly workflowState: Extract<WorkflowState, 'approved' | 'in-review'>
+  }
+
+  async function upsertWorkflowNews(data: WorkflowNewsSeed): Promise<void> {
+    const existing = await payload.find({
+      collection: 'news',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      where: { slug: { equals: data.slug } },
+    })
+    const newsData = {
+      ...data,
+      publishedAt: new Date().toISOString(),
+      _status: 'draft' as const,
+    }
+
+    if (existing.docs[0]) {
+      await payload.update({
+        collection: 'news',
+        data: newsData,
+        draft: true,
+        id: existing.docs[0].id,
+        overrideAccess: true,
+      })
+      return
+    }
+
+    await payload.create({
+      collection: 'news',
+      data: newsData,
+      draft: true,
+      overrideAccess: true,
+    })
+  }
+
+  const [reviewQueueImage, publishingQueueImage] = await Promise.all([
+    getSeedMediaId(stories[3].image),
+    getSeedMediaId(stories[8].image),
+  ])
+
+  await Promise.all([
+    upsertWorkflowNews({
+      body: lexicalBody([
+        'This draft is ready for a reviewer to check before it becomes a public Dispatch story.',
+        'It demonstrates the simple request-review state without exposing the editorial queue on the public site.',
+      ]),
+      category: 'product',
+      excerpt:
+        'A draft story deliberately placed in the review queue for the Payload workflow demo.',
+      heroMedia: reviewQueueImage,
+      reviewRequestedBy: editorId,
+      slug: 'review-queue-demo-story',
+      title: 'A story ready for review',
+      workflowState: 'in-review',
+    }),
+    upsertWorkflowNews({
+      body: lexicalBody([
+        'This draft has already been approved by a reviewer and is waiting for a publisher to use Payload’s normal Publish action.',
+        'The workflow state shows who has acted without replacing Payload’s draft and published statuses.',
+      ]),
+      category: 'product',
+      excerpt: 'An approved draft kept ready for the publisher in the Payload workflow demo.',
+      heroMedia: publishingQueueImage,
+      reviewNote: 'Ready for the publishing check.',
+      reviewRequestedBy: editorId,
+      reviewedBy: reviewerId,
+      slug: 'publisher-queue-demo-story',
+      title: 'A story ready to publish',
+      workflowState: 'approved',
+    }),
+  ])
+
+  await Promise.all(
+    locations.map(async (location) => {
+      const { image, ...data } = location
+      const heroMedia = await getSeedMediaId(image)
+      const existing = await payload.find({
+        collection: 'locations',
+        depth: 0,
+        limit: 1,
+        overrideAccess: true,
+        where: { slug: { equals: location.slug } },
+      })
+
+      if (existing.docs[0]) {
+        await payload.update({
+          collection: 'locations',
+          data: { ...data, heroMedia, _status: 'published' },
+          draft: false,
+          id: existing.docs[0].id,
+          overrideAccess: true,
+        })
+        return
+      }
+
+      await payload.create({
+        collection: 'locations',
+        data: { ...data, heroMedia, _status: 'published' },
+        draft: false,
+        overrideAccess: true,
+      })
+    }),
+  )
+
+  async function upsertPage(data: PageSeed): Promise<number> {
+    const existing = await payload.find({
+      collection: 'pages',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      where: { slug: { equals: data.slug } },
+    })
+    const draft = data.status === 'draft'
+    const pageData = {
+      lead: data.lead,
+      layout: data.layout,
+      ...(data.parent === undefined ? {} : { parent: data.parent }),
+      ...(data.reviewNote === undefined ? {} : { reviewNote: data.reviewNote }),
+      ...(data.reviewRequestedBy === undefined
+        ? {}
+        : { reviewRequestedBy: data.reviewRequestedBy }),
+      ...(data.reviewedBy === undefined ? {} : { reviewedBy: data.reviewedBy }),
+      slug: data.slug,
+      title: data.title,
+      workflowState: data.workflowState ?? (data.status === 'published' ? 'approved' : 'draft'),
+      _status: data.status,
+    }
+
+    if (existing.docs[0]) {
+      const updated = await payload.update({
+        collection: 'pages',
+        data: pageData,
+        draft,
+        id: existing.docs[0].id,
+        overrideAccess: true,
+      })
+      return updated.id
+    }
+
+    const created = await payload.create({
+      collection: 'pages',
+      data: pageData,
+      draft,
+      overrideAccess: true,
+    })
+    return created.id
+  }
+
+  const [companyImage, workingImage, standardsImage, routesImage] = await Promise.all([
+    getSeedMediaId(stories[0].image),
+    getSeedMediaId(stories[2].image),
+    getSeedMediaId(stories[4].image),
+    getSeedMediaId(stories[6].image),
+  ])
+
+  const companyPageId = await upsertPage({
+    lead: 'A CMS-managed parent page that demonstrates grouped content, reusable blocks, and careful public routing without a custom template for every page.',
+    layout: [
+      richTextPageBlock([
+        'The Company section is a compact content group for this demonstration. Its purpose is to show that editors can add and arrange rich text inside a clear public hierarchy without reaching for freeform styles.',
+        'Every section below is a named Payload block that maps to a shared site component. Editors own the message and the order; the interface keeps the visual system intact.',
+      ]),
+      imagePageBlock(
+        companyImage,
+        'Illustrative editorial media managed in the same CMS library as the newsroom images.',
+      ),
+    ],
+    slug: 'company',
+    status: 'published',
+    title: 'Company',
+  })
+
+  const waysOfWorkingPageId = await upsertPage({
+    lead: 'A small illustration of how clear routes, bounded claims, and an editorial perspective can make a public shipping site easier to use.',
+    layout: [
+      richTextPageBlock([
+        'Useful public journeys begin by naming the next question rather than pretending to complete an operational task on a marketing page.',
+        'For this demo, every path stays illustrative. It can explain a form, a service route, or a publishing decision without claiming live coverage or availability.',
+      ]),
+      featurePageBlock(
+        'A clear route begins with context.',
+        'Editors can pair a managed image with one focused action while the shared feature block keeps reading order, spacing, and responsive behavior consistent.',
+        workingImage,
+        'Explore the enquiry route',
+        '/#enquiry',
+      ),
+      calloutPageBlock(
+        'Start with the right question.',
+        'The enquiry route is the public place to continue a shipping conversation when a visitor is ready to share context.',
+        'Start an enquiry',
+        '/#enquiry',
+      ),
+    ],
+    parent: companyPageId,
+    slug: 'ways-of-working',
+    status: 'published',
+    title: 'Ways of working',
+  })
+
+  const editorialStandardsPageId = await upsertPage({
+    lead: 'The Dispatch uses a calm, illustrative editorial voice to make context visible without presenting a demonstration as a live operating record.',
+    layout: [
+      richTextPageBlock([
+        'A published story should be clear about what it can explain. In this demonstration, the newsroom provides useful context around public routes and CMS-managed content.',
+        'It does not report live operations, customer outcomes, or service availability. Those boundaries are part of making editorial information more trustworthy.',
+      ]),
+      imagePageBlock(
+        standardsImage,
+        'Illustrative newsroom media, selected from the shared library rather than uploaded directly into a page.',
+      ),
+      calloutPageBlock(
+        'Read the latest Dispatch stories.',
+        'Browse the CMS-managed newsroom to see the same draft and publishing workflow applied to illustrative updates.',
+        'Visit the newsroom',
+        '/news',
+      ),
+    ],
+    parent: companyPageId,
+    slug: 'editorial-standards',
+    status: 'published',
+    title: 'Editorial standards',
+  })
+
+  const publicRoutesPageId = await upsertPage({
+    lead: 'A practical note on how a compact demo can steer a visitor toward a clear public action without turning every page into a form.',
+    layout: [
+      richTextPageBlock([
+        'The public site works best when its pages have a single job: offer enough context for a visitor to choose their next useful action.',
+        'That makes room for focused service and enquiry pages while allowing editorial pages to remain readable and calm.',
+      ]),
+      featurePageBlock(
+        'One flexible feature, still a fixed pattern.',
+        'The feature block gives editors room for an image, short explanation, and clear action without allowing arbitrary column systems, styles, or components.',
+        routesImage,
+        'Visit the newsroom',
+        '/news',
+      ),
+    ],
+    parent: companyPageId,
+    slug: 'public-routes',
+    status: 'published',
+    title: 'Public routes',
+  })
+
+  await upsertPage({
+    lead: 'An unpublished example page for testing Payload drafts, autosave, version history, and the live-preview iframe before editorial content is published.',
+    layout: [
+      richTextPageBlock([
+        'This draft is intentionally not visible to public visitors. Open it from the Pages collection to confirm that Payload can update the live preview while the published site remains unchanged.',
+      ]),
+      imagePageBlock(
+        workingImage,
+        'A draft can use the same approved media block before it is published.',
+      ),
+    ],
+    parent: companyPageId,
+    reviewRequestedBy: editorId,
+    slug: 'working-note',
+    status: 'draft',
+    title: 'Working note for preview',
+    workflowState: 'in-review',
+  })
+
+  await upsertPage({
+    lead: 'An approved draft that gives the publisher a safe, visible item to publish during the demo.',
+    layout: [
+      richTextPageBlock([
+        'This page has passed review and is intentionally still a draft. Sign in as the publisher to use Payload’s usual Publish action after checking its preview.',
+        'The status is visible in the Pages list alongside the person who requested and completed the review.',
+      ]),
+      imagePageBlock(
+        routesImage,
+        'The publisher-ready draft still uses the same approved editorial image block.',
+      ),
+    ],
+    parent: companyPageId,
+    reviewNote: 'Approved for the publisher to release.',
+    reviewRequestedBy: editorId,
+    reviewedBy: reviewerId,
+    slug: 'publisher-ready-note',
+    status: 'draft',
+    title: 'Publisher-ready note',
+    workflowState: 'approved',
+  })
+
+  await upsertPage({
+    lead: 'A CMS-managed parent page that demonstrates grouped content, reusable blocks, and careful public routing without a custom template for every page.',
+    layout: [
+      richTextPageBlock([
+        'The Company section is a compact content group for this demonstration. Its purpose is to show that editors can add and arrange rich text inside a clear public hierarchy without reaching for freeform styles.',
+        'Every section below is a named Payload block that maps to a shared site component. Editors own the message and the order; the interface keeps the visual system intact.',
+      ]),
+      imagePageBlock(
+        companyImage,
+        'Illustrative editorial media managed in the same CMS library as the newsroom images.',
+      ),
+      pageLinksBlock(
+        'Explore the company pages',
+        'Each link below is a related CMS page rendered with the shared story-card component.',
+        [waysOfWorkingPageId, editorialStandardsPageId, publicRoutesPageId],
+      ),
+    ],
+    slug: 'company',
+    status: 'published',
+    title: 'Company',
+  })
+
+  await payload.updateGlobal({
+    slug: 'homepage',
+    data: {
+      eyebrow: 'A public-site demonstration',
+      heroTitle: 'Shipping, made clearer.',
+      heroBody:
+        'A focused demonstration of service paths, illustrative locations, editorial updates, and the right enquiry.',
+      heroMedia: await getSeedMediaId(homepageHero),
+      primaryCta: { label: 'Start an enquiry', href: '/#enquiry' },
+      secondaryCta: { label: 'Visit the newsroom', href: '/news' },
+      aboutTitle: 'A small set of useful paths',
+      aboutBody:
+        'The homepage leads with essential options instead of turning the demo into a general page builder.',
+      featuredNews: newsIds.slice(0, 3),
+      contactTitle: 'Point each question to the right form.',
+      contactBody:
+        'The demo distinguishes a general message, a quote request, and a shipment enquiry without presenting real-time tracking.',
+      newsletterTitle: 'Editorial updates, when they are published.',
+      newsletterBody: 'A compact footer entry for the demo’s newsletter flow.',
+      _status: 'published',
+    },
+    draft: false,
+    overrideAccess: true,
+  })
+
+  await Promise.all([
+    payload.updateGlobal({
+      slug: 'homepage',
+      data: {
+        aboutBody:
+          'La página principal prioriza las opciones esenciales sin convertir la demostración en un creador de páginas general.',
+        aboutTitle: 'Un conjunto pequeño de rutas útiles',
+        contactBody:
+          'La demostración distingue un mensaje general, una solicitud de presupuesto y una consulta de envío sin presentar seguimiento en tiempo real.',
+        contactTitle: 'Dirige cada pregunta al formulario adecuado.',
+        eyebrow: 'Una demostración de sitio público',
+        heroBody:
+          'Una demostración enfocada en rutas de servicio, ubicaciones ilustrativas, actualizaciones editoriales y la consulta adecuada.',
+        heroTitle: 'Envíos, con mayor claridad.',
+        newsletterBody:
+          'Una entrada de pie de página compacta para el flujo de boletines de la demostración.',
+        newsletterTitle: 'Actualizaciones editoriales, cuando se publican.',
+        primaryCta: { label: 'Iniciar una consulta', href: '/#enquiry' },
+        secondaryCta: { label: 'Visitar la sala de prensa', href: '/news' },
+      },
+      draft: false,
+      locale: 'es',
+      overrideAccess: true,
+    }),
+    payload.updateGlobal({
+      slug: 'homepage',
+      data: {
+        aboutBody:
+          'このホームページでは、デモを汎用的なページビルダーにせず、必要な選択肢を優先しています。',
+        aboutTitle: '役立つ経路を厳選',
+        contactBody:
+          'このデモでは、一般的なメッセージ、見積もり依頼、配送に関するお問い合わせを区別し、リアルタイム追跡とは表示しません。',
+        contactTitle: '質問ごとに適切なフォームへ。',
+        eyebrow: '公開サイトのデモンストレーション',
+        heroBody:
+          'サービス経路、説明用の拠点、編集記事、適切なお問い合わせを示す、焦点を絞ったデモです。',
+        heroTitle: '配送を、もっとわかりやすく。',
+        newsletterBody: 'デモのニュースレターフロー用に用意した、簡潔なフッター項目です。',
+        newsletterTitle: '公開時に届く、編集アップデート。',
+        primaryCta: { label: 'お問い合わせを始める', href: '/#enquiry' },
+        secondaryCta: { label: 'ニュースルームを見る', href: '/news' },
+      },
+      draft: false,
+      locale: 'jp',
+      overrideAccess: true,
+    }),
+  ])
+
+  await payload.destroy()
+}

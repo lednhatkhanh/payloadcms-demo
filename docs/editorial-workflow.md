@@ -6,7 +6,7 @@ The public site has three canonical language routes:
 - `/jp` — Japanese
 - `/es` — Spanish
 
-Unprefixed public links redirect to the language most recently selected by the visitor; a first visit defaults to English. English remains the source locale in Payload. Japanese and Spanish are editable through Payload’s locale selector, and empty translations fall back to English until they are completed.
+Unprefixed public links redirect to the language most recently selected by the visitor; a first visit defaults to English. English remains the source locale in Payload. It is stored once as the `en` locale value, not as an additional translation field, and English is not selectable in a translation request. Japanese and Spanish are editable through Payload’s locale selector, and empty translations fall back to English until they are completed.
 
 ## Editorial flow
 

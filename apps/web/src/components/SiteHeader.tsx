@@ -3,7 +3,7 @@
 import { Button } from '@repo/ui/button'
 import { Container, HeaderBar, HeaderNavigation, SiteBrand, SiteHeaderFrame } from '@repo/ui/layout'
 import { ButtonLink, Link } from '@repo/ui/link'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 
 import { LanguageSelector } from './LanguageSelector'
 
@@ -43,7 +43,9 @@ export function SiteHeader() {
             <Link href="/#about" onPress={closeMenu} variant="navigation">
               About
             </Link>
-            <LanguageSelector />
+            <Suspense fallback={null}>
+              <LanguageSelector />
+            </Suspense>
             <ButtonLink href="/#enquiry" onPress={closeMenu} size="sm" variant="secondary">
               Start an enquiry
             </ButtonLink>
