@@ -7,6 +7,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { ContactSubmissions } from './collections/ContactSubmissions'
+import { Locations } from './collections/Locations'
 import { Media } from './collections/Media'
 import { News } from './collections/News'
 import { NewsletterSignups } from './collections/NewsletterSignups'
@@ -27,7 +28,7 @@ export default buildConfig({
     theme: 'light',
     user: Users.slug,
   },
-  collections: [Users, Media, News, ContactSubmissions, NewsletterSignups],
+  collections: [Users, Media, News, Locations, ContactSubmissions, NewsletterSignups],
   db: postgresAdapter({ pool: { connectionString: serverEnvironment.DATABASE_URL } }),
   editor: lexicalEditor(),
   globals: [Homepage],

@@ -175,6 +175,32 @@ export function FeatureGrid({ children }: { readonly children: ReactNode }) {
   return <div className="grid gap-space-lg md:grid-cols-3">{children}</div>
 }
 
+export function LocationGrid({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="grid items-stretch gap-space-lg md:grid-cols-2 lg:grid-cols-3">{children}</div>
+  )
+}
+
+export function LocationToolbar({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-space-lg border-y border-border py-space-xl lg:flex-row lg:items-center lg:justify-between">
+      {children}
+    </div>
+  )
+}
+
+export function FilterGroup({ children }: { readonly children: ReactNode }) {
+  return <div className="flex flex-wrap gap-space-sm">{children}</div>
+}
+
+export function LocationDetailGrid({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="grid items-start gap-space-2xl lg:grid-cols-location-detail lg:gap-space-3xl">
+      {children}
+    </div>
+  )
+}
+
 export function ServiceGrid({ children }: { readonly children: ReactNode }) {
   return <div className="grid border-t border-border md:grid-cols-3">{children}</div>
 }

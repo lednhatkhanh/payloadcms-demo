@@ -13,6 +13,13 @@ export const Homepage: GlobalConfig = {
     { name: 'heroTitle', type: 'text', required: true },
     { name: 'heroBody', type: 'textarea', required: true },
     {
+      name: 'heroMedia',
+      type: 'upload',
+      relationTo: 'media',
+      required: true,
+      admin: { description: 'Lead image shown in the public homepage hero.' },
+    },
+    {
       name: 'primaryCta',
       type: 'group',
       fields: [

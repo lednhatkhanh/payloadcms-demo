@@ -75,6 +75,8 @@
   --spacing-card-location: 18rem;
   --spacing-media-hero: 31rem;
   --spacing-media-hero-compact: 22rem;
+  --spacing-media-location: 14rem;
+  --spacing-media-location-detail: clamp(18rem, 37vw, 32rem);
   --spacing-media-story: 10rem;
   --spacing-header: 5rem;
 
@@ -129,6 +131,7 @@
   --grid-template-columns-enquiry: minmax(0, 1.1fr) minmax(17rem, 0.68fr);
   --grid-template-columns-editorial: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
   --grid-template-columns-form-action: minmax(0, 1fr) auto;
+  --grid-template-columns-location-detail: minmax(0, 1fr) minmax(17rem, 0.56fr);
   --grid-template-columns-newsletter: minmax(0, 1fr) minmax(20rem, 0.75fr);
 
   --shadow-card: 0 1rem 3rem color-mix(in oklch, var(--color-neutral-950) 8%, transparent);

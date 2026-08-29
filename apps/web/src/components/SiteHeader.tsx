@@ -32,7 +32,7 @@ export function SiteHeader() {
             <Link href="/#services" onPress={closeMenu} variant="navigation">
               Shipping
             </Link>
-            <Link href="/#locations" onPress={closeMenu} variant="navigation">
+            <Link href="/locations" onPress={closeMenu} variant="navigation">
               Locations
             </Link>
             <Link href="/#dispatch" onPress={closeMenu} variant="navigation">

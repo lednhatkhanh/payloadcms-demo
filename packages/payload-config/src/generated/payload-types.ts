@@ -70,6 +70,7 @@ export interface Config {
     users: User;
     media: Media;
     news: News;
+    locations: Location;
     'contact-submissions': ContactSubmission;
     'newsletter-signups': NewsletterSignup;
     'payload-kv': PayloadKv;
@@ -82,6 +83,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
+    locations: LocationsSelect<false> | LocationsSelect<true>;
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     'newsletter-signups': NewsletterSignupsSelect<false> | NewsletterSignupsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -219,12 +221,39 @@ export interface News {
     [k: string]: unknown;
   };
   /**
-   * Optional 16:9 lead image.
+   * Lead image shown on the public story card and detail page.
    */
-  heroMedia?: (number | null) | Media;
+  heroMedia: number | Media;
   category: 'company' | 'product' | 'people' | 'ideas';
   publishedAt: string;
   featured?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations".
+ */
+export interface Location {
+  id: number;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * Editorial description only; do not imply operational coverage.
+   */
+  description: string;
+  /**
+   * Lead image shown on the public card and detail page.
+   */
+  heroMedia: number | Media;
+  serviceTags: ('ocean-freight' | 'logistics-solutions')[];
+  city: string;
+  country: string;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -290,6 +319,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'news';
         value: number | News;
+      } | null)
+    | ({
+        relationTo: 'locations';
+        value: number | Location;
       } | null)
     | ({
         relationTo: 'contact-submissions';
@@ -426,6 +459,23 @@ export interface NewsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations_select".
+ */
+export interface LocationsSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  description?: T;
+  heroMedia?: T;
+  serviceTags?: T;
+  city?: T;
+  country?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact-submissions_select".
  */
 export interface ContactSubmissionsSelect<T extends boolean = true> {
@@ -497,6 +547,10 @@ export interface Homepage {
   eyebrow: string;
   heroTitle: string;
   heroBody: string;
+  /**
+   * Lead image shown in the public homepage hero.
+   */
+  heroMedia: number | Media;
   primaryCta: {
     label: string;
     href: string;
@@ -524,6 +578,7 @@ export interface HomepageSelect<T extends boolean = true> {
   eyebrow?: T;
   heroTitle?: T;
   heroBody?: T;
+  heroMedia?: T;
   primaryCta?:
     | T
     | {

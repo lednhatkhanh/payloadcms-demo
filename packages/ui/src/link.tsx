@@ -29,6 +29,12 @@ const linkStyles = cva(
         navigation:
           'text-small font-semibold text-neutral-800 no-underline rac-hovered:text-brand-800',
         card: 'block h-full rounded-lg no-underline rac-focus-visible:ring-offset-page',
+        filter:
+          'inline-flex items-center rounded-pill border px-space-md py-space-2xs font-mono text-tag no-underline rac-hovered:border-brand-300 rac-hovered:bg-brand-50',
+      },
+      active: {
+        false: 'border-border bg-surface text-muted',
+        true: 'border-brand-700 bg-brand-700 text-white',
       },
     },
     defaultVariants: { variant: 'inline' },
@@ -42,9 +48,19 @@ export interface LinkProps
   readonly href: string
 }
 
-export function Link({ href, variant, ...props }: LinkProps) {
+export function Link({
+  active,
+  href,
+  variant,
+  ...props
+}: LinkProps & { readonly active?: boolean }) {
   return (
-    <AriaLink {...props} className={linkStyles({ variant })} href={href} render={nextLinkRender} />
+    <AriaLink
+      {...props}
+      className={linkStyles({ active, variant })}
+      href={href}
+      render={nextLinkRender}
+    />
   )
 }
 

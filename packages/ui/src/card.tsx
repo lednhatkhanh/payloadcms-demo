@@ -15,11 +15,25 @@ export function CardBody({ children }: { readonly children: ReactNode }) {
   return <div className="flex flex-1 flex-col gap-space-md p-space-lg">{children}</div>
 }
 
-export function LocationCard({ children }: { readonly children: ReactNode }) {
-  return (
-    <article className="flex min-h-card-location flex-col overflow-hidden rounded-lg border border-neutral-200 bg-surface shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none">
+export function LocationCard({
+  children,
+  href,
+}: {
+  readonly children: ReactNode
+  readonly href?: string
+}) {
+  const card = (
+    <article className="group flex h-full min-h-card-location flex-col overflow-hidden rounded-lg border border-neutral-200 bg-surface shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none">
       {children}
     </article>
+  )
+
+  return href ? (
+    <Link href={href} variant="card">
+      {card}
+    </Link>
+  ) : (
+    card
   )
 }
 
@@ -31,6 +45,78 @@ export function LocationCardBody({ children }: { readonly children: ReactNode })
 
 export function LocationCardContent({ children }: { readonly children: ReactNode }) {
   return <div className="mt-space-location-heading flex flex-col gap-space-sm">{children}</div>
+}
+
+export function CardLinkAffordance({ children }: { readonly children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-space-xs whitespace-nowrap text-small font-semibold text-brand-800">
+      {children}
+    </span>
+  )
+}
+
+export function LocationCardMedia({
+  alt,
+  src,
+}: {
+  readonly alt: string
+  readonly src?: string | undefined
+}) {
+  return (
+    <div className="relative h-media-location overflow-hidden bg-brand-100">
+      {src ? (
+        <Image
+          alt={alt}
+          className="object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none"
+          fill
+          sizes="(min-width: 768px) 50vw, 100vw"
+          src={src}
+        />
+      ) : (
+        <span className="flex h-full items-end bg-brand-50 p-space-lg font-mono text-meta text-muted">
+          Purposeful no-image state
+        </span>
+      )}
+    </div>
+  )
+}
+
+export function LocationDetailMedia({ alt, src }: { readonly alt: string; readonly src: string }) {
+  return (
+    <figure>
+      <div className="relative min-h-media-location-detail overflow-hidden rounded-lg border border-neutral-200 bg-brand-100 shadow-card">
+        <Image
+          alt={alt}
+          className="object-cover"
+          fill
+          preload
+          sizes="(min-width: 1024px) 83rem, 100vw"
+          src={src}
+        />
+      </div>
+    </figure>
+  )
+}
+
+export function LocationFactPanel({
+  facts,
+}: {
+  readonly facts: readonly { readonly label: string; readonly value: string }[]
+}) {
+  return (
+    <aside className="rounded-lg border border-neutral-200 bg-surface p-space-lg shadow-card">
+      <dl className="flex flex-col gap-space-lg">
+        {facts.map((fact) => (
+          <div className="flex flex-col gap-space-2xs" key={fact.label}>
+            <dt className="font-mono text-meta font-bold uppercase tracking-label text-muted">
+              {fact.label}
+            </dt>
+            <dd className="text-body text-foreground">{fact.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </aside>
+  )
 }
 
 export function CardMedia({

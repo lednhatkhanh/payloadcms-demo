@@ -24,7 +24,8 @@ export const News: CollectionConfig = {
       name: 'heroMedia',
       type: 'upload',
       relationTo: 'media',
-      admin: { description: 'Optional 16:9 lead image.' },
+      required: true,
+      admin: { description: 'Lead image shown on the public story card and detail page.' },
     },
     {
       name: 'category',

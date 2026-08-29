@@ -65,7 +65,7 @@ async function Article({ params }: PageProps) {
               </Text>
             </Cluster>
           </Stack>
-          <CardMedia alt={article.hero?.alt ?? ''} src={article.hero?.url} />
+          <CardMedia alt={article.hero.alt} src={article.hero.url} />
           <ArticleBody>
             <RichText data={article.body} />
           </ArticleBody>

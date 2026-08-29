@@ -1,5 +1,6 @@
 import {
   HeroMedia,
+  HeroPlaceholder,
   LocationCard,
   LocationCardBody,
   LocationCardContent,
@@ -35,7 +36,13 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
-import { getPublishedNews, type NewsSummary } from '@/lib/content'
+import {
+  getHomepage,
+  getPublishedLocations,
+  getPublishedNews,
+  type LocationService,
+  type NewsSummary,
+} from '@/lib/content'
 
 export const metadata: Metadata = {
   description:
@@ -67,53 +74,9 @@ const services = [
   },
 ] as const
 
-const locations = [
-  {
-    description:
-      'A location card can combine a city, country, service tags, image, and editorial description.',
-    tags: ['Ocean freight', 'Published'],
-    title: 'Port city record',
-  },
-  {
-    description:
-      'Purposeful fallbacks keep the location experience complete when no lead image is present.',
-    tags: ['Logistics', 'No-image state'],
-    title: 'Inland hub record',
-  },
-  {
-    description:
-      'A concise entry can direct a visitor toward the appropriate form without making coverage claims.',
-    tags: ['Enquiry path', 'CMS content'],
-    title: 'Regional point record',
-  },
-] as const
-
-const newsCardImages = [
-  {
-    alt: 'Container vessel docked below harbor cranes',
-    src: '/images/news/shipment-enquiry.png',
-  },
-  {
-    alt: 'Route planning documents beside a harbor window',
-    src: '/images/news/editorial-review.png',
-  },
-  {
-    alt: 'Container cranes at blue hour across a calm harbor',
-    src: '/images/news/service-path.png',
-  },
-] as const
-
-type NewsCardImage = {
-  readonly alt: string
-  readonly src: string
-}
-
-function getNewsCardImage(article: NewsSummary, index: number): NewsCardImage {
-  const fallback = newsCardImages[index] ?? newsCardImages[0]
-  return {
-    alt: article.hero?.alt || fallback.alt,
-    src: article.hero?.url ?? fallback.src,
-  }
+const locationServiceLabels: Record<LocationService, string> = {
+  'logistics-solutions': 'Logistics solutions',
+  'ocean-freight': 'Ocean freight',
 }
 
 export default function HomePage() {
@@ -140,11 +103,9 @@ export default function HomePage() {
                 </ButtonLink>
               </Cluster>
             </HeroContent>
-            <HeroMedia
-              alt="Container vessel crossing a calm harbor at sunrise"
-              caption="Illustrative harbor scene · For demonstrative use"
-              src="/images/hero-harbor.png"
-            />
+            <Suspense fallback={<HeroPlaceholder />}>
+              <HomepageHeroMedia />
+            </Suspense>
           </HomeHeroGrid>
         </Container>
       </Section>
@@ -208,30 +169,9 @@ export default function HomePage() {
                   do not represent offices, contacts, or operational coverage.
                 </Text>
               </SectionIntro>
-              <FeatureGrid>
-                {locations.map((location) => (
-                  <LocationCard key={location.title}>
-                    <LocationCardBody>
-                      <div>
-                        <Text color="muted" variant="kicker">
-                          Illustrative location
-                        </Text>
-                        <LocationCardContent>
-                          <Text as="h3" variant="h3">
-                            {location.title}
-                          </Text>
-                          <Text color="muted">{location.description}</Text>
-                        </LocationCardContent>
-                      </div>
-                      <Cluster>
-                        {location.tags.map((tag) => (
-                          <Tag key={tag}>{tag}</Tag>
-                        ))}
-                      </Cluster>
-                    </LocationCardBody>
-                  </LocationCard>
-                ))}
-              </FeatureGrid>
+              <Suspense fallback={<LocationsLoadingState />}>
+                <HomepageLocations />
+              </Suspense>
             </Stack>
           </Container>
         </Section>
@@ -295,6 +235,44 @@ export default function HomePage() {
   )
 }
 
+async function HomepageLocations() {
+  const locations = await getPublishedLocations()
+  if (locations.length === 0) {
+    return <Text color="muted">No published illustrative locations yet.</Text>
+  }
+
+  return (
+    <FeatureGrid>
+      {locations.slice(0, 3).map((location) => (
+        <LocationCard href={`/locations/${location.slug}`} key={location.slug}>
+          <LocationCardBody>
+            <div>
+              <Text color="muted" variant="kicker">
+                Illustrative location
+              </Text>
+              <LocationCardContent>
+                <Text as="h3" variant="h3">
+                  {location.title}
+                </Text>
+                <Text color="muted">{location.description}</Text>
+              </LocationCardContent>
+            </div>
+            <Cluster>
+              {location.serviceTags.map((serviceTag) => (
+                <Tag key={serviceTag}>{locationServiceLabels[serviceTag]}</Tag>
+              ))}
+            </Cluster>
+          </LocationCardBody>
+        </LocationCard>
+      ))}
+    </FeatureGrid>
+  )
+}
+
+function LocationsLoadingState() {
+  return <Text color="muted">Loading published illustrative locations…</Text>
+}
+
 async function NewsroomStories() {
   const news = await getPublishedNews(3)
 
@@ -312,7 +290,6 @@ async function NewsroomStories() {
         <HomepageStoryCard
           article={article}
           featured={index === 0}
-          image={getNewsCardImage(article, index)}
           key={article.slug}
           label={index === 0 ? 'Featured example' : index === 1 ? 'Behind the demo' : 'Guide'}
           meta={
@@ -339,13 +316,11 @@ function NewsroomLoadingState() {
 function HomepageStoryCard({
   article,
   featured,
-  image,
   label,
   meta,
 }: {
   readonly article: NewsSummary
   readonly featured: boolean
-  readonly image: NewsCardImage
   readonly label: string
   readonly meta: string
 }) {
@@ -368,9 +343,9 @@ function HomepageStoryCard({
           <StoryCardContent>{story}</StoryCardContent>
         </div>
       ) : (
-        <StoryCardMedia alt={image.alt} src={image.src} />
+        <StoryCardMedia alt={article.hero.alt} src={article.hero.url} />
       )}
-      {featured ? <StoryCardMedia alt={image.alt} src={image.src} /> : null}
+      {featured ? <StoryCardMedia alt={article.hero.alt} src={article.hero.url} /> : null}
       {!featured ? (
         <>
           <Text color="muted" variant="kicker">
@@ -381,5 +356,18 @@ function HomepageStoryCard({
       ) : null}
       <StoryCardMeta>{meta}</StoryCardMeta>
     </StoryCard>
+  )
+}
+
+async function HomepageHeroMedia() {
+  const homepage = await getHomepage()
+  return homepage.hero ? (
+    <HeroMedia
+      alt={homepage.hero.alt}
+      caption="Illustrative harbor scene · For demonstrative use"
+      src={homepage.hero.url}
+    />
+  ) : (
+    <HeroPlaceholder />
   )
 }

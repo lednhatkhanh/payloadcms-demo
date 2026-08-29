@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     ".": "./src/payload.config.ts",
+    "./paths": "./src/paths.ts",
     "./seed": "./src/seed.ts",
     "./types": "./src/generated/payload-types.ts"
   },

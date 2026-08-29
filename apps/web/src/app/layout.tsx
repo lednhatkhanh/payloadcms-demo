@@ -27,7 +27,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { readonly children: React.ReactNode }) {
   return (
-    <html className={`${manrope.variable} ${jetBrainsMono.variable}`} dir="ltr" lang="en-US">
+    <html
+      className={`${manrope.variable} ${jetBrainsMono.variable}`}
+      data-scroll-behavior="smooth"
+      dir="ltr"
+      lang="en-US"
+    >
       <body>
         <UiProvider>
           <SiteHeader />
