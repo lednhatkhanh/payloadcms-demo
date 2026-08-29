@@ -1,0 +1,2 @@
+/* Keep the site reset out and load the shared, viewport-safe Payload theme. */
+@import '@repo/ui/payload-admin.css';

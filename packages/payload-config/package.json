@@ -1,0 +1,29 @@
+{
+  "name": "@repo/payload-config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/payload.config.ts",
+    "./seed": "./src/seed.ts",
+    "./types": "./src/generated/payload-types.ts"
+  },
+  "scripts": {
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "catalog:",
+    "@payloadcms/richtext-lexical": "catalog:",
+    "@repo/contracts": "workspace:*",
+    "payload": "catalog:",
+    "react": "catalog:",
+    "sharp": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "catalog:",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
+  }
+}
