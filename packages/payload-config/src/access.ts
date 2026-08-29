@@ -20,7 +20,7 @@ export function isAdministrator(user: unknown): boolean {
 
 export function hasEditorialRole(
   user: unknown,
-  role: 'editor' | 'reviewer' | 'publisher',
+  role: 'editor' | 'translator' | 'reviewer' | 'publisher',
 ): boolean {
   return isAdministrator(user) || rolesForUser(user).includes(role)
 }
@@ -29,6 +29,7 @@ export const administrator: Access = ({ req }) => isAdministrator(req.user)
 
 export const editorialParticipant: Access = ({ req }) =>
   hasEditorialRole(req.user, 'editor') ||
+  hasEditorialRole(req.user, 'translator') ||
   hasEditorialRole(req.user, 'reviewer') ||
   hasEditorialRole(req.user, 'publisher')
 

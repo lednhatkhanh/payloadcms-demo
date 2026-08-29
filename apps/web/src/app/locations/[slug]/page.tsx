@@ -9,6 +9,7 @@ import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
 import { getLocationBySlug, type LocationService } from '@/lib/content'
+import { getSiteLocale } from '@/lib/locale'
 
 type PageProps = { readonly params: Promise<{ readonly slug: string }> }
 
@@ -30,7 +31,7 @@ const locationServicePaths: Record<
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const location = await getLocationBySlug(slug)
+  const location = await getLocationBySlug(slug, await getSiteLocale())
   return location
     ? { description: location.description, title: location.title }
     : { title: 'Location not found' }
@@ -46,7 +47,7 @@ export default function LocationDetailPage({ params }: PageProps) {
 
 async function LocationDetail({ params }: PageProps) {
   const { slug } = await params
-  const location = await getLocationBySlug(slug)
+  const location = await getLocationBySlug(slug, await getSiteLocale())
   if (!location) notFound()
   const primaryService = location.serviceTags[0]
   if (!primaryService) notFound()

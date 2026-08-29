@@ -15,11 +15,12 @@ export const Locations: CollectionConfig = {
     useAsTitle: 'title',
   },
   fields: [
-    { name: 'title', type: 'text', required: true },
+    { name: 'title', type: 'text', localized: true, required: true },
     slugField(),
     {
       name: 'description',
       type: 'textarea',
+      localized: true,
       required: true,
       maxLength: 320,
       admin: { description: 'Editorial description only; do not imply operational coverage.' },

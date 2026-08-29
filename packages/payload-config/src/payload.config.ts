@@ -14,11 +14,13 @@ import { NewsletterSignups } from './collections/NewsletterSignups'
 import { Pages } from './collections/Pages'
 import { Users } from './collections/Users'
 import { Homepage } from './globals/Homepage'
+import { contentLocales, defaultContentLocale } from './locales'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
 export default buildConfig({
   admin: {
     components: {
+      beforeDashboard: ['./admin/WorkflowInbox#WorkflowInbox'],
       graphics: {
         Icon: './admin/Logo#Icon',
         Logo: './admin/Logo#Logo',
@@ -33,6 +35,11 @@ export default buildConfig({
   db: postgresAdapter({ pool: { connectionString: serverEnvironment.DATABASE_URL } }),
   editor: lexicalEditor(),
   globals: [Homepage],
+  localization: {
+    defaultLocale: defaultContentLocale,
+    fallback: true,
+    locales: [...contentLocales],
+  },
   maxDepth: 2,
   secret: serverEnvironment.PAYLOAD_SECRET,
   serverURL: serverEnvironment.PAYLOAD_PUBLIC_SERVER_URL,

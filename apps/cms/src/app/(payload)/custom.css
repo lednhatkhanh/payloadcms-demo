@@ -1,2 +1,71 @@
 /* Keep the site reset out and load the shared, viewport-safe Payload theme. */
 @import '@repo/ui/payload-admin.css';
+
+.workflow-inbox {
+  border: 1px solid var(--theme-elevation-200);
+  border-radius: var(--style-radius-m);
+  margin-bottom: calc(var(--base) * 2);
+  padding: calc(var(--base) * 1.5);
+}
+
+.workflow-inbox__heading {
+  align-items: start;
+  display: flex;
+  gap: var(--base);
+  justify-content: space-between;
+}
+
+.workflow-inbox__heading h2,
+.workflow-inbox__heading p,
+.workflow-inbox__eyebrow {
+  margin: 0;
+}
+
+.workflow-inbox__heading > p {
+  color: var(--theme-elevation-600);
+  max-width: 38rem;
+}
+
+.workflow-inbox__eyebrow {
+  color: var(--theme-success-500);
+  font-size: var(--font-size-s);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.workflow-inbox__list {
+  display: grid;
+  gap: calc(var(--base) * 0.5);
+  list-style: none;
+  margin: calc(var(--base) * 1.25) 0 0;
+  padding: 0;
+}
+
+.workflow-inbox__list a {
+  align-items: center;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  color: var(--theme-text);
+  display: flex;
+  justify-content: space-between;
+  padding: var(--base);
+  text-decoration: none;
+}
+
+.workflow-inbox__list a:hover {
+  background: var(--theme-elevation-50);
+  border-color: var(--theme-elevation-300);
+}
+
+.workflow-inbox__list small,
+.workflow-inbox__empty {
+  color: var(--theme-elevation-600);
+}
+
+@media (max-width: 640px) {
+  .workflow-inbox__heading,
+  .workflow-inbox__list a {
+    align-items: start;
+    flex-direction: column;
+  }
+}

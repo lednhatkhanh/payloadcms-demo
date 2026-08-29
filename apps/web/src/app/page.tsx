@@ -48,6 +48,7 @@ import {
   type ManagedPageSummary,
   type NewsSummary,
 } from '@/lib/content'
+import { getSiteLocale } from '@/lib/locale'
 
 export const metadata: Metadata = {
   description:
@@ -267,7 +268,7 @@ export default function HomePage() {
 }
 
 async function HomepageLocations() {
-  const locations = await getPublishedLocations()
+  const locations = await getPublishedLocations(await getSiteLocale())
   if (locations.length === 0) {
     return <Text color="muted">No published illustrative locations yet.</Text>
   }
@@ -305,7 +306,7 @@ function LocationsLoadingState() {
 }
 
 async function HomepageCompanyPages() {
-  const pages = await getPublishedPageChildren('company')
+  const pages = await getPublishedPageChildren('company', await getSiteLocale())
   if (pages.length === 0) {
     return <Text color="muted">The Company pages are being prepared.</Text>
   }
@@ -344,7 +345,7 @@ function HomepageCompanyPageCard({ page }: { readonly page: ManagedPageSummary }
 }
 
 async function NewsroomStories() {
-  const news = await getPublishedNews(3)
+  const news = await getPublishedNews(await getSiteLocale(), 3)
 
   if (news.length === 0) {
     return (
@@ -432,7 +433,7 @@ function HomepageStoryCard({
 }
 
 async function HomepageHeroMedia() {
-  const homepage = await getHomepage()
+  const homepage = await getHomepage(await getSiteLocale())
   return homepage.hero ? (
     <HeroMedia
       alt={homepage.hero.alt}

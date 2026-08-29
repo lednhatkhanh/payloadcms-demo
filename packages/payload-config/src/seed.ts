@@ -2,6 +2,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { getPayload } from 'payload'
 import type { News, Page } from './generated/payload-types'
+import type { ContentLocale } from './locales'
 import config from './payload.config'
 import type { EditorialRole, WorkflowState } from './workflow'
 
@@ -380,6 +381,11 @@ const demoReviewer: DemoUser = {
   name: 'Rowan Reviewer',
   role: 'reviewer',
 }
+const demoTranslator: DemoUser = {
+  email: 'translator@dispatch.demo',
+  name: 'Jordan Translator',
+  role: 'translator',
+}
 const demoPublisher: DemoUser = {
   email: 'publisher@dispatch.demo',
   name: 'Parker Publisher',
@@ -421,6 +427,7 @@ async function upsertDemoUser(user: DemoUser): Promise<number> {
 await upsertDemoUser(demoAdmin)
 const editorId = await upsertDemoUser(demoEditor)
 const reviewerId = await upsertDemoUser(demoReviewer)
+await upsertDemoUser(demoTranslator)
 await upsertDemoUser(demoPublisher)
 
 async function getSeedMediaId(image: SeedMedia): Promise<number> {
@@ -497,6 +504,75 @@ const newsIds = await Promise.all(
       overrideAccess: true,
     })
     return created.id
+  }),
+)
+
+type NewsTranslation = {
+  readonly body: News['body']
+  readonly excerpt: string
+  readonly locale: Exclude<ContentLocale, 'en'>
+  readonly title: string
+}
+
+const seededNewsTranslations: readonly NewsTranslation[] = [
+  {
+    body: lexicalBody([
+      'Una consulta de envío es una solicitud de ayuda, no una promesa de información operativa en tiempo real. Un contexto claro ayuda a los visitantes a saber qué compartir y qué ocurrirá después.',
+      'The Dispatch puede explicar el recorrido de un formulario en lenguaje sencillo y, al mismo tiempo, mantener claros los límites operativos.',
+    ]),
+    excerpt:
+      'El contexto editorial puede explicar un proceso de consulta en lenguaje sencillo sin confundir una consulta con el seguimiento en tiempo real.',
+    locale: 'es',
+    title: 'Una forma más clara de iniciar una consulta de envío',
+  },
+  {
+    body: lexicalBody([
+      '配送に関するお問い合わせは、支援を求めるためのものであり、リアルタイムの運航情報を約束するものではありません。明確な文脈があれば、訪問者は共有すべき情報と次の流れを理解できます。',
+      'The Dispatch は、運用上の境界を明確に保ちながら、フォームの流れをわかりやすい言葉で説明できます。',
+    ]),
+    excerpt:
+      '編集上の文脈は、お問い合わせとリアルタイム追跡を混同させずに、フォームの流れをわかりやすく説明できます。',
+    locale: 'jp',
+    title: '配送に関するお問い合わせを、より明確に始める方法',
+  },
+  {
+    body: lexicalBody([
+      'Una demostración de sala de prensa resulta útil cuando hace visible la propiedad del contenido y el ciclo de publicación sin presentar afirmaciones que no se puedan respaldar.',
+      'El sitio público y el espacio editorial siguen siendo aplicaciones distintas con un único modelo de contenido compartido.',
+    ]),
+    excerpt:
+      'Borradores, contexto de publicación, medios, categorías y texto enriquecido se reúnen en una superficie editorial enfocada.',
+    locale: 'es',
+    title: 'Lo que puede mostrar una revisión editorial publicada',
+  },
+  {
+    body: lexicalBody([
+      'ニュースルームのデモは、裏付けのない主張をせずに、コンテンツの責任範囲と公開までの流れを可視化できるときに役立ちます。',
+      '公開サイトと編集ワークスペースは別々のアプリケーションですが、同じコンテンツモデルを共有しています。',
+    ]),
+    excerpt:
+      '下書き、公開時の文脈、メディア、カテゴリー、リッチテキストを、焦点の定まったニュースルーム画面にまとめます。',
+    locale: 'jp',
+    title: '公開された編集レビューで示せること',
+  },
+]
+
+await Promise.all(
+  seededNewsTranslations.map(async (translation, index) => {
+    const id = newsIds[Math.floor(index / 2)]
+    if (!id) return
+    await payload.update({
+      collection: 'news',
+      data: {
+        body: translation.body,
+        excerpt: translation.excerpt,
+        title: translation.title,
+      },
+      draft: false,
+      id,
+      locale: translation.locale,
+      overrideAccess: true,
+    })
   }),
 )
 
@@ -839,5 +915,53 @@ await payload.updateGlobal({
   draft: false,
   overrideAccess: true,
 })
+
+await Promise.all([
+  payload.updateGlobal({
+    slug: 'homepage',
+    data: {
+      aboutBody:
+        'La página principal prioriza las opciones esenciales sin convertir la demostración en un creador de páginas general.',
+      aboutTitle: 'Un conjunto pequeño de rutas útiles',
+      contactBody:
+        'La demostración distingue un mensaje general, una solicitud de presupuesto y una consulta de envío sin presentar seguimiento en tiempo real.',
+      contactTitle: 'Dirige cada pregunta al formulario adecuado.',
+      eyebrow: 'Una demostración de sitio público',
+      heroBody:
+        'Una demostración enfocada en rutas de servicio, ubicaciones ilustrativas, actualizaciones editoriales y la consulta adecuada.',
+      heroTitle: 'Envíos, con mayor claridad.',
+      newsletterBody:
+        'Una entrada de pie de página compacta para el flujo de boletines de la demostración.',
+      newsletterTitle: 'Actualizaciones editoriales, cuando se publican.',
+      primaryCta: { label: 'Iniciar una consulta', href: '/#enquiry' },
+      secondaryCta: { label: 'Visitar la sala de prensa', href: '/news' },
+    },
+    draft: false,
+    locale: 'es',
+    overrideAccess: true,
+  }),
+  payload.updateGlobal({
+    slug: 'homepage',
+    data: {
+      aboutBody:
+        'このホームページでは、デモを汎用的なページビルダーにせず、必要な選択肢を優先しています。',
+      aboutTitle: '役立つ経路を厳選',
+      contactBody:
+        'このデモでは、一般的なメッセージ、見積もり依頼、配送に関するお問い合わせを区別し、リアルタイム追跡とは表示しません。',
+      contactTitle: '質問ごとに適切なフォームへ。',
+      eyebrow: '公開サイトのデモンストレーション',
+      heroBody:
+        'サービス経路、説明用の拠点、編集記事、適切なお問い合わせを示す、焦点を絞ったデモです。',
+      heroTitle: '配送を、もっとわかりやすく。',
+      newsletterBody: 'デモのニュースレターフロー用に用意した、簡潔なフッター項目です。',
+      newsletterTitle: '公開時に届く、編集アップデート。',
+      primaryCta: { label: 'お問い合わせを始める', href: '/#enquiry' },
+      secondaryCta: { label: 'ニュースルームを見る', href: '/news' },
+    },
+    draft: false,
+    locale: 'jp',
+    overrideAccess: true,
+  }),
+])
 
 await payload.destroy()

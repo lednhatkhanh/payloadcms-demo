@@ -19,6 +19,7 @@ import { Suspense } from 'react'
 import { NewsCard } from '@/components/NewsCard'
 import { SiteFooter } from '@/components/SiteFooter'
 import { getPublishedNews, type NewsSummary } from '@/lib/content'
+import { getSiteLocale } from '@/lib/locale'
 
 export const metadata: Metadata = {
   description: 'Company, product, people, and ideas from The Dispatch.',
@@ -108,7 +109,7 @@ export default function NewsPage({ searchParams }: PageProps) {
 }
 
 async function NewsListing({ searchParams }: PageProps) {
-  const news = await getPublishedNews()
+  const news = await getPublishedNews(await getSiteLocale())
   const { category } = await searchParams
   const selectedFilter = isNewsCategory(category) ? category : 'all'
   const filteredNews =

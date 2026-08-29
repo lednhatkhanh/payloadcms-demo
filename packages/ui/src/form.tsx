@@ -2,6 +2,8 @@
 
 import { cva } from 'class-variance-authority'
 import type { ReactNode } from 'react'
+import { ChevronDown } from 'lucide-react'
+import { Button as AriaButton } from 'react-aria-components/Button'
 import { Form as AriaForm, type FormProps as AriaFormProps } from 'react-aria-components/Form'
 import {
   FieldError,
@@ -20,6 +22,13 @@ import {
 } from 'react-aria-components/Checkbox'
 import { Check } from 'lucide-react'
 import { VisuallyHidden } from 'react-aria-components/VisuallyHidden'
+import { ListBox, ListBoxItem } from 'react-aria-components/ListBox'
+import { Popover } from 'react-aria-components/Popover'
+import {
+  Select as AriaSelect,
+  SelectValue,
+  type SelectProps as AriaSelectProps,
+} from 'react-aria-components/Select'
 
 const fieldStyles = cva('group flex flex-col gap-space-2xs text-body')
 const labelStyles = cva('text-small font-semibold', {
@@ -56,6 +65,34 @@ const checkboxButtonStyles = cva(
     },
     defaultVariants: { tone: 'default' },
   },
+)
+const selectStyles = cva('group relative flex flex-col gap-space-2xs', {
+  variants: {
+    size: {
+      compact: 'w-fit',
+      default: '',
+    },
+  },
+  defaultVariants: { size: 'default' },
+})
+const selectButtonStyles = cva(
+  'flex min-h-11 items-center gap-space-sm rounded-md border border-border bg-surface px-space-md py-space-sm text-small font-semibold text-foreground transition rac-hovered:border-neutral-500 rac-focused:border-brand-700 rac-focus-visible:outline-none rac-focus-visible:ring-2 rac-focus-visible:ring-brand-700 rac-focus-visible:ring-offset-2 rac-pressed:bg-brand-50',
+  {
+    variants: {
+      size: {
+        compact:
+          'min-h-0 rounded-sm border-transparent bg-transparent px-space-xs py-space-2xs text-label rac-hovered:bg-brand-50 rac-hovered:text-brand-800',
+        default: '',
+      },
+    },
+    defaultVariants: { size: 'default' },
+  },
+)
+const selectListStyles = cva(
+  'max-h-64 min-w-(--trigger-width) overflow-auto rounded-md border border-border bg-surface p-space-2xs shadow-card outline-none',
+)
+const selectItemStyles = cva(
+  'cursor-default rounded-sm px-space-md py-space-sm text-small text-foreground rac-focused:bg-brand-50 rac-selected:bg-brand-700 rac-selected:text-white',
 )
 
 export interface FormProps extends Omit<AriaFormProps, 'className' | 'style'> {}
@@ -193,6 +230,47 @@ export function CheckboxField({
         {errorMessage}
       </FieldError>
     </AriaCheckboxField>
+  )
+}
+
+export interface SelectFieldOption {
+  readonly label: string
+  readonly value: string
+}
+
+export interface SelectFieldProps extends Omit<
+  AriaSelectProps<object>,
+  'children' | 'className' | 'style'
+> {
+  readonly label: string
+  readonly options: readonly SelectFieldOption[]
+  readonly size?: 'compact' | 'default'
+}
+
+export function SelectField({ label, options, size, ...props }: SelectFieldProps) {
+  return (
+    <AriaSelect {...props} aria-label={label} className={selectStyles({ size })}>
+      {size === 'compact' ? (
+        <VisuallyHidden>
+          <Label>{label}</Label>
+        </VisuallyHidden>
+      ) : (
+        <Label className={labelStyles()}>{label}</Label>
+      )}
+      <AriaButton className={selectButtonStyles({ size })}>
+        <SelectValue className="flex-1 text-left" />
+        <ChevronDown aria-hidden="true" className="size-4" strokeWidth={2} />
+      </AriaButton>
+      <Popover className="min-w-(--trigger-width)">
+        <ListBox className={selectListStyles()}>
+          {options.map((option) => (
+            <ListBoxItem className={selectItemStyles()} id={option.value} key={option.value}>
+              {option.label}
+            </ListBoxItem>
+          ))}
+        </ListBox>
+      </Popover>
+    </AriaSelect>
   )
 }
 

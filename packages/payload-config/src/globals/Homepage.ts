@@ -9,9 +9,9 @@ export const Homepage: GlobalConfig = {
     update: ({ req }) => authenticated({ req }),
   },
   fields: [
-    { name: 'eyebrow', type: 'text', required: true },
-    { name: 'heroTitle', type: 'text', required: true },
-    { name: 'heroBody', type: 'textarea', required: true },
+    { name: 'eyebrow', type: 'text', localized: true, required: true },
+    { name: 'heroTitle', type: 'text', localized: true, required: true },
+    { name: 'heroBody', type: 'textarea', localized: true, required: true },
     {
       name: 'heroMedia',
       type: 'upload',
@@ -23,7 +23,7 @@ export const Homepage: GlobalConfig = {
       name: 'primaryCta',
       type: 'group',
       fields: [
-        { name: 'label', type: 'text', required: true },
+        { name: 'label', type: 'text', localized: true, required: true },
         { name: 'href', type: 'text', required: true },
       ],
     },
@@ -31,12 +31,12 @@ export const Homepage: GlobalConfig = {
       name: 'secondaryCta',
       type: 'group',
       fields: [
-        { name: 'label', type: 'text', required: true },
+        { name: 'label', type: 'text', localized: true, required: true },
         { name: 'href', type: 'text', required: true },
       ],
     },
-    { name: 'aboutTitle', type: 'text', required: true },
-    { name: 'aboutBody', type: 'textarea', required: true },
+    { name: 'aboutTitle', type: 'text', localized: true, required: true },
+    { name: 'aboutBody', type: 'textarea', localized: true, required: true },
     {
       name: 'featuredNews',
       type: 'relationship',
@@ -44,10 +44,10 @@ export const Homepage: GlobalConfig = {
       hasMany: true,
       maxRows: 3,
     },
-    { name: 'contactTitle', type: 'text', required: true },
-    { name: 'contactBody', type: 'textarea', required: true },
-    { name: 'newsletterTitle', type: 'text', required: true },
-    { name: 'newsletterBody', type: 'textarea', required: true },
+    { name: 'contactTitle', type: 'text', localized: true, required: true },
+    { name: 'contactBody', type: 'textarea', localized: true, required: true },
+    { name: 'newsletterTitle', type: 'text', localized: true, required: true },
+    { name: 'newsletterBody', type: 'textarea', localized: true, required: true },
   ],
   versions: { drafts: { autosave: true } },
 }

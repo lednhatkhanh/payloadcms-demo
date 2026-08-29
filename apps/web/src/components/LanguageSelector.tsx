@@ -1,0 +1,37 @@
+'use client'
+
+import { contentLocales, isContentLocale } from '@repo/payload-config/locales'
+import { SelectField } from '@repo/ui/form'
+import { usePathname, useRouter } from 'next/navigation'
+import type { Key } from 'react'
+
+function localePath(locale: string, pathname: string): string {
+  const segments = pathname.split('/').filter(Boolean)
+  const pageSegments = isContentLocale(segments[0]) ? segments.slice(1) : segments
+  return `/${locale}${pageSegments.length > 0 ? `/${pageSegments.join('/')}` : ''}`
+}
+
+function selectedLocale(pathname: string): string {
+  const locale = pathname.split('/').filter(Boolean)[0]
+  return isContentLocale(locale) ? locale : 'en'
+}
+
+export function LanguageSelector() {
+  const pathname = usePathname()
+  const router = useRouter()
+
+  function changeLanguage(key: Key | null) {
+    if (typeof key !== 'string' || !isContentLocale(key)) return
+    router.replace(localePath(key, pathname))
+  }
+
+  return (
+    <SelectField
+      label="Language"
+      onSelectionChange={changeLanguage}
+      options={contentLocales.map((locale) => ({ label: locale.toUpperCase(), value: locale }))}
+      selectedKey={selectedLocale(pathname)}
+      size="compact"
+    />
+  )
+}

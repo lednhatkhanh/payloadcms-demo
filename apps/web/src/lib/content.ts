@@ -3,6 +3,7 @@ import 'server-only'
 import config from '@repo/payload-config'
 import { mediaDirectory } from '@repo/payload-config/paths'
 import type { News, Page } from '@repo/payload-config/types'
+import type { ContentLocale } from '@repo/payload-config/locales'
 import { serverEnvironment } from '@repo/contracts/env'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -164,12 +165,13 @@ function pageParentId(page: Pick<Page, 'parent'>): number | undefined {
   return parent?.id
 }
 
-export async function getHomepage(): Promise<HomepageContent> {
+export async function getHomepage(locale: ContentLocale): Promise<HomepageContent> {
   const payload = await getPayload({ config })
   const homepage = await payload.findGlobal({
     slug: 'homepage',
     depth: 1,
     draft: false,
+    locale,
     overrideAccess: false,
     select: {
       aboutBody: true,
@@ -210,7 +212,10 @@ export async function getHomepage(): Promise<HomepageContent> {
   }
 }
 
-export async function getPublishedNews(limit = 12): Promise<readonly NewsSummary[]> {
+export async function getPublishedNews(
+  locale: ContentLocale,
+  limit = 12,
+): Promise<readonly NewsSummary[]> {
   'use cache'
   cacheLife('minutes')
   cacheTag('news')
@@ -219,6 +224,7 @@ export async function getPublishedNews(limit = 12): Promise<readonly NewsSummary
     collection: 'news',
     depth: 1,
     draft: false,
+    locale,
     limit,
     overrideAccess: false,
     select: {
@@ -238,7 +244,10 @@ export async function getPublishedNews(limit = 12): Promise<readonly NewsSummary
   })
 }
 
-export async function getNewsBySlug(slug: string): Promise<NewsArticle | undefined> {
+export async function getNewsBySlug(
+  slug: string,
+  locale: ContentLocale,
+): Promise<NewsArticle | undefined> {
   'use cache'
   cacheLife('minutes')
   cacheTag('news', `news:${slug}`)
@@ -247,6 +256,7 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | undefin
     collection: 'news',
     depth: 1,
     draft: false,
+    locale,
     limit: 1,
     overrideAccess: false,
     select: {
@@ -270,12 +280,15 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | undefin
   return { ...summary, body: body as News['body'] }
 }
 
-export async function getPublishedLocations(): Promise<readonly LocationSummary[]> {
+export async function getPublishedLocations(
+  locale: ContentLocale,
+): Promise<readonly LocationSummary[]> {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'locations',
     depth: 1,
     draft: false,
+    locale,
     limit: 24,
     overrideAccess: false,
     select: {
@@ -294,12 +307,16 @@ export async function getPublishedLocations(): Promise<readonly LocationSummary[
   })
 }
 
-export async function getLocationBySlug(slug: string): Promise<LocationRecord | undefined> {
+export async function getLocationBySlug(
+  slug: string,
+  locale: ContentLocale,
+): Promise<LocationRecord | undefined> {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'locations',
     depth: 1,
     draft: false,
+    locale,
     limit: 1,
     overrideAccess: false,
     select: {
@@ -328,12 +345,14 @@ async function findPageBySegment(
   slug: string,
   parent: number | undefined,
   draft: boolean,
+  locale: ContentLocale,
 ): Promise<ManagedPageLookup | undefined> {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'pages',
     depth: 2,
     draft,
+    locale,
     limit: 1,
     overrideAccess: draft,
     select: { layout: true, lead: true, slug: true, title: true },
@@ -348,6 +367,7 @@ async function findPageBySegment(
 async function lookupPageByPath(
   segments: readonly string[],
   draft: boolean,
+  locale: ContentLocale,
 ): Promise<ManagedPage | undefined> {
   async function lookupSegment(
     index: number,
@@ -355,7 +375,7 @@ async function lookupPageByPath(
   ): Promise<ManagedPageLookup | undefined> {
     const segment = segments[index]
     if (!segment) return undefined
-    const page = await findPageBySegment(segment, parent, draft)
+    const page = await findPageBySegment(segment, parent, draft, locale)
     if (!page) return undefined
     if (index === segments.length - 1) return page
     return lookupSegment(index + 1, page.id)
@@ -367,20 +387,23 @@ async function lookupPageByPath(
 
 export async function getPageByPath(
   segments: readonly string[],
+  locale: ContentLocale,
   draft = false,
 ): Promise<ManagedPage | undefined> {
   if (segments.length === 0) return undefined
-  return lookupPageByPath(segments, draft)
+  return lookupPageByPath(segments, draft, locale)
 }
 
 async function getPageChildrenByParentSlug(
   parentSlug: string,
+  locale: ContentLocale,
 ): Promise<readonly ManagedPageSummary[]> {
   const payload = await getPayload({ config })
   const parentResult = await payload.find({
     collection: 'pages',
     depth: 0,
     draft: false,
+    locale,
     limit: 1,
     overrideAccess: false,
     select: { slug: true },
@@ -393,6 +416,7 @@ async function getPageChildrenByParentSlug(
     collection: 'pages',
     depth: 0,
     draft: false,
+    locale,
     limit: 12,
     overrideAccess: false,
     select: { lead: true, slug: true, title: true },
@@ -405,8 +429,9 @@ async function getPageChildrenByParentSlug(
 
 export async function getPublishedPageChildren(
   parentSlug: string,
+  locale: ContentLocale,
 ): Promise<readonly ManagedPageSummary[]> {
-  return getPageChildrenByParentSlug(parentSlug)
+  return getPageChildrenByParentSlug(parentSlug, locale)
 }
 
 export async function getPagePathById(id: number): Promise<string | undefined> {

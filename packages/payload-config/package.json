@@ -4,6 +4,7 @@
   "type": "module",
   "exports": {
     ".": "./src/payload.config.ts",
+    "./locales": "./src/locales.ts",
     "./paths": "./src/paths.ts",
     "./preview": "./src/preview.ts",
     "./seed": "./src/seed.ts",

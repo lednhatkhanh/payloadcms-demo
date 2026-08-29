@@ -47,7 +47,7 @@ const calloutBlock: Block = {
   slug: 'callout',
   labels: { plural: 'Callouts', singular: 'Callout' },
   fields: [
-    { name: 'title', type: 'text', required: true },
+    { name: 'title', type: 'text', localized: true, required: true },
     { name: 'body', type: 'textarea', required: true, maxLength: 320 },
     {
       name: 'link',
@@ -89,7 +89,7 @@ const featureBlock: Block = {
   slug: 'feature',
   labels: { plural: 'Image features', singular: 'Image feature' },
   fields: [
-    { name: 'title', type: 'text', required: true },
+    { name: 'title', type: 'text', localized: true, required: true },
     { name: 'body', type: 'textarea', required: true, maxLength: 420 },
     {
       name: 'media',
@@ -150,7 +150,7 @@ export const Pages: CollectionConfig = {
     },
     defaultColumns: ['title', 'workflowState', '_status', 'updatedAt'],
     description:
-      'Workflow: editor requests review, reviewer approves or requests changes, publisher uses Payload’s Publish action.',
+      'Workflow: editor requests translation or review, translator submits work for review, reviewer approves or requests changes, publisher publishes.',
     group: 'Content',
     livePreview: {
       breakpoints: [
@@ -182,6 +182,7 @@ export const Pages: CollectionConfig = {
     {
       name: 'lead',
       type: 'textarea',
+      localized: true,
       required: true,
       maxLength: 320,
       admin: { description: 'The concise introduction shown below the page title.' },
@@ -199,6 +200,7 @@ export const Pages: CollectionConfig = {
     {
       name: 'layout',
       type: 'blocks',
+      localized: true,
       blocks: [richTextBlock, imageBlock, featureBlock, calloutBlock, pageLinksBlock],
       minRows: 1,
       required: true,

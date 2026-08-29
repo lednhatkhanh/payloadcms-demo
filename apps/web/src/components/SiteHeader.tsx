@@ -5,6 +5,8 @@ import { Container, HeaderBar, HeaderNavigation, SiteBrand, SiteHeaderFrame } fr
 import { ButtonLink, Link } from '@repo/ui/link'
 import { useState } from 'react'
 
+import { LanguageSelector } from './LanguageSelector'
+
 export function SiteHeader() {
   const [isMenuOpen, setMenuOpen] = useState(false)
 
@@ -41,6 +43,7 @@ export function SiteHeader() {
             <Link href="/#about" onPress={closeMenu} variant="navigation">
               About
             </Link>
+            <LanguageSelector />
             <ButtonLink href="/#enquiry" onPress={closeMenu} size="sm" variant="secondary">
               Start an enquiry
             </ButtonLink>

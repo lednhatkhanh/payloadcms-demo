@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
   const preview = await draftMode()
   preview.enable()
-  const destination = new URL(path, request.url)
+  const destination = new URL(`/en${path}`, request.url)
   destination.searchParams.set('id', String(id))
   destination.searchParams.set('preview', pagePreviewToken)
   return NextResponse.redirect(destination)

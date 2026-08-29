@@ -32,7 +32,7 @@ export const Users: CollectionConfig = {
       access: { update: ({ req }) => isAdministrator(req.user) },
       admin: {
         description:
-          'Use one clear responsibility per demo account: editor, reviewer, publisher, or admin.',
+          'Use one clear responsibility per demo account: editor, translator, reviewer, publisher, or admin.',
         position: 'sidebar',
       },
     },

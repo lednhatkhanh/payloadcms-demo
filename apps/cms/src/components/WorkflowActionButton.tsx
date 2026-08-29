@@ -13,17 +13,36 @@ import { formatAdminURL } from 'payload/shared'
 
 import { useCallback, useState } from 'react'
 
-type WorkflowState = 'approved' | 'changes-requested' | 'draft' | 'in-review'
+type WorkflowState =
+  | 'approved'
+  | 'changes-requested'
+  | 'draft'
+  | 'in-review'
+  | 'translation-requested'
 
 type WorkflowAction = {
-  readonly key: 'approve' | 'publish' | 'request-changes' | 'request-review' | 'save-draft'
+  readonly key:
+    | 'approve'
+    | 'publish'
+    | 'request-changes'
+    | 'request-review'
+    | 'request-translation'
+    | 'save-draft'
+    | 'submit-translation'
   readonly label: string
   readonly publish?: boolean
   readonly state: WorkflowState
 }
 
 function workflowStateFrom(value: unknown): WorkflowState {
-  if (value === 'approved' || value === 'changes-requested' || value === 'in-review') return value
+  if (
+    value === 'approved' ||
+    value === 'changes-requested' ||
+    value === 'in-review' ||
+    value === 'translation-requested'
+  ) {
+    return value
+  }
   return 'draft'
 }
 
@@ -45,7 +64,9 @@ function isWorkflowActionKey(value: unknown): value is WorkflowAction['key'] {
     value === 'publish' ||
     value === 'request-changes' ||
     value === 'request-review' ||
-    value === 'save-draft'
+    value === 'request-translation' ||
+    value === 'save-draft' ||
+    value === 'submit-translation'
   )
 }
 
@@ -93,22 +114,42 @@ export function WorkflowActionButton() {
     [collectionSlug, config.routes.api, id, submit],
   )
 
-  const actions: readonly WorkflowAction[] =
-    (workflowState === 'draft' || workflowState === 'changes-requested') &&
-    includesRole(roles, 'editor')
-      ? [
-          id
-            ? { key: 'request-review', label: 'Request review', state: 'in-review' }
-            : { key: 'save-draft', label: 'Save draft', state: 'draft' },
-        ]
-      : workflowState === 'in-review' && includesRole(roles, 'reviewer')
+  const actions: readonly WorkflowAction[] = (() => {
+    if (
+      (workflowState === 'draft' || workflowState === 'changes-requested') &&
+      includesRole(roles, 'editor')
+    ) {
+      return id
         ? [
-            { key: 'approve', label: 'Approve', state: 'approved' },
-            { key: 'request-changes', label: 'Request changes', state: 'changes-requested' },
+            {
+              key: 'request-translation',
+              label: 'Request translation',
+              state: 'translation-requested',
+            },
+            { key: 'request-review', label: 'Request review', state: 'in-review' },
           ]
-        : workflowState === 'approved' && includesRole(roles, 'publisher')
-          ? [{ key: 'publish', label: 'Publish changes', publish: true, state: 'approved' }]
-          : []
+        : [{ key: 'save-draft', label: 'Save draft', state: 'draft' }]
+    }
+
+    if (workflowState === 'translation-requested' && includesRole(roles, 'translator')) {
+      return [
+        { key: 'submit-translation', label: 'Submit translations for review', state: 'in-review' },
+      ]
+    }
+
+    if (workflowState === 'in-review' && includesRole(roles, 'reviewer')) {
+      return [
+        { key: 'approve', label: 'Approve', state: 'approved' },
+        { key: 'request-changes', label: 'Request changes', state: 'changes-requested' },
+      ]
+    }
+
+    if (workflowState === 'approved' && includesRole(roles, 'publisher')) {
+      return [{ key: 'publish', label: 'Publish changes', publish: true, state: 'approved' }]
+    }
+
+    return []
+  })()
   const selectedAction = actions.find(({ key }) => key === selectedActionKey) ?? actions[0]
 
   if (!selectedAction) return null

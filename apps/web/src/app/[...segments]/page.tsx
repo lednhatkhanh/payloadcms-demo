@@ -11,6 +11,7 @@ import { LivePreviewRefresh } from '@/components/LivePreviewRefresh'
 import { PageBlocks } from '@/components/PageBlocks'
 import { SiteFooter } from '@/components/SiteFooter'
 import { getPageByPath } from '@/lib/content'
+import { getSiteLocale } from '@/lib/locale'
 
 type PreviewSearchParams = { readonly id?: string; readonly preview?: string }
 type PageProps = {
@@ -27,7 +28,7 @@ function previewPageId(searchParams: PreviewSearchParams): number | undefined {
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { segments } = await params
   const previewPage = previewPageId(await searchParams)
-  const page = await getPageByPath(segments, previewPage !== undefined)
+  const page = await getPageByPath(segments, await getSiteLocale(), previewPage !== undefined)
   return page && (previewPage === undefined || page.id === previewPage)
     ? { description: page.lead, title: page.title }
     : { title: 'Page not found' }
@@ -46,7 +47,7 @@ async function ManagedPageContent({ params, searchParams }: PageProps) {
   const previewPage = previewPageId(await searchParams)
   const preview = await draftMode()
   const previewActive = preview.isEnabled || previewPage !== undefined
-  const page = await getPageByPath(segments, previewActive)
+  const page = await getPageByPath(segments, await getSiteLocale(), previewActive)
   if (!page || (previewPage !== undefined && page.id !== previewPage)) notFound()
 
   return (

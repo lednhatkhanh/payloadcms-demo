@@ -96,14 +96,14 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'jp' | 'es') | ('en' | 'jp' | 'es')[];
   globals: {
     homepage: Homepage;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'jp' | 'es';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -139,9 +139,9 @@ export interface User {
   id: number;
   name: string;
   /**
-   * Use one clear responsibility per demo account: editor, reviewer, publisher, or admin.
+   * Use one clear responsibility per demo account: editor, translator, reviewer, publisher, or admin.
    */
-  roles: ('admin' | 'editor' | 'reviewer' | 'publisher')[];
+  roles: ('admin' | 'editor' | 'translator' | 'reviewer' | 'publisher')[];
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -199,7 +199,7 @@ export interface Media {
   };
 }
 /**
- * Workflow: editor requests review, reviewer approves or requests changes, publisher uses Payload’s Publish action.
+ * Workflow: editor requests translation or review, translator submits work for review, reviewer approves or requests changes, publisher publishes.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news".
@@ -238,7 +238,7 @@ export interface News {
   /**
    * Read-only. Use the role-specific action control in the document toolbar to change workflow state.
    */
-  workflowState: 'draft' | 'in-review' | 'changes-requested' | 'approved';
+  workflowState: 'draft' | 'translation-requested' | 'in-review' | 'changes-requested' | 'approved';
   /**
    * Optional context from the reviewer for the editor or publisher.
    */
@@ -247,6 +247,18 @@ export interface News {
    * Set automatically when an editor requests review.
    */
   reviewRequestedBy?: (number | null) | User;
+  /**
+   * Choose the language versions that a translator should prepare before requesting translation.
+   */
+  translationLocales?: ('jp' | 'es')[] | null;
+  /**
+   * Set automatically when an editor requests translation.
+   */
+  translationRequestedBy?: (number | null) | User;
+  /**
+   * Set automatically when a translator submits completed translations for review.
+   */
+  translatedBy?: (number | null) | User;
   /**
    * Set automatically when a reviewer responds.
    */
@@ -283,7 +295,7 @@ export interface Location {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Workflow: editor requests review, reviewer approves or requests changes, publisher uses Payload’s Publish action.
+ * Workflow: editor requests translation or review, translator submits work for review, reviewer approves or requests changes, publisher publishes.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
@@ -391,7 +403,7 @@ export interface Page {
   /**
    * Read-only. Use the role-specific action control in the document toolbar to change workflow state.
    */
-  workflowState: 'draft' | 'in-review' | 'changes-requested' | 'approved';
+  workflowState: 'draft' | 'translation-requested' | 'in-review' | 'changes-requested' | 'approved';
   /**
    * Optional context from the reviewer for the editor or publisher.
    */
@@ -400,6 +412,18 @@ export interface Page {
    * Set automatically when an editor requests review.
    */
   reviewRequestedBy?: (number | null) | User;
+  /**
+   * Choose the language versions that a translator should prepare before requesting translation.
+   */
+  translationLocales?: ('jp' | 'es')[] | null;
+  /**
+   * Set automatically when an editor requests translation.
+   */
+  translationRequestedBy?: (number | null) | User;
+  /**
+   * Set automatically when a translator submits completed translations for review.
+   */
+  translatedBy?: (number | null) | User;
   /**
    * Set automatically when a reviewer responds.
    */
@@ -612,6 +636,9 @@ export interface NewsSelect<T extends boolean = true> {
   workflowState?: T;
   reviewNote?: T;
   reviewRequestedBy?: T;
+  translationLocales?: T;
+  translationRequestedBy?: T;
+  translatedBy?: T;
   reviewedBy?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -704,6 +731,9 @@ export interface PagesSelect<T extends boolean = true> {
   workflowState?: T;
   reviewNote?: T;
   reviewRequestedBy?: T;
+  translationLocales?: T;
+  translationRequestedBy?: T;
+  translatedBy?: T;
   reviewedBy?: T;
   updatedAt?: T;
   createdAt?: T;

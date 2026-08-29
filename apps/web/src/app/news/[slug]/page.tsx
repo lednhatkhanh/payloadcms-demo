@@ -18,12 +18,13 @@ import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
 import { getNewsBySlug } from '@/lib/content'
+import { getSiteLocale, localeTag } from '@/lib/locale'
 
 type PageProps = { readonly params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const article = await getNewsBySlug(slug)
+  const article = await getNewsBySlug(slug, await getSiteLocale())
   return article
     ? { description: article.excerpt, title: article.title }
     : { title: 'Story not found' }
@@ -53,9 +54,10 @@ export default function NewsDetailPage({ params }: PageProps) {
 
 async function ArticleHero({ params }: PageProps) {
   const { slug } = await params
-  const article = await getNewsBySlug(slug)
+  const locale = await getSiteLocale()
+  const article = await getNewsBySlug(slug, locale)
   if (!article) notFound()
-  const published = new Intl.DateTimeFormat('en-US', { dateStyle: 'long' }).format(
+  const published = new Intl.DateTimeFormat(localeTag(locale), { dateStyle: 'long' }).format(
     new Date(article.publishedAt),
   )
 
@@ -82,7 +84,7 @@ async function ArticleHero({ params }: PageProps) {
 
 async function ArticleDetails({ params }: PageProps) {
   const { slug } = await params
-  const article = await getNewsBySlug(slug)
+  const article = await getNewsBySlug(slug, await getSiteLocale())
   if (!article) notFound()
 
   return (

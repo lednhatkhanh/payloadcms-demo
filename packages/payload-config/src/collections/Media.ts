@@ -15,7 +15,7 @@ export const Media: CollectionConfig = {
     defaultColumns: ['filename', 'alt', 'updatedAt'],
     useAsTitle: 'alt',
   },
-  fields: [{ name: 'alt', type: 'text', required: true }],
+  fields: [{ name: 'alt', type: 'text', localized: true, required: true }],
   upload: {
     imageSizes: [
       { name: 'card', width: 768, height: 432, fit: 'cover' },

@@ -24,15 +24,15 @@ export const News: CollectionConfig = {
     },
     defaultColumns: ['title', 'workflowState', '_status', 'updatedAt'],
     description:
-      'Workflow: editor requests review, reviewer approves or requests changes, publisher uses Payload’s Publish action.',
+      'Workflow: editor requests translation or review, translator submits work for review, reviewer approves or requests changes, publisher publishes.',
     useAsTitle: 'title',
   },
   defaultSort: '-publishedAt',
   fields: [
-    { name: 'title', type: 'text', required: true },
+    { name: 'title', type: 'text', localized: true, required: true },
     slugField(),
-    { name: 'excerpt', type: 'textarea', required: true, maxLength: 320 },
-    { name: 'body', type: 'richText', required: true },
+    { name: 'excerpt', type: 'textarea', localized: true, required: true, maxLength: 320 },
+    { name: 'body', type: 'richText', localized: true, required: true },
     {
       name: 'heroMedia',
       type: 'upload',

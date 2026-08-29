@@ -25,6 +25,7 @@ import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
 import { getPublishedLocations, type LocationService, type LocationSummary } from '@/lib/content'
+import { getSiteLocale } from '@/lib/locale'
 
 export const metadata: Metadata = {
   description: 'Published illustrative location records for the shipping and logistics demo.',
@@ -116,7 +117,7 @@ export default function LocationsPage({ searchParams }: PageProps) {
 }
 
 async function LocationListing({ searchParams }: PageProps) {
-  const locations = await getPublishedLocations()
+  const locations = await getPublishedLocations(await getSiteLocale())
   const { service } = await searchParams
   const selectedFilter = isLocationService(service) ? service : 'all'
   const filteredLocations =
