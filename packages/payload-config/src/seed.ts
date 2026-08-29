@@ -26,37 +26,42 @@ function lexicalBody(paragraphs: readonly string[]): News['body'] {
 
 const stories = [
   {
-    title: 'A calmer way to follow what matters',
-    slug: 'a-calmer-way-to-follow-what-matters',
-    excerpt: 'The Dispatch launches with a slower, clearer approach to company and product news.',
+    legacySlug: 'a-calmer-way-to-follow-what-matters',
+    title: 'A clearer way to begin a shipment enquiry',
+    slug: 'a-clearer-way-to-begin-a-shipment-enquiry',
+    excerpt:
+      'Editorial context can explain a form journey in plain language while preserving the boundary between an enquiry and real-time tracking.',
     category: 'company' as const,
     featured: true,
     body: lexicalBody([
-      'News should reward attention, not demand it. The Dispatch brings our most important updates into one considered place.',
-      'Expect concise reporting, useful context, and a clear record of what changed and why it matters.',
+      'A shipment enquiry is a request for help, not a promise of live operational information. Clear context helps visitors know what to share and what happens next.',
+      'The Dispatch can explain a form journey in plain language while keeping operational boundaries honest.',
     ]),
   },
   {
-    title: 'Designing our publishing system in the open',
-    slug: 'designing-our-publishing-system-in-the-open',
+    legacySlug: 'designing-our-publishing-system-in-the-open',
+    title: 'What a published editorial review can show',
+    slug: 'what-a-published-editorial-review-can-show',
     excerpt:
-      'How a shared design system keeps the newsroom accessible, coherent, and quick to evolve.',
+      'Drafts, publication context, media, categories, and rich text come together in a focused newsroom surface.',
     category: 'product' as const,
     featured: true,
     body: lexicalBody([
-      'Our public site and editorial workspace are separate applications with one shared content model.',
-      'That boundary keeps each experience focused while preserving the speed of direct server-side content access.',
+      'A newsroom demonstration is useful when it makes content ownership and the publishing lifecycle visible without making unsupported claims.',
+      'The public site and editorial workspace remain separate applications with one shared content model.',
     ]),
   },
   {
-    title: 'The people behind the first edition',
-    slug: 'the-people-behind-the-first-edition',
-    excerpt: 'Meet the small team shaping the voice, tooling, and visual rhythm of The Dispatch.',
-    category: 'people' as const,
+    legacySlug: 'the-people-behind-the-first-edition',
+    title: 'Choosing a service path for a demonstration brief',
+    slug: 'choosing-a-service-path-for-a-demonstration-brief',
+    excerpt:
+      'A readable entry point for a compact shipping site rather than unsupported operational advice.',
+    category: 'ideas' as const,
     featured: false,
     body: lexicalBody([
-      'A newsroom is a collaboration between editors, designers, engineers, and the readers who keep asking better questions.',
-      'This first edition is an invitation to follow along as the publication grows.',
+      'A compact shipping demo can orient visitors through a small number of clear paths before asking them to make a decision.',
+      'That structure offers enough context for a useful enquiry without suggesting coverage, performance, or operational advice.',
     ]),
   },
 ] as const
@@ -64,22 +69,36 @@ const stories = [
 const payload = await getPayload({ config })
 const newsIds = await Promise.all(
   stories.map(async (story) => {
+    const { legacySlug, ...data } = story
     const existing = await payload.find({
       collection: 'news',
       depth: 0,
       limit: 1,
       overrideAccess: true,
-      where: { slug: { equals: story.slug } },
+      where: {
+        or: [{ slug: { equals: data.slug } }, { slug: { equals: legacySlug } }],
+      },
     })
 
     if (existing.docs[0]) {
-      return existing.docs[0].id
+      const updated = await payload.update({
+        collection: 'news',
+        data: {
+          ...data,
+          publishedAt: new Date().toISOString(),
+          _status: 'published',
+        },
+        draft: false,
+        id: existing.docs[0].id,
+        overrideAccess: true,
+      })
+      return updated.id
     }
 
     const created = await payload.create({
       collection: 'news',
       data: {
-        ...story,
+        ...data,
         publishedAt: new Date().toISOString(),
         _status: 'published',
       },
@@ -93,20 +112,21 @@ const newsIds = await Promise.all(
 await payload.updateGlobal({
   slug: 'homepage',
   data: {
-    eyebrow: 'Independent thinking, clearly told',
-    heroTitle: 'News with room to breathe.',
+    eyebrow: 'A public-site demonstration',
+    heroTitle: 'Shipping, made clearer.',
     heroBody:
-      'The Dispatch is a considered record of the products, people, and ideas shaping what comes next.',
-    primaryCta: { label: 'Read the latest', href: '/news' },
-    secondaryCta: { label: 'Talk with us', href: '/#contact' },
-    aboutTitle: 'Built for useful context',
+      'A focused demonstration of service paths, illustrative locations, editorial updates, and the right enquiry.',
+    primaryCta: { label: 'Start an enquiry', href: '/#enquiry' },
+    secondaryCta: { label: 'Visit the newsroom', href: '/news' },
+    aboutTitle: 'A small set of useful paths',
     aboutBody:
-      'We publish fewer, better updates: direct reporting, durable explanations, and a point of view you can understand.',
-    featuredNews: newsIds.slice(0, 2),
-    contactTitle: 'Have a question worth exploring?',
-    contactBody: 'Send a note to the editorial team. We read every thoughtful message.',
-    newsletterTitle: 'The important parts, occasionally.',
-    newsletterBody: 'A short letter when there is something genuinely useful to share.',
+      'The homepage leads with essential options instead of turning the demo into a general page builder.',
+    featuredNews: newsIds,
+    contactTitle: 'Point each question to the right form.',
+    contactBody:
+      'The demo distinguishes a general message, a quote request, and a shipment enquiry without presenting real-time tracking.',
+    newsletterTitle: 'Editorial updates, when they are published.',
+    newsletterBody: 'A compact footer entry for the demo’s newsletter flow.',
     _status: 'published',
   },
   draft: false,

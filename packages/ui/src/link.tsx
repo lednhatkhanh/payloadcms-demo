@@ -20,13 +20,15 @@ function nextLinkRender(domProps: Parameters<NonNullable<AriaLinkProps['render']
 }
 
 const linkStyles = cva(
-  'rounded-sm underline decoration-brand-300 underline-offset-4 transition rac-hovered:decoration-brand-700 rac-focus-visible:outline-none rac-focus-visible:ring-2 rac-focus-visible:ring-brand-700 rac-focus-visible:ring-offset-2',
+  'rounded-sm transition rac-focus-visible:outline-none rac-focus-visible:ring-2 rac-focus-visible:ring-brand-700 rac-focus-visible:ring-offset-2',
   {
     variants: {
       variant: {
-        inline: 'font-semibold text-brand-800',
+        inline:
+          'inline-flex w-fit max-w-full items-center gap-space-xs whitespace-nowrap font-semibold underline decoration-border underline-offset-4 rac-hovered:text-brand-800 rac-hovered:decoration-brand-700',
         navigation:
           'text-small font-semibold text-neutral-800 no-underline rac-hovered:text-brand-800',
+        card: 'block h-full rounded-lg no-underline rac-focus-visible:ring-offset-page',
       },
     },
     defaultVariants: { variant: 'inline' },

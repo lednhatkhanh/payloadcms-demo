@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react'
 import Image from 'next/image'
 
+import { Link } from './link'
+
 export function Card({ children }: { readonly children: ReactNode }) {
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-surface shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-lg">
+    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-surface shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover">
       {children}
     </article>
   )
@@ -11,6 +13,24 @@ export function Card({ children }: { readonly children: ReactNode }) {
 
 export function CardBody({ children }: { readonly children: ReactNode }) {
   return <div className="flex flex-1 flex-col gap-space-md p-space-lg">{children}</div>
+}
+
+export function LocationCard({ children }: { readonly children: ReactNode }) {
+  return (
+    <article className="flex min-h-card-location flex-col overflow-hidden rounded-lg border border-neutral-200 bg-surface shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none">
+      {children}
+    </article>
+  )
+}
+
+export function LocationCardBody({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="flex flex-1 flex-col justify-between gap-space-md p-space-lg">{children}</div>
+  )
+}
+
+export function LocationCardContent({ children }: { readonly children: ReactNode }) {
+  return <div className="mt-space-location-heading flex flex-col gap-space-sm">{children}</div>
 }
 
 export function CardMedia({
@@ -39,4 +59,114 @@ export function CardMedia({
 
 export function ArticleBody({ children }: { readonly children: ReactNode }) {
   return <div className="article-body">{children}</div>
+}
+
+export function ServiceCard({ children }: { readonly children: ReactNode }) {
+  return (
+    <article className="flex min-h-card-service flex-col justify-between border-b border-r border-border bg-page p-space-card-service transition duration-200 first:border-l max-md:border-l hover:-translate-y-1 hover:bg-surface motion-reduce:transition-none">
+      {children}
+    </article>
+  )
+}
+
+export function StoryCardContent({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="story-card-content mt-space-card-heading flex flex-col gap-space-sm">
+      {children}
+    </div>
+  )
+}
+
+export function StoryCardMeta({ children }: { readonly children: ReactNode }) {
+  return <p className="mt-space-lg font-mono text-meta text-muted">{children}</p>
+}
+
+export function StoryCardMedia({ alt, src }: { readonly alt: string; readonly src: string }) {
+  return (
+    <div className="relative mb-space-card-media h-media-story overflow-hidden rounded-md bg-brand-100">
+      <Image
+        alt={alt}
+        className="object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none"
+        fill
+        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+        src={src}
+      />
+    </div>
+  )
+}
+
+export function StoryCard({
+  children,
+  featured = false,
+  href,
+}: {
+  readonly children: ReactNode
+  readonly featured?: boolean
+  readonly href?: string
+}) {
+  const card = (
+    <article
+      className={
+        featured
+          ? 'group flex h-full min-h-card-story-featured flex-col justify-between rounded-lg border border-neutral-200 bg-surface-soft p-space-lg shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none'
+          : 'group flex h-full min-h-card-story flex-col justify-between rounded-lg border border-neutral-200 bg-surface p-space-lg shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none'
+      }
+    >
+      {children}
+    </article>
+  )
+
+  return href ? (
+    <Link href={href} variant="card">
+      {card}
+    </Link>
+  ) : (
+    card
+  )
+}
+
+export function Tag({ children }: { readonly children: ReactNode }) {
+  return (
+    <span className="rounded-pill border border-border px-space-xs py-space-2xs font-mono text-tag text-muted">
+      {children}
+    </span>
+  )
+}
+
+export function HeroMedia({
+  alt,
+  caption,
+  src,
+}: {
+  readonly alt: string
+  readonly caption: string
+  readonly src: string
+}) {
+  return (
+    <figure>
+      <div className="relative min-h-media-hero-compact overflow-hidden rounded-lg border border-border bg-brand-100 shadow-card sm:min-h-media-hero">
+        <Image
+          alt={alt}
+          className="object-cover"
+          fill
+          preload
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          src={src}
+        />
+      </div>
+      <figcaption className="mt-space-sm font-mono text-meta text-muted">{caption}</figcaption>
+    </figure>
+  )
+}
+
+export function HeroPlaceholder() {
+  return (
+    <figure aria-label="Atmospheric placeholder representing a cargo vessel at a harbor horizon">
+      <div aria-hidden="true" className="hero-placeholder" />
+      <figcaption className="mt-space-sm flex justify-between gap-space-md font-mono text-meta text-muted">
+        <span>Atmospheric media placeholder</span>
+        <span>For demonstrative use</span>
+      </figcaption>
+    </figure>
+  )
 }

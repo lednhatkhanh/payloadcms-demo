@@ -1,26 +1,33 @@
 import '@repo/ui/styles.css'
 
 import { UiProvider } from '@repo/ui/providers'
-import { Noto_Sans } from 'next/font/google'
+import { JetBrains_Mono, Manrope } from 'next/font/google'
 import type { Metadata } from 'next'
 
 import { SiteHeader } from '@/components/SiteHeader'
 
-const notoSans = Noto_Sans({
+const manrope = Manrope({
   display: 'swap',
   subsets: ['latin'],
-  variable: '--font-noto-sans',
+  variable: '--font-manrope',
+})
+
+const jetBrainsMono = JetBrains_Mono({
+  display: 'swap',
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
 })
 
 export const metadata: Metadata = {
-  description: 'A considered record of the products, people, and ideas shaping what comes next.',
+  description:
+    'A focused shipping and logistics demonstration with service paths, illustrative locations, and The Dispatch newsroom.',
   metadataBase: new URL('http://localhost:3000'),
-  title: { default: 'The Dispatch', template: '%s — The Dispatch' },
+  title: { default: 'Shipping & logistics', template: '%s — Shipping & logistics' },
 }
 
 export default function RootLayout({ children }: { readonly children: React.ReactNode }) {
   return (
-    <html className={notoSans.variable} dir="ltr" lang="en-US">
+    <html className={`${manrope.variable} ${jetBrainsMono.variable}`} dir="ltr" lang="en-US">
       <body>
         <UiProvider>
           <SiteHeader />

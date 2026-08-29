@@ -88,6 +88,19 @@ export async function getHomepage(): Promise<HomepageContent> {
     depth: 1,
     draft: false,
     overrideAccess: false,
+    select: {
+      aboutBody: true,
+      aboutTitle: true,
+      contactBody: true,
+      contactTitle: true,
+      eyebrow: true,
+      heroBody: true,
+      heroTitle: true,
+      newsletterBody: true,
+      newsletterTitle: true,
+      primaryCta: true,
+      secondaryCta: true,
+    },
   })
 
   return {
@@ -122,6 +135,14 @@ export async function getPublishedNews(limit = 12): Promise<readonly NewsSummary
     draft: false,
     limit,
     overrideAccess: false,
+    select: {
+      category: true,
+      excerpt: true,
+      heroMedia: true,
+      publishedAt: true,
+      slug: true,
+      title: true,
+    },
     sort: '-publishedAt',
   })
 
@@ -142,6 +163,15 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | undefin
     draft: false,
     limit: 1,
     overrideAccess: false,
+    select: {
+      body: true,
+      category: true,
+      excerpt: true,
+      heroMedia: true,
+      publishedAt: true,
+      slug: true,
+      title: true,
+    },
     where: { slug: { equals: slug } },
   })
   const doc = result.docs[0]

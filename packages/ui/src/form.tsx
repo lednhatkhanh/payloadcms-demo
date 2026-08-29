@@ -1,6 +1,7 @@
 'use client'
 
 import { cva } from 'class-variance-authority'
+import type { ReactNode } from 'react'
 import { Form as AriaForm, type FormProps as AriaFormProps } from 'react-aria-components/Form'
 import {
   FieldError,
@@ -21,8 +22,28 @@ import { Check } from 'lucide-react'
 import { VisuallyHidden } from 'react-aria-components/VisuallyHidden'
 
 const fieldStyles = cva('group flex flex-col gap-space-2xs text-body')
+const labelStyles = cva('text-small font-semibold', {
+  variants: {
+    tone: {
+      default: 'text-foreground',
+      inverse: 'text-inverse',
+    },
+  },
+  defaultVariants: { tone: 'default' },
+})
 const controlStyles = cva(
-  'w-full rounded-md border border-border bg-surface px-space-md py-space-sm text-body text-foreground outline-none transition placeholder:text-neutral-500 rac-hovered:border-neutral-500 rac-focused:border-brand-700 rac-focused:ring-2 rac-focused:ring-brand-200 rac-invalid:border-danger rac-invalid:ring-danger/15 rac-disabled:cursor-not-allowed rac-disabled:bg-neutral-100 rac-disabled:opacity-60',
+  'w-full rounded-md border px-space-md py-space-sm text-body outline-none transition rac-invalid:border-danger rac-invalid:ring-danger/15 rac-disabled:cursor-not-allowed rac-disabled:opacity-60',
+  {
+    variants: {
+      tone: {
+        default:
+          'border-border bg-surface text-foreground placeholder:text-neutral-500 rac-hovered:border-neutral-500 rac-focused:border-brand-700 rac-focused:ring-2 rac-focused:ring-brand-200 rac-disabled:bg-neutral-100',
+        inverse:
+          'border-neutral-500 bg-neutral-900 text-inverse placeholder:text-inverse-muted rac-hovered:border-neutral-400 rac-focused:border-brand-300 rac-focused:ring-2 rac-focused:ring-brand-300 rac-disabled:bg-neutral-900',
+      },
+    },
+    defaultVariants: { tone: 'default' },
+  },
 )
 const checkboxButtonStyles = cva(
   'group flex cursor-default items-start gap-space-sm text-small rac-disabled:cursor-not-allowed rac-disabled:opacity-50',
@@ -43,6 +64,12 @@ export function Form(props: FormProps) {
   return <AriaForm {...props} className="flex flex-col gap-space-lg" />
 }
 
+export function FormActionRow({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="grid items-end gap-space-footer-field sm:grid-cols-form-action">{children}</div>
+  )
+}
+
 interface SharedFieldProps {
   readonly description?: string
   readonly errorMessage?: string | ((validation: ValidationResult) => string)
@@ -50,15 +77,39 @@ interface SharedFieldProps {
 }
 
 export interface TextFieldProps
-  extends Omit<AriaTextFieldProps, 'children' | 'className' | 'style'>, SharedFieldProps {}
+  extends Omit<AriaTextFieldProps, 'children' | 'className' | 'style'>, SharedFieldProps {
+  readonly placeholder?: string
+  readonly tone?: 'default' | 'inverse'
+}
 
-export function TextField({ description, errorMessage, label, ...props }: TextFieldProps) {
+export function TextField({
+  description,
+  errorMessage,
+  label,
+  placeholder,
+  tone,
+  ...props
+}: TextFieldProps) {
   return (
     <AriaTextField {...props} className={fieldStyles()}>
-      <Label className="text-small font-semibold text-foreground">{label}</Label>
-      <Input className={controlStyles()} />
+      <Label
+        className={
+          tone === 'inverse'
+            ? 'font-mono text-meta font-bold uppercase tracking-label text-inverse'
+            : labelStyles({ tone })
+        }
+      >
+        {label}
+      </Label>
+      <Input
+        className={controlStyles({ tone })}
+        {...(placeholder === undefined ? {} : { placeholder })}
+      />
       {description ? (
-        <Text className="text-small text-muted" slot="description">
+        <Text
+          className={tone === 'inverse' ? 'text-small text-inverse-muted' : 'text-small text-muted'}
+          slot="description"
+        >
           {description}
         </Text>
       ) : null}

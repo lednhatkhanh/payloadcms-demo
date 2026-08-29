@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+        protocol: 'https',
+      },
+      {
         hostname: cmsUrl.hostname,
         pathname: '/**',
         port: cmsUrl.port,

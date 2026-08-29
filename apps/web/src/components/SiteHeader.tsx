@@ -1,27 +1,52 @@
-import { Container, Cluster, Surface } from '@repo/ui/layout'
-import { Link } from '@repo/ui/link'
-import { Text } from '@repo/ui/text'
+'use client'
+
+import { Button } from '@repo/ui/button'
+import { Container, HeaderBar, HeaderNavigation, SiteBrand, SiteHeaderFrame } from '@repo/ui/layout'
+import { ButtonLink, Link } from '@repo/ui/link'
+import { useState } from 'react'
 
 export function SiteHeader() {
+  const [isMenuOpen, setMenuOpen] = useState(false)
+
+  function closeMenu() {
+    setMenuOpen(false)
+  }
+
   return (
-    <Surface as="header" border="subtle" tone="surface">
+    <SiteHeaderFrame>
       <Container>
-        <Cluster as="nav" justify="between" padding="md">
+        <HeaderBar>
           <Link href="/" variant="navigation">
-            <Text as="span" color="brand" variant="h3">
-              The Dispatch
-            </Text>
+            <SiteBrand>Shipping &amp; logistics</SiteBrand>
           </Link>
-          <Cluster>
-            <Link href="/news" variant="navigation">
-              News
+          <Button
+            aria-expanded={isMenuOpen}
+            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            onPress={() => setMenuOpen((current) => !current)}
+            size="sm"
+            variant="navigation"
+          >
+            {isMenuOpen ? 'Close' : 'Menu'}
+          </Button>
+          <HeaderNavigation isOpen={isMenuOpen}>
+            <Link href="/#services" onPress={closeMenu} variant="navigation">
+              Shipping
             </Link>
-            <Link href="/#contact" variant="navigation">
-              Contact
+            <Link href="/#locations" onPress={closeMenu} variant="navigation">
+              Locations
             </Link>
-          </Cluster>
-        </Cluster>
+            <Link href="/#dispatch" onPress={closeMenu} variant="navigation">
+              The Dispatch
+            </Link>
+            <Link href="/#about" onPress={closeMenu} variant="navigation">
+              About
+            </Link>
+            <ButtonLink href="/#enquiry" onPress={closeMenu} size="sm" variant="secondary">
+              Start an enquiry
+            </ButtonLink>
+          </HeaderNavigation>
+        </HeaderBar>
       </Container>
-    </Surface>
+    </SiteHeaderFrame>
   )
 }

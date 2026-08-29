@@ -16,6 +16,7 @@ export const buttonStyles = cva(
         sm: 'px-space-md text-small',
         md: 'px-space-lg text-body',
         lg: 'min-h-12 px-space-xl text-body',
+        newsletter: 'min-h-12 px-space-footer-button text-body',
       },
       variant: {
         primary:
@@ -24,6 +25,8 @@ export const buttonStyles = cva(
           'border-border bg-surface text-foreground rac-hovered:border-brand-300 rac-hovered:bg-brand-50 rac-pressed:bg-brand-100',
         quiet:
           'border-transparent bg-transparent text-foreground rac-hovered:bg-neutral-100 rac-pressed:bg-neutral-200',
+        navigation:
+          'border-border bg-surface text-foreground md:hidden rac-hovered:border-brand-300 rac-hovered:bg-brand-50 rac-pressed:bg-brand-100',
         danger:
           'border-danger bg-danger text-white rac-hovered:brightness-90 rac-pressed:brightness-75',
       },

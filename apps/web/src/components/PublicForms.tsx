@@ -2,8 +2,15 @@
 
 import type { FormResult } from '@repo/contracts/forms'
 import { Button } from '@repo/ui/button'
-import { CheckboxField, Form, HoneypotField, TextAreaField, TextField } from '@repo/ui/form'
-import { Icon, Mail, Send } from '@repo/ui/icon'
+import {
+  CheckboxField,
+  Form,
+  FormActionRow,
+  HoneypotField,
+  TextAreaField,
+  TextField,
+} from '@repo/ui/form'
+import { Icon, Send } from '@repo/ui/icon'
 import { Stack } from '@repo/ui/layout'
 import { Text } from '@repo/ui/text'
 import ky from 'ky'
@@ -83,44 +90,22 @@ export function ContactForm() {
 }
 
 export function NewsletterForm() {
-  const [state, setState] = useState<FormState>(initialState)
-  const [isPending, startTransition] = useTransition()
-
-  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const form = event.currentTarget
-    startTransition(async () => {
-      const result = await submitForm('/api/newsletter', form)
-      if (result.ok) {
-        form.reset()
-        setState({ message: result.message, status: 'success' })
-      } else {
-        setState({
-          fieldErrors: mutableFieldErrors(result.fieldErrors),
-          message: result.message,
-          status: 'error',
-        })
-      }
-    })
-  }
-
   return (
-    <Form
-      onSubmit={handleSubmit}
-      {...(state.fieldErrors ? { validationErrors: state.fieldErrors } : {})}
-    >
-      <TextField isRequired label="Email" maxLength={200} name="email" type="email" />
-      <CheckboxField
-        isRequired
-        label="I want to receive occasional editorial updates."
-        name="consent"
-        tone="inverse"
-      />
-      <HoneypotField />
-      <Button isPending={isPending} type="submit">
-        <Icon source={Mail} size="sm" /> Subscribe
-      </Button>
-      <FormStatus state={state} />
+    <Form>
+      <FormActionRow>
+        <TextField
+          isRequired
+          label="Email address"
+          maxLength={200}
+          name="email"
+          placeholder="you@example.com"
+          tone="inverse"
+          type="email"
+        />
+        <Button size="newsletter" type="button" variant="secondary">
+          Subscribe
+        </Button>
+      </FormActionRow>
     </Form>
   )
 }

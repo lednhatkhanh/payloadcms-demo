@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 import type { ElementType, ReactNode } from 'react'
 
-const containerStyles = cva('mx-auto w-full px-space-lg sm:px-space-xl', {
+const containerStyles = cva('site-container mx-auto w-full px-space-lg sm:px-space-xl', {
   variants: {
     size: { content: 'max-w-3xl', wide: 'max-w-7xl' },
   },
@@ -133,6 +133,125 @@ export function EditorialRule() {
 
 export function StatGrid({ children }: { readonly children: ReactNode }) {
   return <div className="grid gap-space-md sm:grid-cols-3">{children}</div>
+}
+
+export function HomeHeroGrid({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="grid items-center gap-space-2xl lg:grid-cols-home-hero lg:gap-space-3xl">
+      {children}
+    </div>
+  )
+}
+
+export function HeroContent({ children }: { readonly children: ReactNode }) {
+  return <div className="hero-content">{children}</div>
+}
+
+export function SectionHeading({ children }: { readonly children: ReactNode }) {
+  return <div className="section-heading">{children}</div>
+}
+
+export function EnquiryHeading({ children }: { readonly children: ReactNode }) {
+  return <div className="enquiry-heading">{children}</div>
+}
+
+export function SectionIntro({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="grid items-end gap-space-xl lg:grid-cols-section-intro lg:gap-space-2xl">
+      {children}
+    </div>
+  )
+}
+
+export function DispatchHeader({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="flex flex-col items-start gap-space-xl lg:flex-row lg:items-end lg:justify-between">
+      {children}
+    </div>
+  )
+}
+
+export function FeatureGrid({ children }: { readonly children: ReactNode }) {
+  return <div className="grid gap-space-lg md:grid-cols-3">{children}</div>
+}
+
+export function ServiceGrid({ children }: { readonly children: ReactNode }) {
+  return <div className="grid border-t border-border md:grid-cols-3">{children}</div>
+}
+
+export function EditorialGrid({ children }: { readonly children: ReactNode }) {
+  return <div className="grid gap-space-lg lg:grid-cols-editorial">{children}</div>
+}
+
+export function EnquiryGrid({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="grid items-end gap-space-2xl border-y border-border py-space-enquiry lg:grid-cols-enquiry lg:gap-space-3xl">
+      {children}
+    </div>
+  )
+}
+
+export function NewsletterGrid({ children }: { readonly children: ReactNode }) {
+  return <div className="grid gap-space-2xl lg:grid-cols-newsletter">{children}</div>
+}
+
+export function NewsletterFormLayout({ children }: { readonly children: ReactNode }) {
+  return <div className="self-end">{children}</div>
+}
+
+export function FooterContent({ children }: { readonly children: ReactNode }) {
+  return <div className="pb-space-footer-bottom pt-space-footer-top">{children}</div>
+}
+
+export function FooterMeta({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="flex flex-col justify-between gap-space-md border-t border-neutral-700 pt-space-lg sm:flex-row">
+      {children}
+    </div>
+  )
+}
+
+export function SiteHeaderFrame({ children }: { readonly children: ReactNode }) {
+  return (
+    <header className="sticky top-0 z-10 border-b border-border bg-surface/95 backdrop-blur-md">
+      {children}
+    </header>
+  )
+}
+
+export function SiteBrand({ children }: { readonly children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-space-sm font-mono text-label font-bold uppercase tracking-label">
+      <span aria-hidden="true" className="h-space-xs w-space-lg border-y-2 border-foreground" />
+      {children}
+    </span>
+  )
+}
+
+export function HeaderBar({ children }: { readonly children: ReactNode }) {
+  return (
+    <div className="relative flex min-h-header items-center justify-between gap-space-md py-space-md">
+      {children}
+    </div>
+  )
+}
+
+export function HeaderNavigation({
+  children,
+  isOpen = false,
+}: {
+  readonly children: ReactNode
+  readonly isOpen?: boolean
+}) {
+  return (
+    <nav
+      aria-label="Primary navigation"
+      className="absolute inset-x-0 top-full hidden flex-col items-stretch gap-space-md rounded-lg border border-border bg-surface p-space-md shadow-card data-[open=true]:flex md:static md:flex md:flex-row md:items-center md:gap-space-lg md:border-0 md:bg-transparent md:p-0 md:shadow-none"
+      data-open={isOpen || undefined}
+    >
+      {children}
+    </nav>
+  )
 }
 
 export interface SurfaceProps extends BaseProps, VariantProps<typeof surfaceStyles> {}

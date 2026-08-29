@@ -11,7 +11,7 @@ test('the shared news shell commits during soft navigation', async ({ page }) =>
 })
 
 test('the URL-independent story shell is served on initial load', async ({ page, baseURL }) => {
-  const url = `${baseURL}/news/a-calmer-way-to-follow-what-matters`
+  const url = `${baseURL}/news/a-clearer-way-to-begin-a-shipment-enquiry`
   await instant(
     page,
     async () => {

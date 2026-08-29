@@ -1,152 +1,385 @@
-import { ButtonLink } from '@repo/ui/link'
-import { Icon, ArrowRight, Sparkles } from '@repo/ui/icon'
+import {
+  HeroMedia,
+  LocationCard,
+  LocationCardBody,
+  LocationCardContent,
+  ServiceCard,
+  StoryCard,
+  StoryCardContent,
+  StoryCardMedia,
+  StoryCardMeta,
+  Tag,
+} from '@repo/ui/card'
+import { ArrowRight, Icon } from '@repo/ui/icon'
 import {
   Cluster,
   Container,
+  DispatchHeader,
+  EditorialGrid,
   EditorialRule,
-  NewsGrid,
+  EnquiryHeading,
+  EnquiryGrid,
+  FeatureGrid,
+  HeroContent,
+  HomeHeroGrid,
   Section,
-  Split,
+  SectionHeading,
+  SectionIntro,
+  ServiceGrid,
   Stack,
-  StatGrid,
   Surface,
 } from '@repo/ui/layout'
-import { Text } from '@repo/ui/text'
+import { ButtonLink, Link } from '@repo/ui/link'
+import { Accent, Text } from '@repo/ui/text'
+import type { Metadata } from 'next'
+import { Suspense } from 'react'
 
-import { NewsCard } from '@/components/NewsCard'
-import { ContactForm } from '@/components/PublicForms'
 import { SiteFooter } from '@/components/SiteFooter'
-import { getHomepage, getPublishedNews } from '@/lib/content'
+import { getPublishedNews, type NewsSummary } from '@/lib/content'
 
-export default async function HomePage() {
-  const [homepage, news] = await Promise.all([getHomepage(), getPublishedNews(3)])
+export const metadata: Metadata = {
+  description:
+    'A focused shipping and logistics demonstration with service paths, illustrative locations, and The Dispatch newsroom.',
+  title: 'Shipping & logistics',
+}
 
+const services = [
+  {
+    description: 'An at-a-glance entry point for the demo’s core shipping offer.',
+    href: '/#enquiry',
+    label: 'Explore shipping',
+    number: '01 / Overview',
+    title: 'Shipping services',
+  },
+  {
+    description: 'A representative service detail route for visitors evaluating a shipping mode.',
+    href: '/#enquiry',
+    label: 'View the detail',
+    number: '02 / Detail',
+    title: 'Ocean freight',
+  },
+  {
+    description: 'A companion route that explains how a wider logistics question can be framed.',
+    href: '/shipping/logistics-solutions',
+    label: 'See the route',
+    number: '03 / Detail',
+    title: 'Logistics solutions',
+  },
+] as const
+
+const locations = [
+  {
+    description:
+      'A location card can combine a city, country, service tags, image, and editorial description.',
+    tags: ['Ocean freight', 'Published'],
+    title: 'Port city record',
+  },
+  {
+    description:
+      'Purposeful fallbacks keep the location experience complete when no lead image is present.',
+    tags: ['Logistics', 'No-image state'],
+    title: 'Inland hub record',
+  },
+  {
+    description:
+      'A concise entry can direct a visitor toward the appropriate form without making coverage claims.',
+    tags: ['Enquiry path', 'CMS content'],
+    title: 'Regional point record',
+  },
+] as const
+
+const newsCardImages = [
+  {
+    alt: 'Container vessel docked below harbor cranes',
+    src: '/images/news/shipment-enquiry.png',
+  },
+  {
+    alt: 'Route planning documents beside a harbor window',
+    src: '/images/news/editorial-review.png',
+  },
+  {
+    alt: 'Container cranes at blue hour across a calm harbor',
+    src: '/images/news/service-path.png',
+  },
+] as const
+
+type NewsCardImage = {
+  readonly alt: string
+  readonly src: string
+}
+
+function getNewsCardImage(article: NewsSummary, index: number): NewsCardImage {
+  const fallback = newsCardImages[index] ?? newsCardImages[0]
+  return {
+    alt: article.hero?.alt || fallback.alt,
+    src: article.hero?.url ?? fallback.src,
+  }
+}
+
+export default function HomePage() {
   return (
     <>
-      <Section space="hero">
+      <Section id="about" space="hero">
         <Container>
-          <Split>
-            <Stack gap="xl">
-              <Cluster>
-                <Icon source={Sparkles} size="sm" tone="brand" />
-                <Text color="brand" variant="label">
-                  {homepage.eyebrow}
-                </Text>
-              </Cluster>
-              <Text as="h1" variant="display">
-                {homepage.heroTitle}
+          <HomeHeroGrid>
+            <HeroContent>
+              <Text color="brand" variant="label">
+                A public-site demonstration
+              </Text>
+              <Text as="h1" variant="hero">
+                Shipping, made <Accent>clearer.</Accent>
               </Text>
               <Text color="muted" variant="lead">
-                {homepage.heroBody}
+                A focused demonstration of how a shipping and logistics site can help visitors
+                explore services, find illustrative locations, read editorial updates, and send the
+                right enquiry.
               </Text>
               <Cluster>
-                <ButtonLink href={homepage.primaryCta.href} size="lg" variant="primary">
-                  {homepage.primaryCta.label} <Icon source={ArrowRight} size="sm" />
-                </ButtonLink>
-                <ButtonLink href={homepage.secondaryCta.href} size="lg" variant="secondary">
-                  {homepage.secondaryCta.label}
+                <ButtonLink href="/#enquiry" size="lg" variant="primary">
+                  Start an enquiry <Icon source={ArrowRight} size="sm" />
                 </ButtonLink>
               </Cluster>
-            </Stack>
-            <Surface border="brand" padding="lg" radius="lg" tone="soft">
-              <Stack gap="2xl">
-                <Text color="brand" variant="label">
-                  Why we publish
-                </Text>
-                <Text as="h2" variant="h2">
-                  Context is a product.
-                </Text>
-                <EditorialRule />
-                <StatGrid>
-                  <Stack gap="2xs">
-                    <Text variant="h3">Fewer</Text>
-                    <Text color="muted" variant="small">
-                      updates
-                    </Text>
-                  </Stack>
-                  <Stack gap="2xs">
-                    <Text variant="h3">Deeper</Text>
-                    <Text color="muted" variant="small">
-                      reporting
-                    </Text>
-                  </Stack>
-                  <Stack gap="2xs">
-                    <Text variant="h3">Clearer</Text>
-                    <Text color="muted" variant="small">
-                      decisions
-                    </Text>
-                  </Stack>
-                </StatGrid>
-              </Stack>
-            </Surface>
-          </Split>
+            </HeroContent>
+            <HeroMedia
+              alt="Container vessel crossing a calm harbor at sunrise"
+              caption="Illustrative harbor scene · For demonstrative use"
+              src="/images/hero-harbor.png"
+            />
+          </HomeHeroGrid>
         </Container>
       </Section>
 
-      <Surface tone="surface">
-        <Section>
+      <Container>
+        <EditorialRule />
+      </Container>
+
+      <Section id="services">
+        <Container>
+          <Stack gap="2xl">
+            <SectionHeading>
+              <Text color="brand" variant="label">
+                Shipping
+              </Text>
+              <Text as="h2" variant="section">
+                A small set of useful paths.
+              </Text>
+              <Text color="muted" variant="lead">
+                The homepage leads with essential options instead of turning the demonstration into
+                a general page builder.
+              </Text>
+            </SectionHeading>
+            <ServiceGrid>
+              {services.map((service) => (
+                <ServiceCard key={service.title}>
+                  <Stack gap="md">
+                    <Text color="muted" variant="meta">
+                      {service.number}
+                    </Text>
+                    <Text as="h3" variant="h3">
+                      {service.title}
+                    </Text>
+                    <Text color="muted">{service.description}</Text>
+                  </Stack>
+                  <Link href={service.href} variant="inline">
+                    {service.label} <Icon source={ArrowRight} size="sm" />
+                  </Link>
+                </ServiceCard>
+              ))}
+            </ServiceGrid>
+          </Stack>
+        </Container>
+      </Section>
+
+      <Surface border="subtle" tone="surface">
+        <Section id="locations">
           <Container>
             <Stack gap="2xl">
-              <Split>
-                <Stack gap="md">
+              <SectionIntro>
+                <SectionHeading>
                   <Text color="brand" variant="label">
-                    About the publication
+                    Locations
                   </Text>
-                  <Text as="h2" variant="h2">
-                    {homepage.aboutTitle}
+                  <Text as="h2" variant="section">
+                    Managed location records, with useful detail.
                   </Text>
-                </Stack>
-                <Text color="muted" variant="lead">
-                  {homepage.aboutBody}
+                </SectionHeading>
+                <Text color="muted" variant="small">
+                  Illustrative content for demonstrating CMS-managed location cards. These entries
+                  do not represent offices, contacts, or operational coverage.
                 </Text>
-              </Split>
-              <EditorialRule />
-              <Cluster justify="between">
-                <Text as="h2" variant="h3">
-                  Latest stories
-                </Text>
-                <ButtonLink href="/news" size="sm" variant="secondary">
-                  View all news
-                </ButtonLink>
-              </Cluster>
-              {news.length > 0 ? (
-                <NewsGrid>
-                  {news.map((article) => (
-                    <NewsCard article={article} key={article.slug} />
-                  ))}
-                </NewsGrid>
-              ) : (
-                <Surface border="subtle" padding="lg" radius="lg" tone="soft">
-                  <Text color="muted">The first stories are being prepared.</Text>
-                </Surface>
-              )}
+              </SectionIntro>
+              <FeatureGrid>
+                {locations.map((location) => (
+                  <LocationCard key={location.title}>
+                    <LocationCardBody>
+                      <div>
+                        <Text color="muted" variant="kicker">
+                          Illustrative location
+                        </Text>
+                        <LocationCardContent>
+                          <Text as="h3" variant="h3">
+                            {location.title}
+                          </Text>
+                          <Text color="muted">{location.description}</Text>
+                        </LocationCardContent>
+                      </div>
+                      <Cluster>
+                        {location.tags.map((tag) => (
+                          <Tag key={tag}>{tag}</Tag>
+                        ))}
+                      </Cluster>
+                    </LocationCardBody>
+                  </LocationCard>
+                ))}
+              </FeatureGrid>
             </Stack>
           </Container>
         </Section>
       </Surface>
 
-      <Section id="contact">
+      <Section id="dispatch">
         <Container>
-          <Split>
-            <Stack gap="md">
-              <Text color="brand" variant="label">
-                Contact
+          <Stack gap="2xl">
+            <DispatchHeader>
+              <SectionHeading>
+                <Text color="brand" variant="label">
+                  The Dispatch
+                </Text>
+                <Text as="h2" variant="section">
+                  The editorial layer, kept distinct.
+                </Text>
+              </SectionHeading>
+              <Text as="p" variant="dispatchMark">
+                The Dispatch / Newsroom
               </Text>
-              <Text as="h2" variant="h2">
-                {homepage.contactTitle}
-              </Text>
-              <Text color="muted" variant="lead">
-                {homepage.contactBody}
-              </Text>
-            </Stack>
-            <Surface border="default" padding="lg" radius="lg" tone="surface">
-              <ContactForm />
-            </Surface>
-          </Split>
+            </DispatchHeader>
+            <Suspense fallback={<NewsroomLoadingState />}>
+              <NewsroomStories />
+            </Suspense>
+            <Link href="/news" variant="inline">
+              Visit the newsroom <Icon source={ArrowRight} size="sm" />
+            </Link>
+          </Stack>
         </Container>
       </Section>
 
-      <SiteFooter body={homepage.newsletterBody} title={homepage.newsletterTitle} />
+      <Section id="enquiry">
+        <Container>
+          <EnquiryGrid>
+            <EnquiryHeading>
+              <Text color="brand" variant="label">
+                Next step
+              </Text>
+              <Text as="h2" variant="enquiry">
+                Point each question to the right form.
+              </Text>
+            </EnquiryHeading>
+            <Stack gap="md">
+              <Text color="muted">
+                This demonstration distinguishes a general contact message, a quote request, and a
+                shipment enquiry. The latter is a message form, not real-time tracking.
+              </Text>
+              <Link href="/#newsletter" variant="inline">
+                See the available paths <Icon source={ArrowRight} size="sm" />
+              </Link>
+            </Stack>
+          </EnquiryGrid>
+        </Container>
+      </Section>
+
+      <SiteFooter
+        body="A compact footer entry for the demo’s newsletter flow. Subscription content and submission handling are managed separately."
+        title="Editorial updates, when they are published."
+      />
     </>
+  )
+}
+
+async function NewsroomStories() {
+  const news = await getPublishedNews(3)
+
+  if (news.length === 0) {
+    return (
+      <Surface border="subtle" padding="lg" radius="lg" tone="soft">
+        <Text color="muted">The first stories are being prepared.</Text>
+      </Surface>
+    )
+  }
+
+  return (
+    <EditorialGrid>
+      {news.map((article, index) => (
+        <HomepageStoryCard
+          article={article}
+          featured={index === 0}
+          image={getNewsCardImage(article, index)}
+          key={article.slug}
+          label={index === 0 ? 'Featured example' : index === 1 ? 'Behind the demo' : 'Guide'}
+          meta={
+            index === 0
+              ? 'Published story example · CMS-managed'
+              : index === 1
+                ? 'News detail example'
+                : 'News listing example'
+          }
+        />
+      ))}
+    </EditorialGrid>
+  )
+}
+
+function NewsroomLoadingState() {
+  return (
+    <Surface border="subtle" padding="lg" radius="lg" tone="soft">
+      <Text color="muted">Loading the latest stories…</Text>
+    </Surface>
+  )
+}
+
+function HomepageStoryCard({
+  article,
+  featured,
+  image,
+  label,
+  meta,
+}: {
+  readonly article: NewsSummary
+  readonly featured: boolean
+  readonly image: NewsCardImage
+  readonly label: string
+  readonly meta: string
+}) {
+  const story = (
+    <Stack gap="sm">
+      <Text as="h3" variant="h3">
+        {article.title}
+      </Text>
+      <Text color="muted">{article.excerpt}</Text>
+    </Stack>
+  )
+
+  return (
+    <StoryCard featured={featured} href={`/news/${article.slug}`}>
+      {featured ? (
+        <div>
+          <Text color="muted" variant="kicker">
+            {label}
+          </Text>
+          <StoryCardContent>{story}</StoryCardContent>
+        </div>
+      ) : (
+        <StoryCardMedia alt={image.alt} src={image.src} />
+      )}
+      {featured ? <StoryCardMedia alt={image.alt} src={image.src} /> : null}
+      {!featured ? (
+        <>
+          <Text color="muted" variant="kicker">
+            {label}
+          </Text>
+          <StoryCardContent>{story}</StoryCardContent>
+        </>
+      ) : null}
+      <StoryCardMeta>{meta}</StoryCardMeta>
+    </StoryCard>
   )
 }
