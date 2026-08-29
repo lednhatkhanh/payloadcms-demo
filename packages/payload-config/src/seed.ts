@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { getPayload } from 'payload'
-import type { News } from './generated/payload-types'
+import type { News, Page } from './generated/payload-types'
 import config from './payload.config'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
@@ -26,6 +26,44 @@ function lexicalBody(paragraphs: readonly string[]): News['body'] {
       version: 1,
     },
   }
+}
+
+type PageBlock = Page['layout'][number]
+type RichTextPageBlock = Extract<PageBlock, { readonly blockType: 'richText' }>
+type ImagePageBlock = Extract<PageBlock, { readonly blockType: 'image' }>
+type FeaturePageBlock = Extract<PageBlock, { readonly blockType: 'feature' }>
+type CalloutPageBlock = Extract<PageBlock, { readonly blockType: 'callout' }>
+type PageLinksBlock = Extract<PageBlock, { readonly blockType: 'pageLinks' }>
+
+function richTextPageBlock(paragraphs: readonly string[]): RichTextPageBlock {
+  return { blockType: 'richText', content: lexicalBody(paragraphs) }
+}
+
+function imagePageBlock(media: number, caption: string): ImagePageBlock {
+  return { blockType: 'image', caption, media }
+}
+
+function featurePageBlock(
+  title: string,
+  body: string,
+  media: number,
+  label: string,
+  href: string,
+): FeaturePageBlock {
+  return { blockType: 'feature', body, link: { href, label }, media, title }
+}
+
+function calloutPageBlock(
+  title: string,
+  body: string,
+  label: string,
+  href: string,
+): CalloutPageBlock {
+  return { blockType: 'callout', body, link: { href, label }, title }
+}
+
+function pageLinksBlock(title: string, body: string, pages: readonly number[]): PageLinksBlock {
+  return { blockType: 'pageLinks', body, pages: [...pages], title }
 }
 
 type SeedMedia = {
@@ -311,6 +349,15 @@ const locations: SeedLocation[] = [
   },
 ]
 
+type PageSeed = {
+  readonly lead: string
+  readonly layout: Page['layout']
+  readonly parent?: number
+  readonly slug: string
+  readonly status: 'draft' | 'published'
+  readonly title: string
+}
+
 const payload = await getPayload({ config })
 
 async function getSeedMediaId(image: SeedMedia): Promise<number> {
@@ -419,6 +466,179 @@ await Promise.all(
     })
   }),
 )
+
+async function upsertPage(data: PageSeed): Promise<number> {
+  const existing = await payload.find({
+    collection: 'pages',
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
+    where: { slug: { equals: data.slug } },
+  })
+  const draft = data.status === 'draft'
+  const pageData = {
+    lead: data.lead,
+    layout: data.layout,
+    ...(data.parent === undefined ? {} : { parent: data.parent }),
+    slug: data.slug,
+    title: data.title,
+    _status: data.status,
+  }
+
+  if (existing.docs[0]) {
+    const updated = await payload.update({
+      collection: 'pages',
+      data: pageData,
+      draft,
+      id: existing.docs[0].id,
+      overrideAccess: true,
+    })
+    return updated.id
+  }
+
+  const created = await payload.create({
+    collection: 'pages',
+    data: pageData,
+    draft,
+    overrideAccess: true,
+  })
+  return created.id
+}
+
+const [companyImage, workingImage, standardsImage, routesImage] = await Promise.all([
+  getSeedMediaId(stories[0].image),
+  getSeedMediaId(stories[2].image),
+  getSeedMediaId(stories[4].image),
+  getSeedMediaId(stories[6].image),
+])
+
+const companyPageId = await upsertPage({
+  lead: 'A CMS-managed parent page that demonstrates grouped content, reusable blocks, and careful public routing without a custom template for every page.',
+  layout: [
+    richTextPageBlock([
+      'The Company section is a compact content group for this demonstration. Its purpose is to show that editors can add and arrange rich text inside a clear public hierarchy without reaching for freeform styles.',
+      'Every section below is a named Payload block that maps to a shared site component. Editors own the message and the order; the interface keeps the visual system intact.',
+    ]),
+    imagePageBlock(
+      companyImage,
+      'Illustrative editorial media managed in the same CMS library as the newsroom images.',
+    ),
+  ],
+  slug: 'company',
+  status: 'published',
+  title: 'Company',
+})
+
+const waysOfWorkingPageId = await upsertPage({
+  lead: 'A small illustration of how clear routes, bounded claims, and an editorial perspective can make a public shipping site easier to use.',
+  layout: [
+    richTextPageBlock([
+      'Useful public journeys begin by naming the next question rather than pretending to complete an operational task on a marketing page.',
+      'For this demo, every path stays illustrative. It can explain a form, a service route, or a publishing decision without claiming live coverage or availability.',
+    ]),
+    featurePageBlock(
+      'A clear route begins with context.',
+      'Editors can pair a managed image with one focused action while the shared feature block keeps reading order, spacing, and responsive behavior consistent.',
+      workingImage,
+      'Explore the enquiry route',
+      '/#enquiry',
+    ),
+    calloutPageBlock(
+      'Start with the right question.',
+      'The enquiry route is the public place to continue a shipping conversation when a visitor is ready to share context.',
+      'Start an enquiry',
+      '/#enquiry',
+    ),
+  ],
+  parent: companyPageId,
+  slug: 'ways-of-working',
+  status: 'published',
+  title: 'Ways of working',
+})
+
+const editorialStandardsPageId = await upsertPage({
+  lead: 'The Dispatch uses a calm, illustrative editorial voice to make context visible without presenting a demonstration as a live operating record.',
+  layout: [
+    richTextPageBlock([
+      'A published story should be clear about what it can explain. In this demonstration, the newsroom provides useful context around public routes and CMS-managed content.',
+      'It does not report live operations, customer outcomes, or service availability. Those boundaries are part of making editorial information more trustworthy.',
+    ]),
+    imagePageBlock(
+      standardsImage,
+      'Illustrative newsroom media, selected from the shared library rather than uploaded directly into a page.',
+    ),
+    calloutPageBlock(
+      'Read the latest Dispatch stories.',
+      'Browse the CMS-managed newsroom to see the same draft and publishing workflow applied to illustrative updates.',
+      'Visit the newsroom',
+      '/news',
+    ),
+  ],
+  parent: companyPageId,
+  slug: 'editorial-standards',
+  status: 'published',
+  title: 'Editorial standards',
+})
+
+const publicRoutesPageId = await upsertPage({
+  lead: 'A practical note on how a compact demo can steer a visitor toward a clear public action without turning every page into a form.',
+  layout: [
+    richTextPageBlock([
+      'The public site works best when its pages have a single job: offer enough context for a visitor to choose their next useful action.',
+      'That makes room for focused service and enquiry pages while allowing editorial pages to remain readable and calm.',
+    ]),
+    featurePageBlock(
+      'One flexible feature, still a fixed pattern.',
+      'The feature block gives editors room for an image, short explanation, and clear action without allowing arbitrary column systems, styles, or components.',
+      routesImage,
+      'Visit the newsroom',
+      '/news',
+    ),
+  ],
+  parent: companyPageId,
+  slug: 'public-routes',
+  status: 'published',
+  title: 'Public routes',
+})
+
+await upsertPage({
+  lead: 'An unpublished example page for testing Payload drafts, autosave, version history, and the live-preview iframe before editorial content is published.',
+  layout: [
+    richTextPageBlock([
+      'This draft is intentionally not visible to public visitors. Open it from the Pages collection to confirm that Payload can update the live preview while the published site remains unchanged.',
+    ]),
+    imagePageBlock(
+      workingImage,
+      'A draft can use the same approved media block before it is published.',
+    ),
+  ],
+  parent: companyPageId,
+  slug: 'working-note',
+  status: 'draft',
+  title: 'Working note for preview',
+})
+
+await upsertPage({
+  lead: 'A CMS-managed parent page that demonstrates grouped content, reusable blocks, and careful public routing without a custom template for every page.',
+  layout: [
+    richTextPageBlock([
+      'The Company section is a compact content group for this demonstration. Its purpose is to show that editors can add and arrange rich text inside a clear public hierarchy without reaching for freeform styles.',
+      'Every section below is a named Payload block that maps to a shared site component. Editors own the message and the order; the interface keeps the visual system intact.',
+    ]),
+    imagePageBlock(
+      companyImage,
+      'Illustrative editorial media managed in the same CMS library as the newsroom images.',
+    ),
+    pageLinksBlock(
+      'Explore the company pages',
+      'Each link below is a related CMS page rendered with the shared story-card component.',
+      [waysOfWorkingPageId, editorialStandardsPageId, publicRoutesPageId],
+    ),
+  ],
+  slug: 'company',
+  status: 'published',
+  title: 'Company',
+})
 
 await payload.updateGlobal({
   slug: 'homepage',

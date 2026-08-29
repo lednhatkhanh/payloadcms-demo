@@ -1,4 +1,5 @@
 import {
+  CardLinkAffordance,
   HeroMedia,
   HeroPlaceholder,
   LocationCard,
@@ -24,6 +25,7 @@ import {
   FeatureGrid,
   HeroContent,
   HomeHeroGrid,
+  NewsGrid,
   Section,
   SectionHeading,
   SectionIntro,
@@ -39,9 +41,11 @@ import { Suspense } from 'react'
 import { SiteFooter } from '@/components/SiteFooter'
 import {
   getHomepage,
+  getPublishedPageChildren,
   getPublishedLocations,
   getPublishedNews,
   type LocationService,
+  type ManagedPageSummary,
   type NewsSummary,
 } from '@/lib/content'
 
@@ -151,6 +155,32 @@ export default function HomePage() {
           </Stack>
         </Container>
       </Section>
+
+      <Surface border="subtle" tone="surface">
+        <Section id="company">
+          <Container>
+            <Stack gap="2xl">
+              <SectionIntro>
+                <SectionHeading>
+                  <Text as="h2" variant="section">
+                    Company pages, within the established system.
+                  </Text>
+                </SectionHeading>
+                <Text color="muted" variant="small">
+                  A concise CMS-managed page set that only uses the approved content blocks and
+                  shared public-site components.
+                </Text>
+              </SectionIntro>
+              <Suspense fallback={<CompanyPagesLoadingState />}>
+                <HomepageCompanyPages />
+              </Suspense>
+              <Link href="/company" variant="inline">
+                Read the Company introduction <Icon source={ArrowRight} size="sm" />
+              </Link>
+            </Stack>
+          </Container>
+        </Section>
+      </Surface>
 
       <Surface border="subtle" tone="surface">
         <Section id="locations">
@@ -272,6 +302,45 @@ async function HomepageLocations() {
 
 function LocationsLoadingState() {
   return <Text color="muted">Loading published illustrative locations…</Text>
+}
+
+async function HomepageCompanyPages() {
+  const pages = await getPublishedPageChildren('company')
+  if (pages.length === 0) {
+    return <Text color="muted">The Company pages are being prepared.</Text>
+  }
+
+  return (
+    <NewsGrid>
+      {pages.map((page) => (
+        <HomepageCompanyPageCard key={page.slug} page={page} />
+      ))}
+    </NewsGrid>
+  )
+}
+
+function CompanyPagesLoadingState() {
+  return <Text color="muted">Loading the Company pages…</Text>
+}
+
+function HomepageCompanyPageCard({ page }: { readonly page: ManagedPageSummary }) {
+  return (
+    <StoryCard href={`/company/${page.slug}`} label={`Read ${page.title}`} size="compact">
+      <StoryCardContent>
+        <Stack gap="sm">
+          <Text as="h3" variant="h3">
+            {page.title}
+          </Text>
+          <Text color="muted">{page.lead}</Text>
+        </Stack>
+      </StoryCardContent>
+      <StoryCardFooter>
+        <CardLinkAffordance>
+          Read page <Icon source={ArrowRight} size="sm" />
+        </CardLinkAffordance>
+      </StoryCardFooter>
+    </StoryCard>
+  )
 }
 
 async function NewsroomStories() {

@@ -90,8 +90,15 @@ export function TextField({
   tone,
   ...props
 }: TextFieldProps) {
+  const needsAccessibleName =
+    props['aria-label'] === undefined && props['aria-labelledby'] === undefined
+
   return (
-    <AriaTextField {...props} className={fieldStyles()}>
+    <AriaTextField
+      {...props}
+      {...(needsAccessibleName ? { 'aria-label': label } : {})}
+      className={fieldStyles()}
+    >
       <Label
         className={
           tone === 'inverse'
@@ -130,8 +137,15 @@ export function TextAreaField({
   rows = 6,
   ...props
 }: TextAreaFieldProps) {
+  const needsAccessibleName =
+    props['aria-label'] === undefined && props['aria-labelledby'] === undefined
+
   return (
-    <AriaTextField {...props} className={fieldStyles()}>
+    <AriaTextField
+      {...props}
+      {...(needsAccessibleName ? { 'aria-label': label } : {})}
+      className={fieldStyles()}
+    >
       <Label className="text-small font-semibold text-foreground">{label}</Label>
       <TextArea className={controlStyles()} rows={rows} />
       {description ? (

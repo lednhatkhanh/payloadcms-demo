@@ -5,6 +5,8 @@ import { Noto_Sans } from 'next/font/google'
 import type { Metadata } from 'next'
 
 import { SiteHeader } from '@/components/SiteHeader'
+import { PreviewBanner } from '@/components/PreviewBanner'
+import { Suspense } from 'react'
 
 const notoSans = Noto_Sans({
   display: 'swap',
@@ -25,6 +27,9 @@ export default function RootLayout({ children }: { readonly children: React.Reac
       <body>
         <UiProvider>
           <SiteHeader />
+          <Suspense fallback={null}>
+            <PreviewBanner />
+          </Suspense>
           <main>{children}</main>
         </UiProvider>
       </body>

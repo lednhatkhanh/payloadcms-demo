@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     news: News;
     locations: Location;
+    pages: Page;
     'contact-submissions': ContactSubmission;
     'newsletter-signups': NewsletterSignup;
     'payload-kv': PayloadKv;
@@ -84,6 +85,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     locations: LocationsSelect<false> | LocationsSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     'newsletter-signups': NewsletterSignupsSelect<false> | NewsletterSignupsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -260,6 +262,115 @@ export interface Location {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * The concise introduction shown below the page title.
+   */
+  lead: string;
+  /**
+   * Optional. Parent pages create nested public paths and a manageable content group.
+   */
+  parent?: (number | null) | Page;
+  /**
+   * Choose from the five approved page blocks. Each block maps to an existing public-site component.
+   */
+  layout: (
+    | {
+        /**
+         * Editorial content rendered with the shared article-reading component.
+         */
+        content: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'richText';
+      }
+    | {
+        /**
+         * Choose an image from the managed media library.
+         */
+        media: number | Media;
+        /**
+         * Optional context shown directly below the image.
+         */
+        caption?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'image';
+      }
+    | {
+        title: string;
+        body: string;
+        /**
+         * Choose an image from the managed media library.
+         */
+        media: number | Media;
+        link: {
+          label: string;
+          /**
+           * Use a public path, such as /#enquiry or /news.
+           */
+          href: string;
+        };
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'feature';
+      }
+    | {
+        title: string;
+        body: string;
+        link: {
+          label: string;
+          /**
+           * Use a public path, such as /#enquiry or /news.
+           */
+          href: string;
+        };
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'callout';
+      }
+    | {
+        title: string;
+        body: string;
+        /**
+         * Select published or draft CMS pages to present with shared story cards.
+         */
+        pages: (number | Page)[];
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'pageLinks';
+      }
+  )[];
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact-submissions".
  */
 export interface ContactSubmission {
@@ -323,6 +434,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'locations';
         value: number | Location;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'contact-submissions';
@@ -472,6 +587,78 @@ export interface LocationsSelect<T extends boolean = true> {
   country?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  lead?: T;
+  parent?: T;
+  layout?:
+    | T
+    | {
+        richText?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        image?:
+          | T
+          | {
+              media?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        feature?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              media?: T;
+              link?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        callout?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              link?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        pageLinks?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              pages?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
   _status?: T;
 }
 /**

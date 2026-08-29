@@ -209,18 +209,22 @@ export function StoryCard({
   featured = false,
   href,
   label,
+  size = 'default',
 }: {
   readonly children: ReactNode
   readonly featured?: boolean
   readonly href?: string
   readonly label?: string
+  readonly size?: 'compact' | 'default'
 }) {
   const card = (
     <article
       className={
         featured
           ? 'group flex h-full min-h-card-story-featured flex-col justify-between rounded-lg border border-neutral-200 bg-surface-soft p-space-lg shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none'
-          : 'group flex h-full min-h-card-story flex-col justify-between rounded-lg border border-neutral-200 bg-surface p-space-lg shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none'
+          : size === 'compact'
+            ? 'group flex h-full flex-col justify-between rounded-lg border border-neutral-200 bg-surface p-space-lg shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none'
+            : 'group flex h-full min-h-card-story flex-col justify-between rounded-lg border border-neutral-200 bg-surface p-space-lg shadow-card transition duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-card-hover motion-reduce:transition-none'
       }
     >
       {children}

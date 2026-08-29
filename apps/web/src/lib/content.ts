@@ -2,7 +2,7 @@ import 'server-only'
 
 import config from '@repo/payload-config'
 import { mediaDirectory } from '@repo/payload-config/paths'
-import type { News } from '@repo/payload-config/types'
+import type { News, Page } from '@repo/payload-config/types'
 import { serverEnvironment } from '@repo/contracts/env'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -36,6 +36,17 @@ export interface NewsSummary {
 export interface NewsArticle extends NewsSummary {
   readonly body: News['body']
 }
+
+export interface ManagedPage {
+  readonly id: number
+  readonly layout: Page['layout']
+  readonly lead: string
+  readonly slug: string
+  readonly title: string
+}
+
+type ManagedPageLookup = Pick<Page, 'id' | 'layout' | 'lead' | 'slug' | 'title'>
+export type ManagedPageSummary = Pick<ManagedPage, 'lead' | 'slug' | 'title'>
 
 export interface MediaReference {
   readonly alt: string
@@ -125,6 +136,32 @@ function mapLocationSummary(doc: Record<string, unknown>): LocationSummary | und
     slug,
     title,
   }
+}
+
+function mapManagedPage(
+  page: Pick<Page, 'id' | 'layout' | 'lead' | 'slug' | 'title'>,
+): ManagedPage {
+  return {
+    id: page.id,
+    layout: page.layout,
+    lead: page.lead,
+    slug: page.slug,
+    title: page.title,
+  }
+}
+
+function mapManagedPageSummary(page: Pick<Page, 'lead' | 'slug' | 'title'>): ManagedPageSummary {
+  return {
+    lead: page.lead,
+    slug: page.slug,
+    title: page.title,
+  }
+}
+
+function pageParentId(page: Pick<Page, 'parent'>): number | undefined {
+  const parent = page.parent
+  if (typeof parent === 'number') return parent
+  return parent?.id
 }
 
 export async function getHomepage(): Promise<HomepageContent> {
@@ -285,6 +322,128 @@ export async function getLocationBySlug(slug: string): Promise<LocationRecord | 
   const country = stringValue(record.country)
   if (!city || !country) return undefined
   return { ...location, city, country }
+}
+
+async function findPageBySegment(
+  slug: string,
+  parent: number | undefined,
+  draft: boolean,
+): Promise<ManagedPageLookup | undefined> {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'pages',
+    depth: 2,
+    draft,
+    limit: 1,
+    overrideAccess: draft,
+    select: { layout: true, lead: true, slug: true, title: true },
+    where:
+      parent === undefined
+        ? { and: [{ slug: { equals: slug } }, { parent: { exists: false } }] }
+        : { and: [{ slug: { equals: slug } }, { parent: { equals: parent } }] },
+  })
+  return result.docs[0]
+}
+
+async function lookupPageByPath(
+  segments: readonly string[],
+  draft: boolean,
+): Promise<ManagedPage | undefined> {
+  async function lookupSegment(
+    index: number,
+    parent: number | undefined,
+  ): Promise<ManagedPageLookup | undefined> {
+    const segment = segments[index]
+    if (!segment) return undefined
+    const page = await findPageBySegment(segment, parent, draft)
+    if (!page) return undefined
+    if (index === segments.length - 1) return page
+    return lookupSegment(index + 1, page.id)
+  }
+
+  const page = await lookupSegment(0, undefined)
+  return page ? mapManagedPage(page) : undefined
+}
+
+async function getPublishedPageByPath(
+  segments: readonly string[],
+): Promise<ManagedPage | undefined> {
+  'use cache'
+  cacheLife('minutes')
+  cacheTag('pages', `page:${segments.join('/')}`)
+  return lookupPageByPath(segments, false)
+}
+
+export async function getPageByPath(
+  segments: readonly string[],
+  draft = false,
+): Promise<ManagedPage | undefined> {
+  if (segments.length === 0) return undefined
+  return draft ? lookupPageByPath(segments, true) : getPublishedPageByPath(segments)
+}
+
+async function getPublishedPageChildrenByParentSlug(
+  parentSlug: string,
+): Promise<readonly ManagedPageSummary[]> {
+  'use cache'
+  cacheLife('minutes')
+  cacheTag('pages', `pages:${parentSlug}`)
+  const payload = await getPayload({ config })
+  const parentResult = await payload.find({
+    collection: 'pages',
+    depth: 0,
+    draft: false,
+    limit: 1,
+    overrideAccess: false,
+    select: { slug: true },
+    where: { and: [{ slug: { equals: parentSlug } }, { parent: { exists: false } }] },
+  })
+  const parent = parentResult.docs[0]
+  if (!parent) return []
+
+  const result = await payload.find({
+    collection: 'pages',
+    depth: 0,
+    draft: false,
+    limit: 12,
+    overrideAccess: false,
+    select: { lead: true, slug: true, title: true },
+    sort: 'title',
+    where: { parent: { equals: parent.id } },
+  })
+
+  return result.docs.map(mapManagedPageSummary)
+}
+
+export async function getPublishedPageChildren(
+  parentSlug: string,
+): Promise<readonly ManagedPageSummary[]> {
+  return getPublishedPageChildrenByParentSlug(parentSlug)
+}
+
+export async function getPagePathById(id: number): Promise<string | undefined> {
+  const payload = await getPayload({ config })
+  async function findSegments(
+    currentId: number,
+    depth: number,
+  ): Promise<readonly string[] | undefined> {
+    if (depth >= 8) return undefined
+    const page = await payload.findByID({
+      collection: 'pages',
+      depth: 0,
+      draft: true,
+      id: currentId,
+      overrideAccess: true,
+      select: { parent: true, slug: true },
+    })
+    const parent = pageParentId(page)
+    if (parent === undefined) return [page.slug]
+    const parentSegments = await findSegments(parent, depth + 1)
+    return parentSegments ? [...parentSegments, page.slug] : undefined
+  }
+
+  const segments = await findSegments(id, 0)
+  return segments ? `/${segments.join('/')}` : undefined
 }
 
 export async function getPublicMediaFile(
