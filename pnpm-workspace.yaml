@@ -1,10 +1,12 @@
 packages:
   - apps/*
+  - docs/demo/slides
   - packages/*
 
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
+  playwright-chromium: true
   sharp: true
   unrs-resolver: true
 

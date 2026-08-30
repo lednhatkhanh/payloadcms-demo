@@ -1,0 +1,16 @@
+{
+  "name": "@repo/cms-platform-slides",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "slidev build slides.md",
+    "dev": "slidev slides.md --open",
+    "export": "slidev export slides.md --output cms-platform-decision.pdf",
+    "export:pptx": "slidev export slides.md --format pptx --output cms-platform-decision.pptx"
+  },
+  "devDependencies": {
+    "@slidev/cli": "52.19.1",
+    "@slidev/theme-default": "0.25.0",
+    "playwright-chromium": "1.62.1"
+  }
+}

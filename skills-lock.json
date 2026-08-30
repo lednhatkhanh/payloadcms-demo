@@ -50,6 +50,12 @@
       "skillPath": "es-toolkit-plugin/skills/recommend/SKILL.md",
       "computedHash": "d48ef72e28efdad6421ae4370b9d52c49aa32c4171da8248ba02720844edb170"
     },
+    "slidev": {
+      "source": "slidevjs/slidev",
+      "sourceType": "github",
+      "skillPath": "skills/slidev/SKILL.md",
+      "computedHash": "a40d5717b0c1db90db946a40f2a258c248779bc933eb9a9bc6fb1f90b4cc0a05"
+    },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
