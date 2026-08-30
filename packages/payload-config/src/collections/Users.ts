@@ -3,6 +3,8 @@ import type { CollectionConfig } from 'payload'
 import { administrator, authenticated, isAdministrator, selfOrAdministrator } from '../access'
 import { editorialRoles } from '../workflow'
 
+const accountRoles = [...editorialRoles, 'operations'] as const
+
 export const Users: CollectionConfig = {
   slug: 'users',
   auth: true,
@@ -36,14 +38,14 @@ export const Users: CollectionConfig = {
       required: true,
       defaultValue: ['editor'],
       saveToJWT: true,
-      options: editorialRoles.map((value) => ({
+      options: accountRoles.map((value) => ({
         label: value.charAt(0).toUpperCase() + value.slice(1),
         value,
       })),
       access: { update: ({ req }) => isAdministrator(req.user) },
       admin: {
         description:
-          'Use one clear responsibility per demo account: editor, translator, reviewer, publisher, or admin.',
+          'Use one clear responsibility per demo account: editorial roles, operations, or admin.',
         position: 'sidebar',
       },
     },

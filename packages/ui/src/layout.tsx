@@ -219,7 +219,7 @@ export function EditorialGrid({ children }: { readonly children: ReactNode }) {
 
 export function EnquiryGrid({ children }: { readonly children: ReactNode }) {
   return (
-    <div className="grid items-end gap-space-2xl border-y border-border py-space-enquiry lg:grid-cols-enquiry lg:gap-space-3xl">
+    <div className="grid items-start gap-space-2xl border-y border-border py-space-enquiry lg:grid-cols-enquiry lg:gap-space-3xl">
       {children}
     </div>
   )

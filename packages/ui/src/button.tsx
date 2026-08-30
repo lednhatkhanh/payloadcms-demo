@@ -44,7 +44,15 @@ export function Button({ children, size, variant, ...props }: ButtonProps) {
     <AriaButton {...props} className={buttonStyles({ size, variant })}>
       {composeRenderProps(children, (content, { isPending }) => (
         <>
-          <span className={isPending ? 'opacity-0' : undefined}>{content}</span>
+          <span
+            className={
+              isPending
+                ? 'inline-flex items-center justify-center gap-space-xs opacity-0'
+                : 'inline-flex items-center justify-center gap-space-xs'
+            }
+          >
+            {content}
+          </span>
           {isPending ? (
             <LoaderCircle
               aria-hidden="true"

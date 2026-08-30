@@ -507,7 +507,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     readonly email: string
     readonly globalAccess: boolean
     readonly name: string
-    readonly role: EditorialRole
+    readonly role: EditorialRole | 'operations'
   }
 
   type CountryTeam = {
@@ -571,6 +571,12 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     name: 'Maya Global Editor',
     role: 'editor',
   }
+  const demoOperations: DemoUser = {
+    email: 'operations@dispatch.demo',
+    globalAccess: true,
+    name: 'Rowan Operations',
+    role: 'operations',
+  }
 
   async function upsertDemoUser(user: DemoUser): Promise<number> {
     const existing = await payload.find({
@@ -615,6 +621,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
   const [adminId, editorId] = await Promise.all([
     upsertDemoUser(demoAdmin),
     upsertDemoUser(demoEditor),
+    upsertDemoUser(demoOperations),
   ])
 
   const countryTeams: readonly CountryTeam[] = await Promise.all(

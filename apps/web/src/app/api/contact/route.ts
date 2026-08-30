@@ -30,10 +30,16 @@ export async function POST(request: Request): Promise<Response> {
     collection: 'contact-submissions',
     data: {
       consent: result.data.consent,
+      destination: result.data.destination,
       email: result.data.email,
       message: result.data.message,
       name: result.data.name,
       organization: result.data.organization,
+      origin: result.data.origin,
+      requestType: result.data.requestType,
+      shipmentReference: result.data.shipmentReference,
+      status: 'new',
+      ...(result.data.service ? { service: result.data.service } : {}),
     },
     overrideAccess: true,
   })

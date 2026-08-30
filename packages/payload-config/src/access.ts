@@ -46,6 +46,10 @@ export function hasEditorialRole(
   return isAdministrator(user) || rolesForUser(user).includes(role)
 }
 
+export function isFormDataManager(user: unknown): boolean {
+  return isAdministrator(user) || rolesForUser(user).includes('operations')
+}
+
 function countryWhere(user: unknown): Where {
   return { country: { in: countryIdsForUser(user) } }
 }
@@ -57,6 +61,8 @@ function countryNewsWhere(user: unknown): Where {
 }
 
 export const administrator: Access = ({ req }) => isAdministrator(req.user)
+
+export const formDataManager: Access = ({ req }) => isFormDataManager(req.user)
 
 export const editorialParticipant: Access = ({ req }) =>
   hasEditorialRole(req.user, 'editor') ||

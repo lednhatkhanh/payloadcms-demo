@@ -10,10 +10,25 @@ describe('public form contracts', () => {
       message: 'I would like to learn more about your newsroom.',
       name: 'Avery Reader',
       organization: '',
+      requestType: 'general',
       website: '',
     })
 
     expect(result.success).toBe(true)
+  })
+
+  it('requires route details for quote requests', () => {
+    const result = contactInputSchema.safeParse({
+      consent: true,
+      email: 'reader@example.com',
+      message: 'Please share a demonstration quote for this example shipment.',
+      name: 'Avery Reader',
+      organization: 'Example Co.',
+      requestType: 'quote',
+      website: '',
+    })
+
+    expect(result.success).toBe(false)
   })
 
   it('rejects honeypot content', () => {

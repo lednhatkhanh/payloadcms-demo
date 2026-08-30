@@ -9,6 +9,7 @@ type WorkflowRequestState = 'approved' | 'changes-requested' | 'in-review' | 'tr
 type WorkflowRequest = {
   readonly collection: EditorialCollection
   readonly id: number | string
+  readonly requester: string
   readonly state: WorkflowRequestState
   readonly title: string
   readonly translationLocales: readonly string[]
@@ -46,22 +47,71 @@ function requestUpdatedAt(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function requestRequester(value: unknown): string {
+  if (!isRecord(value)) return '—'
+
+  const { email, name } = value
+  if (typeof name === 'string' && name.length > 0) return name
+  if (typeof email === 'string' && email.length > 0) return email
+  return '—'
+}
+
+function requesterForState(
+  state: WorkflowRequestState,
+  doc: {
+    readonly reviewRequestedBy?: unknown
+    readonly reviewedBy?: unknown
+    readonly translatedBy?: unknown
+    readonly translationRequestedBy?: unknown
+  },
+): string {
+  if (state === 'translation-requested') return requestRequester(doc.translationRequestedBy)
+  if (state === 'in-review') return requestRequester(doc.translatedBy ?? doc.reviewRequestedBy)
+  return requestRequester(doc.reviewedBy)
+}
+
+function formatRequestDate(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.valueOf())) return '—'
+
+  return new Intl.DateTimeFormat('en', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'UTC',
+  }).format(date)
+}
+
 async function requestsForState(
   payload: Payload,
   state: WorkflowRequestState,
+  user: NonNullable<AdminViewServerProps['initPageResult']['req']['user']>,
 ): Promise<readonly WorkflowRequest[]> {
   const collections: readonly EditorialCollection[] = ['news', 'pages']
   const requests = await Promise.all(
     collections.map(async (collection) => {
       const result = await payload.find({
         collection,
-        depth: 0,
+        depth: 1,
         draft: true,
         limit: 20,
         locale: 'en',
-        overrideAccess: true,
-        select: { title: true, translationLocales: true, updatedAt: true, workflowState: true },
+        overrideAccess: false,
+        select: {
+          reviewRequestedBy: true,
+          reviewedBy: true,
+          title: true,
+          translatedBy: true,
+          translationLocales: true,
+          translationRequestedBy: true,
+          updatedAt: true,
+          workflowState: true,
+        },
         sort: '-updatedAt',
+        user,
         where: { workflowState: { equals: state } },
       })
 
@@ -71,6 +121,7 @@ async function requestsForState(
           {
             collection,
             id: doc.id,
+            requester: requesterForState(doc.workflowState, doc),
             state: doc.workflowState,
             title: requestTitle(doc.title),
             translationLocales: requestLocales(doc.translationLocales),
@@ -112,11 +163,11 @@ export async function WorkflowInbox({
   user,
 }: {
   readonly payload: Payload
-  readonly user?: unknown
+  readonly user: NonNullable<AdminViewServerProps['initPageResult']['req']['user']>
 }) {
   const states = statesForRoles(rolesForUser(user))
   const requests = (
-    await Promise.all(states.map((state) => requestsForState(payload, state)))
+    await Promise.all(states.map((state) => requestsForState(payload, state, user)))
   ).flat()
   const adminPath = payload.config.routes.admin
 
@@ -130,16 +181,41 @@ export async function WorkflowInbox({
         <p>Translation, review, revision, and publishing work currently waiting for your role.</p>
       </div>
       {requests.length > 0 ? (
-        <ul className="workflow-inbox__list">
-          {requests.map((request) => (
-            <li key={`${request.collection}-${request.id}-${request.state}`}>
-              <a href={`${adminPath}/collections/${request.collection}/${request.id}`}>
-                <span>{request.title}</span>
-                <small>{stateLabel(request)}</small>
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="workflow-inbox__table-wrap">
+          <table className="workflow-inbox__table">
+            <thead>
+              <tr>
+                <th scope="col">Content</th>
+                <th scope="col">Current action</th>
+                <th scope="col">Requested by</th>
+                <th scope="col">Translation targets</th>
+                <th scope="col">Last updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.map((request) => (
+                <tr key={`${request.collection}-${request.id}-${request.state}`}>
+                  <td>
+                    <a href={`${adminPath}/collections/${request.collection}/${request.id}`}>
+                      {request.title}
+                    </a>
+                    <small>{request.collection === 'news' ? 'News story' : 'Page'}</small>
+                  </td>
+                  <td>{stateLabel(request)}</td>
+                  <td>{request.requester}</td>
+                  <td>
+                    {request.translationLocales.length > 0
+                      ? request.translationLocales.join(', ')
+                      : '—'}
+                  </td>
+                  <td>
+                    <time dateTime={request.updatedAt}>{formatRequestDate(request.updatedAt)}</time>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="workflow-inbox__empty">No workflow requests are waiting for you.</p>
       )}

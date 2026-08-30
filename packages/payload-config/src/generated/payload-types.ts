@@ -145,9 +145,9 @@ export interface User {
    */
   globalAccess?: boolean | null;
   /**
-   * Use one clear responsibility per demo account: editor, translator, reviewer, publisher, or admin.
+   * Use one clear responsibility per demo account: editorial roles, operations, or admin.
    */
-  roles: ('admin' | 'editor' | 'translator' | 'reviewer' | 'publisher')[];
+  roles: ('admin' | 'editor' | 'translator' | 'reviewer' | 'publisher' | 'operations')[];
   countries?:
     | {
         country: number | Country;
@@ -477,11 +477,17 @@ export interface Page {
  */
 export interface ContactSubmission {
   id: number;
+  requestType: 'general' | 'quote' | 'shipment';
   name: string;
   email: string;
   organization?: string | null;
+  service?: ('ocean-freight' | 'logistics-solutions') | null;
+  origin?: string | null;
+  destination?: string | null;
+  shipmentReference?: string | null;
   message: string;
   consent: boolean;
+  status: 'new' | 'in-progress' | 'closed';
   updatedAt: string;
   createdAt: string;
 }
@@ -810,11 +816,17 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "contact-submissions_select".
  */
 export interface ContactSubmissionsSelect<T extends boolean = true> {
+  requestType?: T;
   name?: T;
   email?: T;
   organization?: T;
+  service?: T;
+  origin?: T;
+  destination?: T;
+  shipmentReference?: T;
   message?: T;
   consent?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

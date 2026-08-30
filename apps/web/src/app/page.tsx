@@ -39,6 +39,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
+import { ContactForm } from '@/components/PublicForms'
 import {
   getHomepage,
   getPublishedPageChildren,
@@ -245,15 +246,56 @@ export default function HomePage() {
               <Text as="h2" variant="enquiry">
                 Point each question to the right form.
               </Text>
+              <Surface border="default" padding="md" radius="md" tone="soft">
+                <Stack gap="lg">
+                  <Stack gap="xs">
+                    <Text color="brand" variant="label">
+                      Three simple steps
+                    </Text>
+                    <Text color="muted" variant="small">
+                      The form keeps an enquiry useful without making the demo feel like a tracking
+                      portal.
+                    </Text>
+                  </Stack>
+                  <Stack gap="md">
+                    <Stack gap="2xs">
+                      <Text variant="meta">01 / Choose a route</Text>
+                      <Text variant="small">
+                        Start with a general question, a quote request, or a shipment reference.
+                      </Text>
+                    </Stack>
+                    <Stack gap="2xs">
+                      <Text variant="meta">02 / Add the useful detail</Text>
+                      <Text variant="small">
+                        Quote requests collect the service, origin, and destination; shipment
+                        questions capture a reference.
+                      </Text>
+                    </Stack>
+                    <Stack gap="2xs">
+                      <Text variant="meta">03 / Keep it with the right team</Text>
+                      <Text variant="small">
+                        The submission is visible only to the demo operations team and
+                        administrators.
+                      </Text>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Surface>
             </EnquiryHeading>
-            <Stack gap="md">
-              <Text color="muted">
-                This demonstration distinguishes a general contact message, a quote request, and a
-                shipment enquiry. The latter is a message form, not real-time tracking.
-              </Text>
-              <Link href="/#newsletter" variant="inline">
-                See the available paths <Icon source={ArrowRight} size="sm" />
-              </Link>
+            <Stack gap="2xl">
+              <Stack gap="md">
+                <Text color="muted">
+                  Choose a general contact, quote request, or shipment question. Each route records
+                  the specific context the team needs, without pretending to offer real-time
+                  tracking.
+                </Text>
+                <Text color="muted" variant="small">
+                  Messages are available only to the demo operations team and administrators.
+                </Text>
+              </Stack>
+              <Surface border="default" padding="lg" radius="lg" tone="surface">
+                <ContactForm />
+              </Surface>
             </Stack>
           </EnquiryGrid>
         </Container>

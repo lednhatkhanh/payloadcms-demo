@@ -36,38 +36,61 @@
   text-transform: uppercase;
 }
 
-.workflow-inbox__list {
-  display: grid;
-  gap: calc(var(--base) * 0.5);
-  list-style: none;
+.workflow-inbox__table-wrap {
   margin: calc(var(--base) * 1.25) 0 0;
-  padding: 0;
+  overflow-x: auto;
 }
 
-.workflow-inbox__list a {
-  align-items: center;
-  border: 1px solid var(--theme-elevation-150);
-  border-radius: var(--style-radius-s);
+.workflow-inbox__table {
+  border-collapse: collapse;
+  min-width: 56rem;
+  width: 100%;
+}
+
+.workflow-inbox__table th,
+.workflow-inbox__table td {
+  border-bottom: 1px solid var(--theme-elevation-150);
+  padding: calc(var(--base) * 0.85) var(--base);
+  text-align: left;
+  vertical-align: top;
+}
+
+.workflow-inbox__table th {
+  color: var(--theme-elevation-600);
+  font-size: var(--font-size-s);
+  font-weight: 600;
+}
+
+.workflow-inbox__table tbody tr:hover {
+  background: var(--theme-elevation-50);
+}
+
+.workflow-inbox__table td:first-child {
+  min-width: 18rem;
+}
+
+.workflow-inbox__table td > a {
   color: var(--theme-text);
-  display: flex;
-  justify-content: space-between;
-  padding: var(--base);
+  font-weight: 600;
   text-decoration: none;
 }
 
-.workflow-inbox__list a:hover {
-  background: var(--theme-elevation-50);
-  border-color: var(--theme-elevation-300);
+.workflow-inbox__table td > a:hover {
+  text-decoration: underline;
 }
 
-.workflow-inbox__list small,
+.workflow-inbox__table small,
 .workflow-inbox__empty {
   color: var(--theme-elevation-600);
 }
 
+.workflow-inbox__table small {
+  display: block;
+  margin-top: calc(var(--base) * 0.25);
+}
+
 @media (max-width: 640px) {
-  .workflow-inbox__heading,
-  .workflow-inbox__list a {
+  .workflow-inbox__heading {
     align-items: start;
     flex-direction: column;
   }

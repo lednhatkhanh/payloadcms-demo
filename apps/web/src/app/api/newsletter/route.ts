@@ -31,14 +31,10 @@ export async function POST(request: Request): Promise<Response> {
     where: { email: { equals: result.data.email } },
   })
   if (existing.totalDocs > 0) return Response.json(success)
-  try {
-    await payload.create({
-      collection: 'newsletter-signups',
-      data: { consent: result.data.consent, email: result.data.email, source: result.data.source },
-      overrideAccess: true,
-    })
-  } catch {
-    return Response.json(success)
-  }
+  await payload.create({
+    collection: 'newsletter-signups',
+    data: { consent: result.data.consent, email: result.data.email, source: result.data.source },
+    overrideAccess: true,
+  })
   return Response.json(success)
 }

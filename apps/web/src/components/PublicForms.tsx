@@ -1,12 +1,17 @@
 'use client'
 
-import type { FormResult } from '@repo/contracts/forms'
+import {
+  isContactRequestType,
+  type ContactRequestType,
+  type FormResult,
+} from '@repo/contracts/forms'
 import { Button } from '@repo/ui/button'
 import {
   CheckboxField,
   Form,
   FormActionRow,
   HoneypotField,
+  SelectField,
   TextAreaField,
   TextField,
 } from '@repo/ui/form'
@@ -14,7 +19,7 @@ import { Icon, Send } from '@repo/ui/icon'
 import { Stack } from '@repo/ui/layout'
 import { Text } from '@repo/ui/text'
 import ky from 'ky'
-import { useState, useTransition, type SyntheticEvent } from 'react'
+import { useState, useTransition, type Key, type SyntheticEvent } from 'react'
 
 import { mutableFieldErrors } from '@/lib/forms'
 
@@ -37,7 +42,7 @@ async function submitForm(endpoint: string, form: HTMLFormElement): Promise<Form
     .json<FormResult>()
 }
 
-export function ContactForm() {
+function usePublicForm(endpoint: string) {
   const [state, setState] = useState<FormState>(initialState)
   const [isPending, startTransition] = useTransition()
 
@@ -45,18 +50,47 @@ export function ContactForm() {
     event.preventDefault()
     const form = event.currentTarget
     startTransition(async () => {
-      const result = await submitForm('/api/contact', form)
-      if (result.ok) {
-        form.reset()
-        setState({ message: result.message, status: 'success' })
-      } else {
+      try {
+        const result = await submitForm(endpoint, form)
+        if (result.ok) {
+          form.reset()
+          setState({ message: result.message, status: 'success' })
+        } else {
+          setState({
+            fieldErrors: mutableFieldErrors(result.fieldErrors),
+            message: result.message,
+            status: 'error',
+          })
+        }
+      } catch {
         setState({
-          fieldErrors: mutableFieldErrors(result.fieldErrors),
-          message: result.message,
+          message: 'We could not send that just now. Please try again.',
           status: 'error',
         })
       }
     })
+  }
+
+  return { handleSubmit, isPending, state }
+}
+
+const requestTypeOptions = [
+  { label: 'General contact', value: 'general' },
+  { label: 'Request a quote', value: 'quote' },
+  { label: 'Shipment question', value: 'shipment' },
+] as const
+
+const serviceOptions = [
+  { label: 'Ocean freight', value: 'ocean-freight' },
+  { label: 'Logistics solutions', value: 'logistics-solutions' },
+] as const
+
+export function ContactForm() {
+  const [requestType, setRequestType] = useState<ContactRequestType>('general')
+  const { handleSubmit, isPending, state } = usePublicForm('/api/contact')
+
+  function selectRequestType(key: Key | null) {
+    if (isContactRequestType(key)) setRequestType(key)
   }
 
   return (
@@ -64,11 +98,39 @@ export function ContactForm() {
       onSubmit={handleSubmit}
       {...(state.fieldErrors ? { validationErrors: state.fieldErrors } : {})}
     >
+      <SelectField
+        label="What can we help with?"
+        name="requestType"
+        onSelectionChange={selectRequestType}
+        options={requestTypeOptions}
+        selectedKey={requestType}
+      />
       <TextField isRequired label="Name" maxLength={100} name="name" />
       <TextField isRequired label="Email" maxLength={200} name="email" type="email" />
       <TextField label="Organization" maxLength={150} name="organization" />
+      {requestType === 'quote' ? (
+        <>
+          <SelectField label="Service" name="service" options={serviceOptions} />
+          <TextField isRequired label="Origin" maxLength={120} name="origin" />
+          <TextField isRequired label="Destination" maxLength={120} name="destination" />
+        </>
+      ) : null}
+      {requestType === 'shipment' ? (
+        <TextField
+          description="This demo records a question only; it does not provide real-time tracking."
+          isRequired
+          label="Shipment or booking reference"
+          maxLength={80}
+          minLength={4}
+          name="shipmentReference"
+        />
+      ) : null}
       <TextAreaField
-        description="Please include enough context for a useful reply."
+        description={
+          requestType === 'quote'
+            ? 'Share the shipment context you would like priced.'
+            : 'Please include enough context for a useful reply.'
+        }
         isRequired
         label="Message"
         maxLength={2000}
@@ -90,8 +152,13 @@ export function ContactForm() {
 }
 
 export function NewsletterForm() {
+  const { handleSubmit, isPending, state } = usePublicForm('/api/newsletter')
+
   return (
-    <Form>
+    <Form
+      onSubmit={handleSubmit}
+      {...(state.fieldErrors ? { validationErrors: state.fieldErrors } : {})}
+    >
       <FormActionRow>
         <TextField
           isRequired
@@ -102,10 +169,18 @@ export function NewsletterForm() {
           tone="inverse"
           type="email"
         />
-        <Button size="newsletter" type="button" variant="secondary">
+        <Button isPending={isPending} size="newsletter" type="submit" variant="secondary">
           Subscribe
         </Button>
       </FormActionRow>
+      <CheckboxField
+        isRequired
+        label="I want occasional editorial updates from The Dispatch."
+        name="consent"
+        tone="inverse"
+      />
+      <HoneypotField />
+      <FormStatus state={state} />
     </Form>
   )
 }

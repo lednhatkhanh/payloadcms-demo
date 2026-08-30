@@ -1,17 +1,19 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../access'
+import { formDataManager, isFormDataManager } from '../access'
 
 export const NewsletterSignups: CollectionConfig = {
   slug: 'newsletter-signups',
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticated,
-    update: authenticated,
+    admin: ({ req }) => isFormDataManager(req.user),
+    create: formDataManager,
+    delete: formDataManager,
+    read: formDataManager,
+    update: formDataManager,
   },
   admin: {
     defaultColumns: ['email', 'source', 'createdAt'],
+    group: 'Submissions',
     useAsTitle: 'email',
   },
   fields: [

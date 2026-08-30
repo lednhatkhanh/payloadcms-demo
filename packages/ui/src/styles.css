@@ -243,6 +243,10 @@
     max-width: 13ch;
   }
 
+  .enquiry-heading > :nth-child(3) {
+    margin-top: var(--spacing-space-2xl);
+  }
+
   @media (max-width: 520px) {
     .site-container {
       padding-inline: var(--spacing-space-md);
