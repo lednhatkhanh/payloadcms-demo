@@ -1,20 +1,22 @@
 import { slugField, type CollectionConfig } from 'payload'
 
-import { authenticated, publishedOrAuthenticated } from '../access'
+import { countryMember, publishedCountryContentOrMember } from '../access'
+import { countryField, enforceCountryMembership } from '../country'
 
 export const Locations: CollectionConfig = {
   slug: 'locations',
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: publishedOrAuthenticated,
-    update: authenticated,
+    create: countryMember,
+    delete: countryMember,
+    read: publishedCountryContentOrMember,
+    update: countryMember,
   },
   admin: {
-    defaultColumns: ['title', 'city', 'country', '_status'],
+    defaultColumns: ['title', 'city', 'countryName', '_status'],
     useAsTitle: 'title',
   },
   fields: [
+    countryField(true),
     { name: 'title', type: 'text', localized: true, required: true },
     slugField(),
     {
@@ -44,8 +46,9 @@ export const Locations: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     { name: 'city', type: 'text', required: true, admin: { position: 'sidebar' } },
-    { name: 'country', type: 'text', required: true, admin: { position: 'sidebar' } },
+    { name: 'countryName', type: 'text', required: true, admin: { position: 'sidebar' } },
   ],
+  hooks: { beforeChange: [enforceCountryMembership] },
   timestamps: true,
   versions: { drafts: { autosave: true } },
 }

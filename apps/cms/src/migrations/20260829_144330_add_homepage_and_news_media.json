@@ -74,12 +74,8 @@
           "name": "users_sessions_parent_id_fk",
           "tableFrom": "users_sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "_parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["_parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -647,12 +643,8 @@
           "name": "news_hero_media_id_media_id_fk",
           "tableFrom": "news",
           "tableTo": "media",
-          "columnsFrom": [
-            "hero_media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["hero_media_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -956,12 +948,8 @@
           "name": "_news_v_parent_id_news_id_fk",
           "tableFrom": "_news_v",
           "tableTo": "news",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -969,12 +957,8 @@
           "name": "_news_v_version_hero_media_id_media_id_fk",
           "tableFrom": "_news_v",
           "tableTo": "media",
-          "columnsFrom": [
-            "version_hero_media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_hero_media_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1052,12 +1036,8 @@
           "name": "locations_service_tags_parent_fk",
           "tableFrom": "locations_service_tags",
           "tableTo": "locations",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1226,12 +1206,8 @@
           "name": "locations_hero_media_id_media_id_fk",
           "tableFrom": "locations",
           "tableTo": "media",
-          "columnsFrom": [
-            "hero_media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["hero_media_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1309,12 +1285,8 @@
           "name": "_locations_v_version_service_tags_parent_fk",
           "tableFrom": "_locations_v_version_service_tags",
           "tableTo": "_locations_v",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1588,12 +1560,8 @@
           "name": "_locations_v_parent_id_locations_id_fk",
           "tableFrom": "_locations_v",
           "tableTo": "locations",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1601,12 +1569,8 @@
           "name": "_locations_v_version_hero_media_id_media_id_fk",
           "tableFrom": "_locations_v",
           "tableTo": "media",
-          "columnsFrom": [
-            "version_hero_media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_hero_media_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2165,12 +2129,8 @@
           "name": "payload_locked_documents_rels_parent_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "payload_locked_documents",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2178,12 +2138,8 @@
           "name": "payload_locked_documents_rels_users_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2191,12 +2147,8 @@
           "name": "payload_locked_documents_rels_media_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "media",
-          "columnsFrom": [
-            "media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["media_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2204,12 +2156,8 @@
           "name": "payload_locked_documents_rels_news_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "news",
-          "columnsFrom": [
-            "news_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["news_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2217,12 +2165,8 @@
           "name": "payload_locked_documents_rels_locations_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "locations",
-          "columnsFrom": [
-            "locations_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["locations_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2230,12 +2174,8 @@
           "name": "payload_locked_documents_rels_contact_submissions_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "contact_submissions",
-          "columnsFrom": [
-            "contact_submissions_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["contact_submissions_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2243,12 +2183,8 @@
           "name": "payload_locked_documents_rels_newsletter_signups_fk",
           "tableFrom": "payload_locked_documents_rels",
           "tableTo": "newsletter_signups",
-          "columnsFrom": [
-            "newsletter_signups_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["newsletter_signups_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2452,12 +2388,8 @@
           "name": "payload_preferences_rels_parent_fk",
           "tableFrom": "payload_preferences_rels",
           "tableTo": "payload_preferences",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2465,12 +2397,8 @@
           "name": "payload_preferences_rels_users_fk",
           "tableFrom": "payload_preferences_rels",
           "tableTo": "users",
-          "columnsFrom": [
-            "users_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["users_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2709,12 +2637,8 @@
           "name": "homepage_hero_media_id_media_id_fk",
           "tableFrom": "homepage",
           "tableTo": "media",
-          "columnsFrom": [
-            "hero_media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["hero_media_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2827,12 +2751,8 @@
           "name": "homepage_rels_parent_fk",
           "tableFrom": "homepage_rels",
           "tableTo": "homepage",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2840,12 +2760,8 @@
           "name": "homepage_rels_news_fk",
           "tableFrom": "homepage_rels",
           "tableTo": "news",
-          "columnsFrom": [
-            "news_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["news_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3094,12 +3010,8 @@
           "name": "_homepage_v_version_hero_media_id_media_id_fk",
           "tableFrom": "_homepage_v",
           "tableTo": "media",
-          "columnsFrom": [
-            "version_hero_media_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["version_hero_media_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -3212,12 +3124,8 @@
           "name": "_homepage_v_rels_parent_fk",
           "tableFrom": "_homepage_v_rels",
           "tableTo": "_homepage_v",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -3225,12 +3133,8 @@
           "name": "_homepage_v_rels_news_fk",
           "tableFrom": "_homepage_v_rels",
           "tableTo": "news",
-          "columnsFrom": [
-            "news_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["news_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -3246,86 +3150,52 @@
     "public.enum_news_category": {
       "name": "enum_news_category",
       "schema": "public",
-      "values": [
-        "company",
-        "product",
-        "people",
-        "ideas"
-      ]
+      "values": ["company", "product", "people", "ideas"]
     },
     "public.enum_news_status": {
       "name": "enum_news_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published"
-      ]
+      "values": ["draft", "published"]
     },
     "public.enum__news_v_version_category": {
       "name": "enum__news_v_version_category",
       "schema": "public",
-      "values": [
-        "company",
-        "product",
-        "people",
-        "ideas"
-      ]
+      "values": ["company", "product", "people", "ideas"]
     },
     "public.enum__news_v_version_status": {
       "name": "enum__news_v_version_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published"
-      ]
+      "values": ["draft", "published"]
     },
     "public.enum_locations_service_tags": {
       "name": "enum_locations_service_tags",
       "schema": "public",
-      "values": [
-        "ocean-freight",
-        "logistics-solutions"
-      ]
+      "values": ["ocean-freight", "logistics-solutions"]
     },
     "public.enum_locations_status": {
       "name": "enum_locations_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published"
-      ]
+      "values": ["draft", "published"]
     },
     "public.enum__locations_v_version_service_tags": {
       "name": "enum__locations_v_version_service_tags",
       "schema": "public",
-      "values": [
-        "ocean-freight",
-        "logistics-solutions"
-      ]
+      "values": ["ocean-freight", "logistics-solutions"]
     },
     "public.enum__locations_v_version_status": {
       "name": "enum__locations_v_version_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published"
-      ]
+      "values": ["draft", "published"]
     },
     "public.enum_homepage_status": {
       "name": "enum_homepage_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published"
-      ]
+      "values": ["draft", "published"]
     },
     "public.enum__homepage_v_version_status": {
       "name": "enum__homepage_v_version_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published"
-      ]
+      "values": ["draft", "published"]
     }
   },
   "schemas": {},

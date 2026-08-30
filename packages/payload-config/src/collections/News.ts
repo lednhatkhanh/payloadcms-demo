@@ -2,19 +2,20 @@ import { slugField, type CollectionConfig } from 'payload'
 
 import {
   administrator,
-  editorialCreator,
-  editorialParticipant,
-  publishedOrAuthenticated,
+  countryEditorialCreator,
+  countryEditorialParticipant,
+  publishedCountryNewsOrParticipant,
 } from '../access'
+import { countryField, enforceNewsCountryScope, newsScopeField } from '../country'
 import { editorialWorkflowFields, enforceEditorialWorkflow } from '../workflow'
 
 export const News: CollectionConfig = {
   slug: 'news',
   access: {
-    create: editorialCreator,
+    create: countryEditorialCreator,
     delete: administrator,
-    read: publishedOrAuthenticated,
-    update: editorialParticipant,
+    read: publishedCountryNewsOrParticipant,
+    update: countryEditorialParticipant,
   },
   admin: {
     components: {
@@ -28,9 +29,12 @@ export const News: CollectionConfig = {
     useAsTitle: 'title',
   },
   defaultSort: '-publishedAt',
+  indexes: [{ fields: ['country', 'slug'], unique: true }],
   fields: [
+    newsScopeField,
+    countryField(),
     { name: 'title', type: 'text', localized: true, required: true },
-    slugField(),
+    slugField({ disableUnique: true }),
     { name: 'excerpt', type: 'textarea', localized: true, required: true, maxLength: 320 },
     { name: 'body', type: 'richText', localized: true, required: true },
     {
@@ -64,7 +68,7 @@ export const News: CollectionConfig = {
     { name: 'featured', type: 'checkbox', defaultValue: false, admin: { position: 'sidebar' } },
     ...editorialWorkflowFields,
   ],
-  hooks: { beforeChange: [enforceEditorialWorkflow] },
+  hooks: { beforeChange: [enforceNewsCountryScope, enforceEditorialWorkflow] },
   timestamps: true,
   versions: { drafts: { autosave: true } },
 }

@@ -2,92 +2,92 @@
 name: The Dispatch
 description: A warm, approachable editorial system for a focused shipping and logistics journal.
 colors:
-  harbor-rose-50: "#fff1f7"
-  harbor-rose-100: "#ffe4f0"
-  harbor-rose-200: "#ffc9e0"
-  harbor-rose-300: "#ffa1c8"
-  harbor-rose-700: "#bd0f72"
-  harbor-rose-800: "#9a105e"
-  harbor-rose-900: "#7f124f"
-  page-paper: "#fcf9fb"
-  surface: "#ffffff"
-  soft-surface: "#fff1f7"
-  rule: "#dfcfd7"
-  ink: "#1d1419"
-  muted-ink: "#66505c"
-  success: "#137a52"
-  warning: "#9a6700"
-  danger: "#b42318"
-  info: "#1769aa"
+  harbor-rose-50: '#fff1f7'
+  harbor-rose-100: '#ffe4f0'
+  harbor-rose-200: '#ffc9e0'
+  harbor-rose-300: '#ffa1c8'
+  harbor-rose-700: '#bd0f72'
+  harbor-rose-800: '#9a105e'
+  harbor-rose-900: '#7f124f'
+  page-paper: '#fcf9fb'
+  surface: '#ffffff'
+  soft-surface: '#fff1f7'
+  rule: '#dfcfd7'
+  ink: '#1d1419'
+  muted-ink: '#66505c'
+  success: '#137a52'
+  warning: '#9a6700'
+  danger: '#b42318'
+  info: '#1769aa'
 typography:
   display:
-    fontFamily: "Noto Sans, sans-serif"
-    fontSize: "clamp(3.25rem, 8vw, 7.5rem)"
+    fontFamily: 'Noto Sans, sans-serif'
+    fontSize: 'clamp(3.25rem, 8vw, 7.5rem)'
     fontWeight: 700
     lineHeight: 0.9
-    letterSpacing: "-0.055em"
+    letterSpacing: '-0.055em'
   headline:
-    fontFamily: "Noto Sans, sans-serif"
-    fontSize: "clamp(2.5rem, 6vw, 5rem)"
+    fontFamily: 'Noto Sans, sans-serif'
+    fontSize: 'clamp(2.5rem, 6vw, 5rem)'
     fontWeight: 700
     lineHeight: 0.98
-    letterSpacing: "-0.045em"
+    letterSpacing: '-0.045em'
   title:
-    fontFamily: "Noto Sans, sans-serif"
-    fontSize: "clamp(2rem, 4vw, 3.5rem)"
+    fontFamily: 'Noto Sans, sans-serif'
+    fontSize: 'clamp(2rem, 4vw, 3.5rem)'
     fontWeight: 700
     lineHeight: 1.05
-    letterSpacing: "-0.035em"
+    letterSpacing: '-0.035em'
   body:
-    fontFamily: "Noto Sans, sans-serif"
-    fontSize: "1rem"
+    fontFamily: 'Noto Sans, sans-serif'
+    fontSize: '1rem'
     fontWeight: 400
     lineHeight: 1.7
   label:
-    fontFamily: "Noto Sans, sans-serif"
-    fontSize: "0.75rem"
+    fontFamily: 'Noto Sans, sans-serif'
+    fontSize: '0.75rem'
     fontWeight: 700
     lineHeight: 1.3
-    letterSpacing: "0.11em"
+    letterSpacing: '0.11em'
 rounded:
-  sm: "0.5rem"
-  md: "0.875rem"
-  lg: "1.25rem"
-  pill: "9999px"
+  sm: '0.5rem'
+  md: '0.875rem'
+  lg: '1.25rem'
+  pill: '9999px'
 spacing:
-  space-2xs: "0.25rem"
-  space-xs: "0.5rem"
-  space-sm: "0.75rem"
-  space-md: "1rem"
-  space-lg: "1.5rem"
-  space-xl: "2rem"
-  space-2xl: "3rem"
-  space-3xl: "4.5rem"
-  space-section: "clamp(4.5rem, 9vw, 7rem)"
-  space-hero: "9rem"
+  space-2xs: '0.25rem'
+  space-xs: '0.5rem'
+  space-sm: '0.75rem'
+  space-md: '1rem'
+  space-lg: '1.5rem'
+  space-xl: '2rem'
+  space-2xl: '3rem'
+  space-3xl: '4.5rem'
+  space-section: 'clamp(4.5rem, 9vw, 7rem)'
+  space-hero: '9rem'
 components:
   button-primary:
-    backgroundColor: "{colors.harbor-rose-700}"
-    textColor: "{colors.surface}"
-    rounded: "{rounded.md}"
-    padding: "0 1.5rem"
-    height: "2.75rem"
+    backgroundColor: '{colors.harbor-rose-700}'
+    textColor: '{colors.surface}'
+    rounded: '{rounded.md}'
+    padding: '0 1.5rem'
+    height: '2.75rem'
   button-secondary:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.md}"
-    padding: "0 1.5rem"
-    height: "2.75rem"
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.md}'
+    padding: '0 1.5rem'
+    height: '2.75rem'
   input-default:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.md}"
-    padding: "0.75rem 1rem"
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.md}'
+    padding: '0.75rem 1rem'
   card-default:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.lg}"
-    padding: "1.5rem"
+    backgroundColor: '{colors.surface}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.lg}'
+    padding: '1.5rem'
 ---
 
 # Design System: The Dispatch

@@ -1,23 +1,210 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Port city record — Shipping &amp; Logistics</title>
-  <link rel="stylesheet" href="shipping-service.css">
-</head>
-<body data-page="locations">
-  <header class="site-header" data-od-id="location-detail-header"><div class="wrap header-inner"><a class="site-label" href="shipping-logistics-homepage.html" data-od-id="location-detail-site-label">Shipping &amp; logistics</a><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="location-detail-navigation" data-od-id="location-detail-menu-toggle">Menu</button><nav class="nav-cluster" id="location-detail-navigation" aria-label="Primary navigation" data-od-id="location-detail-navigation"><div class="nav-links"><a href="shipping.html" data-od-id="location-detail-nav-shipping">Shipping</a><a href="locations.html" aria-current="page" data-od-id="location-detail-nav-current">Locations</a><a href="about.html" data-od-id="location-detail-nav-about">About</a></div><button class="nav-action" type="button" data-open-request data-od-id="location-detail-nav-enquiry">Start an enquiry</button></nav></div></header>
-  <main id="content" data-location-detail>
-    <div data-location-found>
-      <section class="location-detail-hero" data-od-id="location-detail-hero"><div class="wrap"><p class="breadcrumb" data-od-id="location-detail-breadcrumb"><a href="locations.html">Locations</a> / <span data-location-title>Port city record</span></p><p class="eyebrow" data-location-label data-od-id="location-detail-eyebrow">Illustrative location</p><h1 class="location-detail-heading" data-location-title data-od-id="location-detail-heading">Port city record</h1></div></section>
-      <section class="section section-flush" data-od-id="location-detail-record-section"><div class="wrap record-grid"><div><p class="record-description" data-location-description>A published location detail used to demonstrate a CMS-managed city and country field, editorial description, media slot, and service tags. It does not represent an office or operational coverage.</p><div class="service-tags" data-location-tags data-od-id="location-detail-tags"><span class="service-tag">Ocean freight</span></div><a class="text-link" href="shipping-ocean-freight.html" data-location-service-link data-od-id="location-detail-service-link">Explore ocean freight <span aria-hidden="true">→</span></a></div><aside class="record-panel" data-od-id="location-detail-panel"><dl><div><dt>Record state</dt><dd>Published illustrative content</dd></div><div><dt>City</dt><dd data-location-city>Illustrative port city</dd></div><div><dt>Country</dt><dd data-location-country>Illustrative country</dd></div><div><dt>Contact details</dt><dd>Not provided in this demo</dd></div></dl></aside></div></section>
-      <section class="section editorial-panel" data-od-id="location-detail-close-section"><div class="wrap panel-grid"><div><p class="eyebrow" data-od-id="location-detail-close-eyebrow">Next step</p><h2 data-od-id="location-detail-close-heading">Ask a question without implying coverage.</h2></div><div><p>Location content helps a visitor find a relevant route. It does not substitute for a confirmed quote, service availability, or real-time shipment status.</p><button class="button button-secondary" type="button" data-open-request data-od-id="location-detail-close-cta">Start an enquiry</button></div></div></section>
-    </div>
-    <section class="wrap not-found" hidden data-location-missing data-od-id="location-not-found"><p class="eyebrow">Location not found</p><h1>This illustrative record is not available.</h1><p class="section-copy">The public route only renders published location records. Try the published list or return to the homepage.</p><a class="button button-primary" href="locations.html" data-od-id="location-not-found-cta">View published locations <span aria-hidden="true">→</span></a></section>
-  </main>
-  <footer class="site-footer" data-od-id="location-detail-footer"><div class="wrap footer-inner"><span>Shipping &amp; logistics demo</span><span>Illustrative public experience</span></div></footer>
-  <dialog id="request-dialog" aria-labelledby="request-heading" data-od-id="location-detail-request-dialog"><div class="dialog-inner"><div class="dialog-head"><div><p class="eyebrow">Choose a path</p><h2 id="request-heading">Start an enquiry</h2></div><button class="close-button" type="button" aria-label="Close enquiry form" data-close-request>×</button></div><form class="form-grid" id="request-form" data-od-id="location-detail-request-form"><label>Enquiry type<select required data-od-id="location-detail-enquiry-type"><option value="">Choose one</option><option>Request a quote</option><option>Shipment enquiry</option><option>General contact</option></select></label><label>Email address<input type="email" autocomplete="email" required data-od-id="location-detail-enquiry-email"></label><label>Message<textarea required data-od-id="location-detail-enquiry-message"></textarea></label><button class="button button-primary" type="submit" data-od-id="location-detail-enquiry-submit">Continue</button><p class="form-status" id="request-status" aria-live="polite" data-od-id="location-detail-enquiry-status"></p></form></div></dialog>
-  <script src="shipping-service.js"></script><script src="location-page.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Port city record — Shipping &amp; Logistics</title>
+    <link rel="stylesheet" href="shipping-service.css" />
+  </head>
+  <body data-page="locations">
+    <header class="site-header" data-od-id="location-detail-header">
+      <div class="wrap header-inner">
+        <a
+          class="site-label"
+          href="shipping-logistics-homepage.html"
+          data-od-id="location-detail-site-label"
+          >Shipping &amp; logistics</a
+        ><button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="location-detail-navigation"
+          data-od-id="location-detail-menu-toggle"
+        >
+          Menu
+        </button>
+        <nav
+          class="nav-cluster"
+          id="location-detail-navigation"
+          aria-label="Primary navigation"
+          data-od-id="location-detail-navigation"
+        >
+          <div class="nav-links">
+            <a href="shipping.html" data-od-id="location-detail-nav-shipping">Shipping</a
+            ><a href="locations.html" aria-current="page" data-od-id="location-detail-nav-current"
+              >Locations</a
+            ><a href="about.html" data-od-id="location-detail-nav-about">About</a>
+          </div>
+          <button
+            class="nav-action"
+            type="button"
+            data-open-request
+            data-od-id="location-detail-nav-enquiry"
+          >
+            Start an enquiry
+          </button>
+        </nav>
+      </div>
+    </header>
+    <main id="content" data-location-detail>
+      <div data-location-found>
+        <section class="location-detail-hero" data-od-id="location-detail-hero">
+          <div class="wrap">
+            <p class="breadcrumb" data-od-id="location-detail-breadcrumb">
+              <a href="locations.html">Locations</a> /
+              <span data-location-title>Port city record</span>
+            </p>
+            <p class="eyebrow" data-location-label data-od-id="location-detail-eyebrow">
+              Illustrative location
+            </p>
+            <h1
+              class="location-detail-heading"
+              data-location-title
+              data-od-id="location-detail-heading"
+            >
+              Port city record
+            </h1>
+          </div>
+        </section>
+        <section class="section section-flush" data-od-id="location-detail-record-section">
+          <div class="wrap record-grid">
+            <div>
+              <p class="record-description" data-location-description>
+                A published location detail used to demonstrate a CMS-managed city and country
+                field, editorial description, media slot, and service tags. It does not represent an
+                office or operational coverage.
+              </p>
+              <div class="service-tags" data-location-tags data-od-id="location-detail-tags">
+                <span class="service-tag">Ocean freight</span>
+              </div>
+              <a
+                class="text-link"
+                href="shipping-ocean-freight.html"
+                data-location-service-link
+                data-od-id="location-detail-service-link"
+                >Explore ocean freight <span aria-hidden="true">→</span></a
+              >
+            </div>
+            <aside class="record-panel" data-od-id="location-detail-panel">
+              <dl>
+                <div>
+                  <dt>Record state</dt>
+                  <dd>Published illustrative content</dd>
+                </div>
+                <div>
+                  <dt>City</dt>
+                  <dd data-location-city>Illustrative port city</dd>
+                </div>
+                <div>
+                  <dt>Country</dt>
+                  <dd data-location-country>Illustrative country</dd>
+                </div>
+                <div>
+                  <dt>Contact details</dt>
+                  <dd>Not provided in this demo</dd>
+                </div>
+              </dl>
+            </aside>
+          </div>
+        </section>
+        <section class="section editorial-panel" data-od-id="location-detail-close-section">
+          <div class="wrap panel-grid">
+            <div>
+              <p class="eyebrow" data-od-id="location-detail-close-eyebrow">Next step</p>
+              <h2 data-od-id="location-detail-close-heading">
+                Ask a question without implying coverage.
+              </h2>
+            </div>
+            <div>
+              <p>
+                Location content helps a visitor find a relevant route. It does not substitute for a
+                confirmed quote, service availability, or real-time shipment status.
+              </p>
+              <button
+                class="button button-secondary"
+                type="button"
+                data-open-request
+                data-od-id="location-detail-close-cta"
+              >
+                Start an enquiry
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <section class="wrap not-found" hidden data-location-missing data-od-id="location-not-found">
+        <p class="eyebrow">Location not found</p>
+        <h1>This illustrative record is not available.</h1>
+        <p class="section-copy">
+          The public route only renders published location records. Try the published list or return
+          to the homepage.
+        </p>
+        <a class="button button-primary" href="locations.html" data-od-id="location-not-found-cta"
+          >View published locations <span aria-hidden="true">→</span></a
+        >
+      </section>
+    </main>
+    <footer class="site-footer" data-od-id="location-detail-footer">
+      <div class="wrap footer-inner">
+        <span>Shipping &amp; logistics demo</span><span>Illustrative public experience</span>
+      </div>
+    </footer>
+    <dialog
+      id="request-dialog"
+      aria-labelledby="request-heading"
+      data-od-id="location-detail-request-dialog"
+    >
+      <div class="dialog-inner">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow">Choose a path</p>
+            <h2 id="request-heading">Start an enquiry</h2>
+          </div>
+          <button
+            class="close-button"
+            type="button"
+            aria-label="Close enquiry form"
+            data-close-request
+          >
+            ×
+          </button>
+        </div>
+        <form class="form-grid" id="request-form" data-od-id="location-detail-request-form">
+          <label
+            >Enquiry type<select required data-od-id="location-detail-enquiry-type">
+              <option value="">Choose one</option>
+              <option>Request a quote</option>
+              <option>Shipment enquiry</option>
+              <option>General contact</option>
+            </select></label
+          ><label
+            >Email address<input
+              type="email"
+              autocomplete="email"
+              required
+              data-od-id="location-detail-enquiry-email" /></label
+          ><label
+            >Message<textarea
+              required
+              data-od-id="location-detail-enquiry-message"
+            ></textarea></label
+          ><button
+            class="button button-primary"
+            type="submit"
+            data-od-id="location-detail-enquiry-submit"
+          >
+            Continue
+          </button>
+          <p
+            class="form-status"
+            id="request-status"
+            aria-live="polite"
+            data-od-id="location-detail-enquiry-status"
+          ></p>
+        </form>
+      </div>
+    </dialog>
+    <script src="shipping-service.js"></script>
+    <script src="location-page.js"></script>
+  </body>
 </html>

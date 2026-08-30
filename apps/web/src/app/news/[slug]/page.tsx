@@ -20,17 +20,21 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { getNewsBySlug } from '@/lib/content'
 import { getSiteLocale, localeTag } from '@/lib/locale'
 
-type PageProps = { readonly params: Promise<{ slug: string }> }
+type PageProps = {
+  readonly params: Promise<{ slug: string }>
+  readonly searchParams: Promise<{ readonly country?: string }>
+}
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const article = await getNewsBySlug(slug, await getSiteLocale())
+  const { country } = await searchParams
+  const article = await getNewsBySlug(slug, await getSiteLocale(), country)
   return article
     ? { description: article.excerpt, title: article.title }
     : { title: 'Story not found' }
 }
 
-export default function NewsDetailPage({ params }: PageProps) {
+export default function NewsDetailPage({ params, searchParams }: PageProps) {
   return (
     <article>
       <Section space="compact">
@@ -40,22 +44,23 @@ export default function NewsDetailPage({ params }: PageProps) {
               The Dispatch / Story
             </Text>
             <Suspense fallback={<ArticleHeroLoadingState />}>
-              <ArticleHero params={params} />
+              <ArticleHero params={params} searchParams={searchParams} />
             </Suspense>
           </Stack>
         </Container>
       </Section>
       <Suspense fallback={null}>
-        <ArticleDetails params={params} />
+        <ArticleDetails params={params} searchParams={searchParams} />
       </Suspense>
     </article>
   )
 }
 
-async function ArticleHero({ params }: PageProps) {
+async function ArticleHero({ params, searchParams }: PageProps) {
   const { slug } = await params
+  const { country } = await searchParams
   const locale = await getSiteLocale()
-  const article = await getNewsBySlug(slug, locale)
+  const article = await getNewsBySlug(slug, locale, country)
   if (!article) notFound()
   const published = new Intl.DateTimeFormat(localeTag(locale), { dateStyle: 'long' }).format(
     new Date(article.publishedAt),
@@ -82,9 +87,10 @@ async function ArticleHero({ params }: PageProps) {
   )
 }
 
-async function ArticleDetails({ params }: PageProps) {
+async function ArticleDetails({ params, searchParams }: PageProps) {
   const { slug } = await params
-  const article = await getNewsBySlug(slug, await getSiteLocale())
+  const { country } = await searchParams
+  const article = await getNewsBySlug(slug, await getSiteLocale(), country)
   if (!article) notFound()
 
   return (
@@ -104,7 +110,10 @@ async function ArticleDetails({ params }: PageProps) {
                   Illustrative newsroom content managed in the CMS. It does not report live
                   operations, customer outcomes, or service availability.
                 </Text>
-                <Link href="/news" variant="inline">
+                <Link
+                  href={article.country ? `/news?country=${article.country.code}` : '/news'}
+                  variant="inline"
+                >
                   All stories <Icon source={ArrowRight} size="sm" />
                 </Link>
               </Stack>

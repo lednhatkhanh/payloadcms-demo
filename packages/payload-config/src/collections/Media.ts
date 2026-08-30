@@ -1,21 +1,23 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated, publicRead } from '../access'
+import { countryMember, publishedCountryContentOrMember } from '../access'
+import { countryField, enforceCountryMembership } from '../country'
 import { mediaDirectory } from '../paths'
 
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: publicRead,
-    update: authenticated,
+    create: countryMember,
+    delete: countryMember,
+    read: publishedCountryContentOrMember,
+    update: countryMember,
   },
   admin: {
     defaultColumns: ['filename', 'alt', 'updatedAt'],
     useAsTitle: 'alt',
   },
-  fields: [{ name: 'alt', type: 'text', localized: true, required: true }],
+  fields: [countryField(true), { name: 'alt', type: 'text', localized: true, required: true }],
+  hooks: { beforeChange: [enforceCountryMembership] },
   upload: {
     imageSizes: [
       { name: 'card', width: 768, height: 432, fit: 'cover' },

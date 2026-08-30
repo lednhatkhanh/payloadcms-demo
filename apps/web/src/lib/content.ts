@@ -27,6 +27,7 @@ export interface HomepageContent {
 
 export interface NewsSummary {
   readonly category: string
+  readonly country?: NewsCountry
   readonly excerpt: string
   readonly hero: MediaReference
   readonly publishedAt: string
@@ -36,6 +37,16 @@ export interface NewsSummary {
 
 export interface NewsArticle extends NewsSummary {
   readonly body: News['body']
+}
+
+export interface NewsCountry {
+  readonly code: string
+  readonly name: string
+}
+
+export interface CountryFilter {
+  readonly code: string
+  readonly name: string
 }
 
 export interface ManagedPage {
@@ -66,7 +77,7 @@ export interface LocationSummary {
 
 export interface LocationRecord extends LocationSummary {
   readonly city: string
-  readonly country: string
+  readonly countryName: string
 }
 
 const defaultHomepage: HomepageContent = {
@@ -102,6 +113,14 @@ function mediaValue(value: unknown): MediaReference | undefined {
   }
 }
 
+function countryValue(value: unknown): NewsCountry | undefined {
+  if (typeof value !== 'object' || value === null) return undefined
+  const record = value as Record<string, unknown>
+  const code = stringValue(record.code)
+  const name = stringValue(record.name)
+  return code && name ? { code, name } : undefined
+}
+
 function locationServiceValues(value: unknown): readonly LocationService[] {
   if (!Array.isArray(value)) return []
   return value.flatMap((item) =>
@@ -113,15 +132,58 @@ function mapSummary(doc: Record<string, unknown>): NewsSummary | undefined {
   const slug = stringValue(doc.slug)
   const title = stringValue(doc.title)
   const hero = mediaValue(doc.heroMedia)
+  const country = countryValue(doc.country)
   if (!slug || !title || !hero) return undefined
   return {
     category: stringValue(doc.category, 'News'),
+    ...(country ? { country } : {}),
     excerpt: stringValue(doc.excerpt),
     hero,
     publishedAt: stringValue(doc.publishedAt),
     slug,
     title,
   }
+}
+
+export function newsHref(article: Pick<NewsSummary, 'country' | 'slug'>): string {
+  return article.country
+    ? `/news/${article.slug}?country=${encodeURIComponent(article.country.code)}`
+    : `/news/${article.slug}`
+}
+
+async function countryIdForCode(code: string): Promise<number | undefined> {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'countries',
+    depth: 0,
+    draft: false,
+    limit: 1,
+    overrideAccess: false,
+    select: { code: true },
+    where: { code: { equals: code } },
+  })
+  return result.docs[0]?.id
+}
+
+export async function getCountryFilters(): Promise<readonly CountryFilter[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('countries')
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'countries',
+    depth: 0,
+    draft: false,
+    limit: 12,
+    overrideAccess: false,
+    select: { code: true, name: true },
+    sort: 'name',
+  })
+  return result.docs.flatMap((country) => {
+    const code = stringValue(country.code)
+    const name = stringValue(country.name)
+    return code && name ? [{ code, name }] : []
+  })
 }
 
 function mapLocationSummary(doc: Record<string, unknown>): LocationSummary | undefined {
@@ -214,12 +276,15 @@ export async function getHomepage(locale: ContentLocale): Promise<HomepageConten
 
 export async function getPublishedNews(
   locale: ContentLocale,
+  countryCode?: string,
   limit = 12,
 ): Promise<readonly NewsSummary[]> {
   'use cache'
   cacheLife('minutes')
-  cacheTag('news')
+  cacheTag('news', ...(countryCode ? [`country:${countryCode}`] : []))
   const payload = await getPayload({ config })
+  const countryId = countryCode ? await countryIdForCode(countryCode) : undefined
+  if (countryCode && countryId === undefined) return []
   const result = await payload.find({
     collection: 'news',
     depth: 1,
@@ -229,6 +294,7 @@ export async function getPublishedNews(
     overrideAccess: false,
     select: {
       category: true,
+      countryName: true,
       excerpt: true,
       heroMedia: true,
       publishedAt: true,
@@ -236,6 +302,16 @@ export async function getPublishedNews(
       title: true,
     },
     sort: '-publishedAt',
+    ...(countryId === undefined
+      ? {}
+      : {
+          where: {
+            or: [
+              { scope: { equals: 'global' } },
+              { and: [{ scope: { equals: 'country' } }, { country: { equals: countryId } }] },
+            ],
+          },
+        }),
   })
 
   return result.docs.flatMap((doc) => {
@@ -247,11 +323,14 @@ export async function getPublishedNews(
 export async function getNewsBySlug(
   slug: string,
   locale: ContentLocale,
+  countryCode?: string,
 ): Promise<NewsArticle | undefined> {
   'use cache'
   cacheLife('minutes')
-  cacheTag('news', `news:${slug}`)
+  cacheTag('news', `news:${slug}`, ...(countryCode ? [`country:${countryCode}`] : []))
   const payload = await getPayload({ config })
+  const countryId = countryCode ? await countryIdForCode(countryCode) : undefined
+  if (countryCode && countryId === undefined) return undefined
   const result = await payload.find({
     collection: 'news',
     depth: 1,
@@ -262,13 +341,21 @@ export async function getNewsBySlug(
     select: {
       body: true,
       category: true,
+      country: true,
       excerpt: true,
       heroMedia: true,
       publishedAt: true,
       slug: true,
       title: true,
     },
-    where: { slug: { equals: slug } },
+    where: {
+      and: [
+        { slug: { equals: slug } },
+        countryId === undefined
+          ? { scope: { equals: 'global' } }
+          : { and: [{ scope: { equals: 'country' } }, { country: { equals: countryId } }] },
+      ],
+    },
   })
   const doc = result.docs[0]
   if (!doc) return undefined
@@ -336,9 +423,9 @@ export async function getLocationBySlug(
   const location = mapLocationSummary(record)
   if (!location) return undefined
   const city = stringValue(record.city)
-  const country = stringValue(record.country)
-  if (!city || !country) return undefined
-  return { ...location, city, country }
+  const countryName = stringValue(record.countryName)
+  if (!city || !countryName) return undefined
+  return { ...location, city, countryName }
 }
 
 async function findPageBySegment(

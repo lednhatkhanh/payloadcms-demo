@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    countries: Country;
     media: Media;
     news: News;
     locations: Location;
@@ -82,6 +83,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    countries: CountriesSelect<false> | CountriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     locations: LocationsSelect<false> | LocationsSelect<true>;
@@ -139,9 +141,19 @@ export interface User {
   id: number;
   name: string;
   /**
+   * Global accounts can work across every country.
+   */
+  globalAccess?: boolean | null;
+  /**
    * Use one clear responsibility per demo account: editor, translator, reviewer, publisher, or admin.
    */
   roles: ('admin' | 'editor' | 'translator' | 'reviewer' | 'publisher')[];
+  countries?:
+    | {
+        country: number | Country;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -163,10 +175,27 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "countries".
+ */
+export interface Country {
+  id: number;
+  name: string;
+  code: string;
+  supportedLocales: ('en' | 'jp' | 'es')[];
+  defaultLocale: 'en' | 'jp' | 'es';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
   id: number;
+  /**
+   * Country that owns this local content.
+   */
+  country: number | Country;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -206,6 +235,11 @@ export interface Media {
  */
 export interface News {
   id: number;
+  scope: 'global' | 'country';
+  /**
+   * Country that owns this local content.
+   */
+  country?: (number | null) | Country;
   title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
@@ -273,6 +307,10 @@ export interface News {
  */
 export interface Location {
   id: number;
+  /**
+   * Country that owns this local content.
+   */
+  country: number | Country;
   title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
@@ -289,7 +327,7 @@ export interface Location {
   heroMedia: number | Media;
   serviceTags: ('ocean-freight' | 'logistics-solutions')[];
   city: string;
-  country: string;
+  countryName: string;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -488,6 +526,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'countries';
+        value: number | Country;
+      } | null)
+    | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
@@ -559,7 +601,14 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  globalAccess?: T;
   roles?: T;
+  countries?:
+    | T
+    | {
+        country?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -579,9 +628,22 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "countries_select".
+ */
+export interface CountriesSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  supportedLocales?: T;
+  defaultLocale?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  country?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -624,6 +686,8 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "news_select".
  */
 export interface NewsSelect<T extends boolean = true> {
+  scope?: T;
+  country?: T;
   title?: T;
   generateSlug?: T;
   slug?: T;
@@ -649,6 +713,7 @@ export interface NewsSelect<T extends boolean = true> {
  * via the `definition` "locations_select".
  */
 export interface LocationsSelect<T extends boolean = true> {
+  country?: T;
   title?: T;
   generateSlug?: T;
   slug?: T;
@@ -656,7 +721,7 @@ export interface LocationsSelect<T extends boolean = true> {
   heroMedia?: T;
   serviceTags?: T;
   city?: T;
-  country?: T;
+  countryName?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

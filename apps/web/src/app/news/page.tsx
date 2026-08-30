@@ -18,7 +18,7 @@ import { Suspense } from 'react'
 
 import { NewsCard } from '@/components/NewsCard'
 import { SiteFooter } from '@/components/SiteFooter'
-import { getPublishedNews, type NewsSummary } from '@/lib/content'
+import { getCountryFilters, getPublishedNews, newsHref, type NewsSummary } from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
 
 export const metadata: Metadata = {
@@ -28,7 +28,9 @@ export const metadata: Metadata = {
 
 type NewsCategory = 'company' | 'product' | 'people' | 'ideas'
 
-type PageProps = { readonly searchParams: Promise<{ readonly category?: string }> }
+type PageProps = {
+  readonly searchParams: Promise<{ readonly category?: string; readonly country?: string }>
+}
 
 const filters: readonly { readonly label: string; readonly value: 'all' | NewsCategory }[] = [
   { label: 'All stories', value: 'all' },
@@ -42,8 +44,12 @@ function isNewsCategory(value: string | undefined): value is NewsCategory {
   return value === 'company' || value === 'product' || value === 'people' || value === 'ideas'
 }
 
-function hrefForFilter(filter: 'all' | NewsCategory): string {
-  return filter === 'all' ? '/news' : `/news?category=${filter}`
+function hrefForFilters(category: 'all' | NewsCategory, country?: string): string {
+  const params = new URLSearchParams()
+  if (category !== 'all') params.set('category', category)
+  if (country) params.set('country', country)
+  const query = params.toString()
+  return query ? `/news?${query}` : '/news'
 }
 
 export default function NewsPage({ searchParams }: PageProps) {
@@ -109,8 +115,12 @@ export default function NewsPage({ searchParams }: PageProps) {
 }
 
 async function NewsListing({ searchParams }: PageProps) {
-  const news = await getPublishedNews(await getSiteLocale())
-  const { category } = await searchParams
+  const [{ category, country: requestedCountry }, countries] = await Promise.all([
+    searchParams,
+    getCountryFilters(),
+  ])
+  const selectedCountry = countries.find((country) => country.code === requestedCountry)
+  const news = await getPublishedNews(await getSiteLocale(), selectedCountry?.code)
   const selectedFilter = isNewsCategory(category) ? category : 'all'
   const filteredNews =
     selectedFilter === 'all' ? news : news.filter((article) => article.category === selectedFilter)
@@ -125,17 +135,40 @@ async function NewsListing({ searchParams }: PageProps) {
           company identity or a record of real operations.
         </Text>
         <FilterGroup>
-          {filters.map((filter) => (
+          <FilterGroup>
             <Link
-              active={filter.value === selectedFilter}
-              aria-current={filter.value === selectedFilter ? 'page' : undefined}
-              href={hrefForFilter(filter.value)}
-              key={filter.value}
+              active={selectedCountry === undefined}
+              aria-current={selectedCountry === undefined ? 'page' : undefined}
+              href={hrefForFilters(selectedFilter)}
               variant="filter"
             >
-              {filter.label}
+              All countries
             </Link>
-          ))}
+            {countries.map((country) => (
+              <Link
+                active={country.code === selectedCountry?.code}
+                aria-current={country.code === selectedCountry?.code ? 'page' : undefined}
+                href={hrefForFilters(selectedFilter, country.code)}
+                key={country.code}
+                variant="filter"
+              >
+                {country.name}
+              </Link>
+            ))}
+          </FilterGroup>
+          <FilterGroup>
+            {filters.map((filter) => (
+              <Link
+                active={filter.value === selectedFilter}
+                aria-current={filter.value === selectedFilter ? 'page' : undefined}
+                href={hrefForFilters(filter.value, selectedCountry?.code)}
+                key={filter.value}
+                variant="filter"
+              >
+                {filter.label}
+              </Link>
+            ))}
+          </FilterGroup>
         </FilterGroup>
       </LocationToolbar>
 
@@ -162,13 +195,14 @@ function FeaturedStory({ article }: { readonly article: NewsSummary }) {
   return (
     <FeaturedStoryCard
       alt={article.hero.alt}
-      href={`/news/${article.slug}`}
+      href={newsHref(article)}
       label={`Read ${article.title}`}
       src={article.hero.url}
     >
       <Stack gap="md">
         <Text color="brand" variant="kicker">
-          {article.category} / Featured
+          {article.country ? `${article.country.name} / ${article.category}` : article.category} /
+          Featured
         </Text>
         <Text as="h2" variant="h2">
           {article.title}

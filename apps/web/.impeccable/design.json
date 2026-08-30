@@ -8,25 +8,61 @@
         "role": "primary",
         "displayName": "Harbor Rose",
         "canonical": "#bd0f72",
-        "tonalRamp": ["#4d062d", "#7f124f", "#9a105e", "#bd0f72", "#d8227e", "#ec3d8f", "#ffa1c8", "#fff1f7"]
+        "tonalRamp": [
+          "#4d062d",
+          "#7f124f",
+          "#9a105e",
+          "#bd0f72",
+          "#d8227e",
+          "#ec3d8f",
+          "#ffa1c8",
+          "#fff1f7"
+        ]
       },
       "page-paper": {
         "role": "neutral",
         "displayName": "Page Paper",
         "canonical": "#fcf9fb",
-        "tonalRamp": ["#1d1419", "#31242b", "#4a3842", "#66505c", "#806675", "#a08391", "#dfcfd7", "#fcf9fb"]
+        "tonalRamp": [
+          "#1d1419",
+          "#31242b",
+          "#4a3842",
+          "#66505c",
+          "#806675",
+          "#a08391",
+          "#dfcfd7",
+          "#fcf9fb"
+        ]
       },
       "surface": {
         "role": "neutral",
         "displayName": "Clean Surface",
         "canonical": "#ffffff",
-        "tonalRamp": ["#1d1419", "#31242b", "#4a3842", "#66505c", "#806675", "#a08391", "#dfcfd7", "#ffffff"]
+        "tonalRamp": [
+          "#1d1419",
+          "#31242b",
+          "#4a3842",
+          "#66505c",
+          "#806675",
+          "#a08391",
+          "#dfcfd7",
+          "#ffffff"
+        ]
       },
       "ink": {
         "role": "neutral",
         "displayName": "Ink",
         "canonical": "#1d1419",
-        "tonalRamp": ["#1d1419", "#31242b", "#4a3842", "#66505c", "#806675", "#a08391", "#dfcfd7", "#fcf9fb"]
+        "tonalRamp": [
+          "#1d1419",
+          "#31242b",
+          "#4a3842",
+          "#66505c",
+          "#806675",
+          "#a08391",
+          "#dfcfd7",
+          "#fcf9fb"
+        ]
       }
     },
     "typographyMeta": {
@@ -140,10 +176,26 @@
       "Quiet depth and calm, buoyant feedback for interactive elements."
     ],
     "rules": [
-      { "name": "The Single Signal Rule", "body": "Harbor Rose communicates priority, status, and editorial provenance. Do not introduce a competing decorative accent.", "section": "colors" },
-      { "name": "The Paper Field Rule", "body": "Keep broad page areas on Page Paper or Clean Surface. Reserve Soft Surface for contained emphasis, never as a full-page wash.", "section": "colors" },
-      { "name": "The Tight Headline Rule", "body": "Headlines are dense and decisive; preserve the negative tracking and compressed line-height rather than compensating with extra weight or decorative typefaces.", "section": "typography" },
-      { "name": "The Earned Lift Rule", "body": "Give depth to content that is actionable or browsable, such as story cards. Standard text sections, dividers, and page regions stay flat.", "section": "elevation" }
+      {
+        "name": "The Single Signal Rule",
+        "body": "Harbor Rose communicates priority, status, and editorial provenance. Do not introduce a competing decorative accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper Field Rule",
+        "body": "Keep broad page areas on Page Paper or Clean Surface. Reserve Soft Surface for contained emphasis, never as a full-page wash.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tight Headline Rule",
+        "body": "Headlines are dense and decisive; preserve the negative tracking and compressed line-height rather than compensating with extra weight or decorative typefaces.",
+        "section": "typography"
+      },
+      {
+        "name": "The Earned Lift Rule",
+        "body": "Give depth to content that is actionable or browsable, such as story cards. Standard text sections, dividers, and page regions stay flat.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do use Harbor Rose for the visitor's clearest next action, selected state, focus state, or small editorial signal.",

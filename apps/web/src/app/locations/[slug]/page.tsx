@@ -99,7 +99,7 @@ async function LocationDetail({ params }: PageProps) {
               facts={[
                 { label: 'Record state', value: 'Published illustrative content' },
                 { label: 'City', value: location.city },
-                { label: 'Country', value: location.country },
+                { label: 'Country', value: location.countryName },
                 { label: 'Contact details', value: 'Not provided in this demo' },
               ]}
             />

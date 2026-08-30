@@ -18,6 +18,7 @@
   "dependencies": {
     "@payloadcms/db-postgres": "catalog:",
     "@payloadcms/next": "catalog:",
+    "@payloadcms/plugin-multi-tenant": "catalog:",
     "@payloadcms/richtext-lexical": "catalog:",
     "@payloadcms/ui": "catalog:",
     "@repo/contracts": "workspace:*",

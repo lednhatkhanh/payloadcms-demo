@@ -301,7 +301,7 @@ const stories = [
 
 type SeedLocation = {
   readonly city: string
-  readonly country: string
+  readonly countryName: string
   readonly description: string
   readonly image: SeedMedia
   readonly serviceTags: ('logistics-solutions' | 'ocean-freight')[]
@@ -312,7 +312,7 @@ type SeedLocation = {
 const locations: SeedLocation[] = [
   {
     city: 'Illustrative port city',
-    country: 'Illustrative country',
+    countryName: 'Illustrative country',
     description: 'A record with a lead-media region and a focused ocean-freight tag.',
     image: {
       alt: 'Container port city at blue hour, viewed across a calm harbor channel',
@@ -325,7 +325,7 @@ const locations: SeedLocation[] = [
   },
   {
     city: 'Illustrative inland hub',
-    country: 'Illustrative country',
+    countryName: 'Illustrative country',
     description: 'A focused intermodal record with a readable logistics-solutions route.',
     image: {
       alt: 'Intermodal freight terminal with a container train and gantry cranes',
@@ -338,7 +338,7 @@ const locations: SeedLocation[] = [
   },
   {
     city: 'Illustrative regional point',
-    country: 'Illustrative country',
+    countryName: 'Illustrative country',
     description: 'A single record can use controlled tags to connect more than one service route.',
     image: {
       alt: 'Regional freight junction with container trailers near a city skyline',
@@ -487,34 +487,89 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
   await repairLocalizedContent()
   await payload.destroy()
 } else {
+  type CountryCode = 'ES' | 'JP' | 'SG'
+
+  type DemoCountry = {
+    readonly code: CountryCode
+    readonly defaultLocale: ContentLocale
+    readonly name: string
+    readonly supportedLocales: readonly ContentLocale[]
+  }
+
+  const demoCountries: readonly DemoCountry[] = [
+    { code: 'JP', defaultLocale: 'jp', name: 'Japan', supportedLocales: ['en', 'jp'] },
+    { code: 'ES', defaultLocale: 'es', name: 'Spain', supportedLocales: ['en', 'es'] },
+    { code: 'SG', defaultLocale: 'en', name: 'Singapore', supportedLocales: ['en', 'jp', 'es'] },
+  ]
+
   type DemoUser = {
+    readonly countryId?: number
     readonly email: string
+    readonly globalAccess: boolean
     readonly name: string
     readonly role: EditorialRole
   }
 
+  type CountryTeam = {
+    readonly code: CountryCode
+    readonly countryId: number
+    readonly editorId: number
+    readonly publisherId: number
+    readonly reviewerId: number
+    readonly translatorId: number
+  }
+
+  async function upsertDemoCountry(country: DemoCountry): Promise<number> {
+    const existing = await payload.find({
+      collection: 'countries',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      where: { code: { equals: country.code } },
+    })
+    const data = {
+      code: country.code,
+      defaultLocale: country.defaultLocale,
+      name: country.name,
+      supportedLocales: [...country.supportedLocales],
+    }
+    if (existing.docs[0]) {
+      const updated = await payload.update({
+        collection: 'countries',
+        data,
+        id: existing.docs[0].id,
+        overrideAccess: true,
+      })
+      return updated.id
+    }
+    const created = await payload.create({ collection: 'countries', data, overrideAccess: true })
+    return created.id
+  }
+
+  const countryIds = await Promise.all(demoCountries.map(upsertDemoCountry))
+  const countryIdByCode = new Map<CountryCode, number>(
+    demoCountries.map((country, index) => [country.code, countryIds[index]!] as const),
+  )
+
+  function countryIdFor(code: CountryCode): number {
+    const countryId = countryIdByCode.get(code)
+    if (countryId === undefined) throw new Error(`Missing demo country ${code}.`)
+    return countryId
+  }
+
   const demoUserPassword = 'Abc123@@'
 
-  const demoAdmin: DemoUser = { email: 'admin@dispatch.demo', name: 'Alex Admin', role: 'admin' }
+  const demoAdmin: DemoUser = {
+    email: 'admin@dispatch.demo',
+    globalAccess: true,
+    name: 'Alex Admin',
+    role: 'admin',
+  }
   const demoEditor: DemoUser = {
     email: 'editor@dispatch.demo',
-    name: 'Maya Editor',
+    globalAccess: true,
+    name: 'Maya Global Editor',
     role: 'editor',
-  }
-  const demoReviewer: DemoUser = {
-    email: 'reviewer@dispatch.demo',
-    name: 'Rowan Reviewer',
-    role: 'reviewer',
-  }
-  const demoTranslator: DemoUser = {
-    email: 'translator@dispatch.demo',
-    name: 'Jordan Translator',
-    role: 'translator',
-  }
-  const demoPublisher: DemoUser = {
-    email: 'publisher@dispatch.demo',
-    name: 'Parker Publisher',
-    role: 'publisher',
   }
 
   async function upsertDemoUser(user: DemoUser): Promise<number> {
@@ -529,7 +584,13 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     if (existing.docs[0]) {
       const updated = await payload.update({
         collection: 'users',
-        data: { name: user.name, password: demoUserPassword, roles: [user.role] },
+        data: {
+          countries: user.countryId === undefined ? [] : [{ country: user.countryId }],
+          globalAccess: user.globalAccess,
+          name: user.name,
+          password: demoUserPassword,
+          roles: [user.role],
+        },
         id: existing.docs[0].id,
         overrideAccess: true,
       })
@@ -539,7 +600,9 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     const created = await payload.create({
       collection: 'users',
       data: {
+        countries: user.countryId === undefined ? [] : [{ country: user.countryId }],
         email: user.email,
+        globalAccess: user.globalAccess,
         name: user.name,
         password: demoUserPassword,
         roles: [user.role],
@@ -549,13 +612,39 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     return created.id
   }
 
-  await upsertDemoUser(demoAdmin)
-  const editorId = await upsertDemoUser(demoEditor)
-  const reviewerId = await upsertDemoUser(demoReviewer)
-  await upsertDemoUser(demoTranslator)
-  await upsertDemoUser(demoPublisher)
+  const [adminId, editorId] = await Promise.all([
+    upsertDemoUser(demoAdmin),
+    upsertDemoUser(demoEditor),
+  ])
 
-  async function getSeedMediaId(image: SeedMedia): Promise<number> {
+  const countryTeams: readonly CountryTeam[] = await Promise.all(
+    demoCountries.map(async (country) => {
+      const countryId = countryIdFor(country.code)
+      const account = (role: Exclude<EditorialRole, 'admin'>): DemoUser => ({
+        countryId,
+        email: `${country.code.toLowerCase()}-${role}@dispatch.demo`,
+        globalAccess: false,
+        name: `${country.name} ${role.charAt(0).toUpperCase()}${role.slice(1)}`,
+        role,
+      })
+      const [countryEditorId, translatorId, reviewerId, publisherId] = await Promise.all([
+        upsertDemoUser(account('editor')),
+        upsertDemoUser(account('translator')),
+        upsertDemoUser(account('reviewer')),
+        upsertDemoUser(account('publisher')),
+      ])
+      return {
+        code: country.code,
+        countryId,
+        editorId: countryEditorId,
+        publisherId,
+        reviewerId,
+        translatorId,
+      }
+    }),
+  )
+
+  async function getSeedMediaId(image: SeedMedia, country = countryIdFor('JP')): Promise<number> {
     const filePath = path.join(currentDirectory, 'seed-media', image.directory, image.filename)
     const existing = await payload.find({
       collection: 'media',
@@ -567,7 +656,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     if (existing.docs[0]) {
       const updated = await payload.update({
         collection: 'media',
-        data: { alt: image.alt },
+        data: { alt: image.alt, country: existing.docs[0].country ?? country },
         filePath,
         id: existing.docs[0].id,
         overwriteExistingFiles: true,
@@ -578,7 +667,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
 
     const created = await payload.create({
       collection: 'media',
-      data: { alt: image.alt },
+      data: { alt: image.alt, country },
       filePath,
       overrideAccess: true,
     })
@@ -586,9 +675,9 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
   }
 
   const newsIds = await Promise.all(
-    stories.map(async (story) => {
+    stories.slice(0, 3).map(async (story, index) => {
       const { image, legacySlug, ...data } = story
-      const heroMedia = await getSeedMediaId(image)
+      const heroMedia = await getSeedMediaId(image, countryTeams[index]!.countryId)
       const existing = await payload.find({
         collection: 'news',
         depth: 0,
@@ -606,6 +695,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
             ...data,
             heroMedia,
             publishedAt: new Date().toISOString(),
+            scope: 'global',
             workflowState: 'approved',
             _status: 'published',
           },
@@ -622,6 +712,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
           ...data,
           heroMedia,
           publishedAt: new Date().toISOString(),
+          scope: 'global',
           workflowState: 'approved',
           _status: 'published',
         },
@@ -834,120 +925,237 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
 
   await seedNewsTranslations()
 
-  type WorkflowNewsSeed = {
+  type CountryNewsSeed = {
     readonly body: News['body']
     readonly category: 'company' | 'ideas' | 'people' | 'product'
+    readonly countryId: number
     readonly excerpt: string
     readonly heroMedia: number
     readonly reviewNote?: string
     readonly reviewRequestedBy: number
     readonly reviewedBy?: number
     readonly slug: string
+    readonly status: 'draft' | 'published'
     readonly title: string
-    readonly workflowState: Extract<WorkflowState, 'approved' | 'in-review'>
+    readonly translationLocales?: Exclude<ContentLocale, 'en'>[]
+    readonly translationRequestedBy?: number
+    readonly translatedBy?: number
+    readonly workflowState: Extract<
+      WorkflowState,
+      'approved' | 'in-review' | 'translation-requested'
+    >
   }
 
-  async function upsertWorkflowNews(data: WorkflowNewsSeed): Promise<void> {
+  async function upsertCountryNews(data: CountryNewsSeed): Promise<number> {
     const existing = await payload.find({
       collection: 'news',
       depth: 0,
       limit: 1,
       overrideAccess: true,
-      where: { slug: { equals: data.slug } },
+      where: {
+        and: [
+          { country: { equals: data.countryId } },
+          { scope: { equals: 'country' } },
+          { slug: { equals: data.slug } },
+        ],
+      },
     })
+    const {
+      countryId,
+      reviewNote,
+      reviewedBy,
+      status,
+      translatedBy,
+      translationLocales,
+      translationRequestedBy,
+      ...newsDetails
+    } = data
     const newsData = {
-      ...data,
+      ...newsDetails,
+      country: countryId,
       publishedAt: new Date().toISOString(),
-      _status: 'draft' as const,
+      scope: 'country' as const,
+      _status: status,
+      ...(reviewNote === undefined ? {} : { reviewNote }),
+      ...(reviewedBy === undefined ? {} : { reviewedBy }),
+      ...(translatedBy === undefined ? {} : { translatedBy }),
+      ...(translationLocales === undefined ? {} : { translationLocales: [...translationLocales] }),
+      ...(translationRequestedBy === undefined ? {} : { translationRequestedBy }),
     }
 
     if (existing.docs[0]) {
-      await payload.update({
+      const updated = await payload.update({
         collection: 'news',
         data: newsData,
-        draft: true,
+        draft: status === 'draft',
         id: existing.docs[0].id,
         overrideAccess: true,
       })
-      return
+      return updated.id
     }
 
-    await payload.create({
+    const created = await payload.create({
       collection: 'news',
       data: newsData,
-      draft: true,
+      draft: status === 'draft',
       overrideAccess: true,
     })
+    return created.id
   }
 
-  const [reviewQueueImage, publishingQueueImage] = await Promise.all([
-    getSeedMediaId(stories[3].image),
-    getSeedMediaId(stories[8].image),
-  ])
+  const localizedCountryTitle: Record<CountryCode, readonly [string, string]> = {
+    ES: ['Actualización local de España', 'Nota de operaciones locales'],
+    JP: ['日本の地域ニュース', '日本の港湾に関するお知らせ'],
+    SG: ['シンガポールの地域ニュース', 'シンガポールの港湾に関するお知らせ'],
+  }
 
-  await Promise.all([
-    upsertWorkflowNews({
-      body: lexicalBody([
-        'This draft is ready for a reviewer to check before it becomes a public Dispatch story.',
-        'It demonstrates the simple request-review state without exposing the editorial queue on the public site.',
-      ]),
-      category: 'product',
-      excerpt:
-        'A draft story deliberately placed in the review queue for the Payload workflow demo.',
-      heroMedia: reviewQueueImage,
-      reviewRequestedBy: editorId,
-      slug: 'review-queue-demo-story',
-      title: 'A story ready for review',
-      workflowState: 'in-review',
-    }),
-    upsertWorkflowNews({
-      body: lexicalBody([
-        'This draft has already been approved by a reviewer and is waiting for a publisher to use Payload’s normal Publish action.',
-        'The workflow state shows who has acted without replacing Payload’s draft and published statuses.',
-      ]),
-      category: 'product',
-      excerpt: 'An approved draft kept ready for the publisher in the Payload workflow demo.',
-      heroMedia: publishingQueueImage,
-      reviewNote: 'Ready for the publishing check.',
-      reviewRequestedBy: editorId,
-      reviewedBy: reviewerId,
-      slug: 'publisher-queue-demo-story',
-      title: 'A story ready to publish',
-      workflowState: 'approved',
-    }),
-  ])
-
-  await Promise.all(
-    locations.map(async (location) => {
-      const { image, ...data } = location
-      const heroMedia = await getSeedMediaId(image)
-      const existing = await payload.find({
-        collection: 'locations',
-        depth: 0,
-        limit: 1,
+  async function seedCountryNews(team: CountryTeam, teamIndex: number): Promise<void> {
+    const storyOffset = 3 + teamIndex * 3
+    const [firstImage, secondImage, workflowImage] = await Promise.all([
+      getSeedMediaId(stories[storyOffset % stories.length]!.image, team.countryId),
+      getSeedMediaId(stories[(storyOffset + 1) % stories.length]!.image, team.countryId),
+      getSeedMediaId(stories[(storyOffset + 2) % stories.length]!.image, team.countryId),
+    ])
+    const sharedSlug = 'local-dispatch-update'
+    const [firstId, secondId] = await Promise.all([
+      upsertCountryNews({
+        body: lexicalBody([
+          `A local illustration for ${team.code} shows how country and language context stay separate in the editorial model.`,
+          'This published story is visible only in its country view, alongside global Dispatch stories.',
+        ]),
+        category: 'company',
+        countryId: team.countryId,
+        excerpt: `A published ${team.code} story that demonstrates country-specific editorial scope.`,
+        heroMedia: firstImage,
+        reviewRequestedBy: team.editorId,
+        reviewedBy: team.reviewerId,
+        slug: sharedSlug,
+        status: 'published',
+        title: `${team.code} local Dispatch update`,
+        workflowState: 'approved',
+      }),
+      upsertCountryNews({
+        body: lexicalBody([
+          `A second local item makes the ${team.code} country view visibly distinct in the demo.`,
+          'It remains illustrative and does not describe live operations or service availability.',
+        ]),
+        category: 'people',
+        countryId: team.countryId,
+        excerpt: `A second published ${team.code} story for the country-filter demonstration.`,
+        heroMedia: secondImage,
+        reviewRequestedBy: team.editorId,
+        reviewedBy: team.reviewerId,
+        slug: `${team.code.toLowerCase()}-local-editorial-brief`,
+        status: 'published',
+        title: `${team.code} local editorial brief`,
+        workflowState: 'approved',
+      }),
+    ])
+    const locale = team.code === 'ES' ? 'es' : 'jp'
+    await Promise.all([
+      payload.update({
+        collection: 'news',
+        data: {
+          body: lexicalBody([localizedCountryTitle[team.code][0]]),
+          excerpt: localizedCountryTitle[team.code][0],
+          title: localizedCountryTitle[team.code][0],
+        },
+        draft: false,
+        id: firstId,
+        locale,
         overrideAccess: true,
-        where: { slug: { equals: location.slug } },
+      }),
+      payload.update({
+        collection: 'news',
+        data: {
+          body: lexicalBody([localizedCountryTitle[team.code][1]]),
+          excerpt: localizedCountryTitle[team.code][1],
+          title: localizedCountryTitle[team.code][1],
+        },
+        draft: false,
+        id: secondId,
+        locale,
+        overrideAccess: true,
+      }),
+      upsertCountryNews({
+        body: lexicalBody([
+          'A translation request is waiting for the assigned country translator.',
+        ]),
+        category: 'ideas',
+        countryId: team.countryId,
+        excerpt: `A translation-requested ${team.code} draft.`,
+        heroMedia: workflowImage,
+        reviewRequestedBy: team.editorId,
+        slug: `${team.code.toLowerCase()}-translation-request`,
+        status: 'draft',
+        title: `${team.code} translation request`,
+        translationLocales: [locale],
+        translationRequestedBy: team.editorId,
+        workflowState: 'translation-requested',
+      }),
+      upsertCountryNews({
+        body: lexicalBody([
+          'A country reviewer can assess this story before a publisher releases it.',
+        ]),
+        category: 'product',
+        countryId: team.countryId,
+        excerpt: `An in-review ${team.code} draft.`,
+        heroMedia: workflowImage,
+        reviewRequestedBy: team.editorId,
+        slug: `${team.code.toLowerCase()}-review-queue`,
+        status: 'draft',
+        title: `${team.code} story ready for review`,
+        workflowState: 'in-review',
+      }),
+    ])
+  }
+
+  await Promise.all(countryTeams.map(seedCountryNews))
+
+  const countryLocations = countryTeams.flatMap((team) =>
+    locations.slice(0, 2).map((location) => ({
+      ...location,
+      country: team.countryId,
+      countryName: demoCountries.find(({ code }) => code === team.code)?.name ?? team.code,
+      slug: `${team.code.toLowerCase()}-${location.slug}`,
+    })),
+  )
+
+  async function seedCountryLocations(index = 0): Promise<void> {
+    const location = countryLocations[index]
+    if (!location) return
+
+    const { image, ...data } = location
+    const heroMedia = await getSeedMediaId(image, location.country)
+    const existing = await payload.find({
+      collection: 'locations',
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+      where: { slug: { equals: location.slug } },
+    })
+
+    if (existing.docs[0]) {
+      await payload.update({
+        collection: 'locations',
+        data: { ...data, heroMedia, _status: 'published' },
+        draft: false,
+        id: existing.docs[0].id,
+        overrideAccess: true,
       })
-
-      if (existing.docs[0]) {
-        await payload.update({
-          collection: 'locations',
-          data: { ...data, heroMedia, _status: 'published' },
-          draft: false,
-          id: existing.docs[0].id,
-          overrideAccess: true,
-        })
-        return
-      }
-
+    } else {
       await payload.create({
         collection: 'locations',
         data: { ...data, heroMedia, _status: 'published' },
         draft: false,
         overrideAccess: true,
       })
-    }),
-  )
+    }
+
+    await seedCountryLocations(index + 1)
+  }
+
+  await seedCountryLocations()
 
   const seededLocationTranslations = [
     {
@@ -1195,7 +1403,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     parent: companyPageId,
     reviewNote: 'Approved for the publisher to release.',
     reviewRequestedBy: editorId,
-    reviewedBy: reviewerId,
+    reviewedBy: adminId,
     slug: 'publisher-ready-note',
     status: 'draft',
     title: 'Publisher-ready note',

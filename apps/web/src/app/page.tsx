@@ -345,7 +345,7 @@ function HomepageCompanyPageCard({ page }: { readonly page: ManagedPageSummary }
 }
 
 async function NewsroomStories() {
-  const news = await getPublishedNews(await getSiteLocale(), 3)
+  const news = await getPublishedNews(await getSiteLocale(), undefined, 3)
 
   if (news.length === 0) {
     return (

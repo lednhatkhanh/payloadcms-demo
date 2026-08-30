@@ -10,7 +10,7 @@ import { Icon, ArrowRight, CalendarDays } from '@repo/ui/icon'
 import { Cluster, Stack } from '@repo/ui/layout'
 import { Text } from '@repo/ui/text'
 
-import type { NewsSummary } from '@/lib/content'
+import { newsHref, type NewsSummary } from '@/lib/content'
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
 
@@ -19,7 +19,7 @@ export function NewsCard({ article }: { readonly article: NewsSummary }) {
     ? dateFormatter.format(new Date(article.publishedAt))
     : 'Recently'
   return (
-    <StoryCard href={`/news/${article.slug}`} label={`Read ${article.title}`}>
+    <StoryCard href={newsHref(article)} label={`Read ${article.title}`}>
       <StoryCardMedia alt={article.hero.alt} src={article.hero.url} />
       <Text color="brand" variant="kicker">
         {article.category}

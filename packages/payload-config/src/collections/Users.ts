@@ -19,6 +19,17 @@ export const Users: CollectionConfig = {
   fields: [
     { name: 'name', type: 'text', required: true },
     {
+      name: 'globalAccess',
+      type: 'checkbox',
+      defaultValue: false,
+      saveToJWT: true,
+      access: { update: ({ req }) => isAdministrator(req.user) },
+      admin: {
+        description: 'Global accounts can work across every country.',
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'roles',
       type: 'select',
       hasMany: true,

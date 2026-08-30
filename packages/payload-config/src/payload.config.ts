@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { serverEnvironment } from '@repo/contracts/env'
 import path from 'node:path'
@@ -7,12 +8,14 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { ContactSubmissions } from './collections/ContactSubmissions'
+import { Countries } from './collections/Countries'
 import { Locations } from './collections/Locations'
 import { Media } from './collections/Media'
 import { News } from './collections/News'
 import { NewsletterSignups } from './collections/NewsletterSignups'
 import { Pages } from './collections/Pages'
 import { Users } from './collections/Users'
+import { isGlobalAccount } from './access'
 import { Homepage } from './globals/Homepage'
 import { contentLocales, defaultContentLocale } from './locales'
 
@@ -37,7 +40,16 @@ export default buildConfig({
     theme: 'light',
     user: Users.slug,
   },
-  collections: [Users, Media, News, Locations, Pages, ContactSubmissions, NewsletterSignups],
+  collections: [
+    Users,
+    Countries,
+    Media,
+    News,
+    Locations,
+    Pages,
+    ContactSubmissions,
+    NewsletterSignups,
+  ],
   db: postgresAdapter({ pool: { connectionString: serverEnvironment.DATABASE_URL } }),
   editor: lexicalEditor(),
   globals: [Homepage],
@@ -47,6 +59,23 @@ export default buildConfig({
     locales: [...contentLocales],
   },
   maxDepth: 2,
+  plugins: [
+    multiTenantPlugin({
+      collections: {
+        locations: { customTenantField: true },
+        media: { customTenantField: true },
+        news: { customTenantField: true, useBaseFilter: false, useTenantAccess: false },
+      },
+      tenantField: { name: 'country' },
+      tenantSelectorLabel: 'Country',
+      tenantsArrayField: {
+        arrayFieldName: 'countries',
+        arrayTenantFieldName: 'country',
+      },
+      tenantsSlug: Countries.slug,
+      userHasAccessToAllTenants: isGlobalAccount,
+    }),
+  ],
   secret: serverEnvironment.PAYLOAD_SECRET,
   serverURL: serverEnvironment.PAYLOAD_PUBLIC_SERVER_URL,
   sharp,
