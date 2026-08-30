@@ -22,6 +22,13 @@ This is a Node.js 24, pnpm 11, TypeScript 7, React 19, Next.js 16 and Payload 3 
 - Shared form contracts belong to `packages/contracts`.
 - All application UI must use `packages/ui`.
 
+## Demo scope
+
+- Treat this repository as a greenfield demo with one canonical current implementation.
+- Do not add or retain legacy aliases, backward-compatibility branches, migration shims, repair-only seed modes, or fallback content that masks missing required CMS data.
+- When a canonical route, locale, schema, or seed changes, update the original demo migrations and seed data, then reset the demo database instead of preserving old behavior.
+- Framework-required loading and error boundaries and explicit product defaults are allowed; they are not compatibility layers.
+
 ## Styling
 
 - Never add hardcoded colors, spacing, radii, borders, shadows or typography in application code.

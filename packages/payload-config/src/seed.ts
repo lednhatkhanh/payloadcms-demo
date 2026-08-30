@@ -430,7 +430,7 @@ async function repairLocalizedContent(): Promise<void> {
       newsletterBody: 'A compact footer entry for the demo’s newsletter flow.',
       newsletterTitle: 'Editorial updates, when they are published.',
       primaryCta: { href: '/#enquiry', label: 'Start an enquiry' },
-      secondaryCta: { href: '/news', label: 'Visit the newsroom' },
+      secondaryCta: { href: '/news', label: 'Read The Dispatch' },
     },
     draft: false,
     locale: 'en',
@@ -454,7 +454,7 @@ async function repairLocalizedContent(): Promise<void> {
         'Una entrada de pie de página compacta para el flujo de boletines de la demostración.',
       newsletterTitle: 'Actualizaciones editoriales, cuando se publican.',
       primaryCta: { href: '/#enquiry', label: 'Iniciar una consulta' },
-      secondaryCta: { href: '/news', label: 'Visitar la sala de prensa' },
+      secondaryCta: { href: '/news', label: 'Leer The Dispatch' },
     },
     draft: false,
     locale: 'es',
@@ -477,10 +477,10 @@ async function repairLocalizedContent(): Promise<void> {
       newsletterBody: 'デモのニュースレターフロー用に用意した、簡潔なフッター項目です。',
       newsletterTitle: '公開時に届く、編集アップデート。',
       primaryCta: { href: '/#enquiry', label: 'お問い合わせを始める' },
-      secondaryCta: { href: '/news', label: 'ニュースルームを見る' },
+      secondaryCta: { href: '/news', label: 'The Dispatchを読む' },
     },
     draft: false,
-    locale: 'jp',
+    locale: 'ja',
     overrideAccess: true,
   })
 }
@@ -499,9 +499,9 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
   }
 
   const demoCountries: readonly DemoCountry[] = [
-    { code: 'JP', defaultLocale: 'jp', name: 'Japan', supportedLocales: ['en', 'jp'] },
+    { code: 'JP', defaultLocale: 'ja', name: 'Japan', supportedLocales: ['en', 'ja'] },
     { code: 'ES', defaultLocale: 'es', name: 'Spain', supportedLocales: ['en', 'es'] },
-    { code: 'SG', defaultLocale: 'en', name: 'Singapore', supportedLocales: ['en', 'jp', 'es'] },
+    { code: 'SG', defaultLocale: 'en', name: 'Singapore', supportedLocales: ['en', 'ja', 'es'] },
   ]
 
   type DemoUser = {
@@ -515,6 +515,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
   type CountryTeam = {
     readonly code: CountryCode
     readonly countryId: number
+    readonly countryName: string
     readonly editorId: number
     readonly publisherId: number
     readonly reviewerId: number
@@ -645,6 +646,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
       return {
         code: country.code,
         countryId,
+        countryName: country.name,
         editorId: countryEditorId,
         publisherId,
         reviewerId,
@@ -703,6 +705,11 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
           data: {
             ...data,
             heroMedia,
+            meta: {
+              description: data.excerpt,
+              image: heroMedia,
+              title: `${data.title} | The Dispatch`,
+            },
             publishedAt: new Date().toISOString(),
             scope: 'global',
             workflowState: 'approved',
@@ -720,6 +727,11 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         data: {
           ...data,
           heroMedia,
+          meta: {
+            description: data.excerpt,
+            image: heroMedia,
+            title: `${data.title} | The Dispatch`,
+          },
           publishedAt: new Date().toISOString(),
           scope: 'global',
           workflowState: 'approved',
@@ -750,7 +762,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     {
       excerpt:
         '編集上の文脈は、お問い合わせとリアルタイム追跡を混同させずに、フォームの流れをわかりやすく説明できます。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'a-clearer-way-to-begin-a-shipment-enquiry',
       title: '配送に関するお問い合わせを、より明確に始める方法',
     },
@@ -764,7 +776,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     {
       excerpt:
         '下書き、公開時の文脈、メディア、カテゴリー、リッチテキストを、焦点の定まったニュースルーム画面にまとめます。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'what-a-published-editorial-review-can-show',
       title: '公開された編集レビューで示せること',
     },
@@ -777,7 +789,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       excerpt: '短い更新でも、次の行動を促す前に必要な文脈を伝えられます。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'a-quieter-arrival-for-the-next-dispatch-edition',
       title: '次の The Dispatch 号を静かに届ける',
     },
@@ -790,7 +802,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       excerpt: '編集ワークフローは、公開記事の状態、背景、責任をわかりやすくします。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'what-changes-when-publishing-has-a-clear-owner',
       title: '公開の責任者が明確になると何が変わるか',
     },
@@ -804,7 +816,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     {
       excerpt:
         '明確な公開導線は、メッセージを送る前に訪問者が知るべきことを協力して決めるところから始まります。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'the-people-behind-a-more-useful-first-question',
       title: 'より役立つ最初の質問を支える人々',
     },
@@ -817,7 +829,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       excerpt: '根拠のない運用アドバイスを示さない、コンパクトな配送サイトの読みやすい入口です。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'choosing-a-service-path-for-a-demonstration-brief',
       title: 'デモの要件に合わせてサービス導線を選ぶ',
     },
@@ -830,7 +842,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       excerpt: 'コンパクトな情報設計が、幅広い配送の質問から役立つ公開導線への移動を支えます。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'a-route-map-for-choosing-the-next-useful-action',
       title: '次に役立つ行動を選ぶためのルートマップ',
     },
@@ -843,7 +855,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       excerpt: '落ち着いた企業のお知らせは、内容を誇張せず変更と次の行動を明確に伝えられます。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'a-public-update-with-room-to-breathe',
       title: '余白のある公開アップデート',
     },
@@ -857,7 +869,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     {
       excerpt:
         '公開ニュースルームを内部ダッシュボードにせず、編集準備の状況を示せるプロダクト画面です。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'a-publishing-queue-with-clear-status',
       title: '状態が明確な公開キュー',
     },
@@ -870,7 +882,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       excerpt: '小さな部門横断ワークショップが、幅広い質問を使いやすい公開導線へと変えます。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'the-workshop-behind-a-clearer-enquiry',
       title: 'より明確なお問い合わせを支えるワークショップ',
     },
@@ -883,7 +895,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       excerpt: '役立つ記事の公開には、下書きから公開閲覧まで意味を保ち続けることが必要です。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'the-editorial-handoff-that-keeps-context-intact',
       title: '文脈を保つ編集の引き継ぎ',
     },
@@ -897,7 +909,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     {
       excerpt:
         '簡潔な問いかけの組み合わせが、一般ページですべてを解決できるふりをせずにサービス導線を選ぶ助けになります。',
-      locale: 'jp',
+      locale: 'ja',
       slug: 'a-small-framework-for-the-next-useful-choice',
       title: '次の役立つ選択のための小さな枠組み',
     },
@@ -920,6 +932,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
               : 'この記事は、リアルタイムの運用情報を示さず、わかりやすい公開導線を説明するための例です。',
           ]),
           excerpt: translation.excerpt,
+          meta: { description: translation.excerpt, title: `${translation.title} | The Dispatch` },
           title: translation.title,
         },
         draft: false,
@@ -982,6 +995,11 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     const newsData = {
       ...newsDetails,
       country: countryId,
+      meta: {
+        description: newsDetails.excerpt,
+        image: newsDetails.heroMedia,
+        title: `${newsDetails.title} | The Dispatch`,
+      },
       publishedAt: new Date().toISOString(),
       scope: 'country' as const,
       _status: status,
@@ -1021,14 +1039,14 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     ES: [
       { locale: 'es', titles: ['Actualización local de España', 'Nota de operaciones locales'] },
     ],
-    JP: [{ locale: 'jp', titles: ['日本の地域ニュース', '日本の港湾に関するお知らせ'] }],
+    JP: [{ locale: 'ja', titles: ['日本の地域ニュース', '日本の港湾に関するお知らせ'] }],
     SG: [
       {
         locale: 'es',
         titles: ['Actualización local de Singapur', 'Nota editorial local de Singapur'],
       },
       {
-        locale: 'jp',
+        locale: 'ja',
         titles: ['シンガポールの地域ニュース', 'シンガポールの港湾に関するお知らせ'],
       },
     ],
@@ -1045,34 +1063,34 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     const [firstId, secondId] = await Promise.all([
       upsertCountryNews({
         body: lexicalBody([
-          `A local illustration for ${team.code} shows how country and language context stay separate in the editorial model.`,
+          `A local illustration for ${team.countryName} shows how country and language context stay separate in the editorial model.`,
           'This published story is visible only in its country view, alongside global Dispatch stories.',
         ]),
         category: 'company',
         countryId: team.countryId,
-        excerpt: `A published ${team.code} story that demonstrates country-specific editorial scope.`,
+        excerpt: `A published ${team.countryName} story that demonstrates country-specific editorial scope.`,
         heroMedia: firstImage,
         reviewRequestedBy: team.editorId,
         reviewedBy: team.reviewerId,
         slug: sharedSlug,
         status: 'published',
-        title: `${team.code} local Dispatch update`,
+        title: `${team.countryName} local Dispatch update`,
         workflowState: 'approved',
       }),
       upsertCountryNews({
         body: lexicalBody([
-          `A second local item makes the ${team.code} country view visibly distinct in the demo.`,
+          `A second local item makes the ${team.countryName} country view visibly distinct in the demo.`,
           'It remains illustrative and does not describe live operations or service availability.',
         ]),
         category: 'people',
         countryId: team.countryId,
-        excerpt: `A second published ${team.code} story for the country-filter demonstration.`,
+        excerpt: `A second published ${team.countryName} story for the country-filter demonstration.`,
         heroMedia: secondImage,
         reviewRequestedBy: team.editorId,
         reviewedBy: team.reviewerId,
         slug: `${team.code.toLowerCase()}-local-editorial-brief`,
         status: 'published',
-        title: `${team.code} local editorial brief`,
+        title: `${team.countryName} local editorial brief`,
         workflowState: 'approved',
       }),
     ])
@@ -1088,6 +1106,10 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         data: {
           body: lexicalBody([translation.titles[0]]),
           excerpt: translation.titles[0],
+          meta: {
+            description: translation.titles[0],
+            title: `${translation.titles[0]} | The Dispatch`,
+          },
           title: translation.titles[0],
         },
         draft: false,
@@ -1100,6 +1122,10 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         data: {
           body: lexicalBody([translation.titles[1]]),
           excerpt: translation.titles[1],
+          meta: {
+            description: translation.titles[1],
+            title: `${translation.titles[1]} | The Dispatch`,
+          },
           title: translation.titles[1],
         },
         draft: false,
@@ -1118,12 +1144,12 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         ]),
         category: 'ideas',
         countryId: team.countryId,
-        excerpt: `A translation-requested ${team.code} draft.`,
+        excerpt: `A translation-requested ${team.countryName} draft.`,
         heroMedia: workflowImage,
         reviewRequestedBy: team.editorId,
         slug: `${team.code.toLowerCase()}-translation-request`,
         status: 'draft',
-        title: `${team.code} translation request`,
+        title: `${team.countryName} translation request`,
         translationLocales,
         translationRequestedBy: team.editorId,
         workflowState: 'translation-requested',
@@ -1134,12 +1160,12 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         ]),
         category: 'product',
         countryId: team.countryId,
-        excerpt: `An in-review ${team.code} draft.`,
+        excerpt: `An in-review ${team.countryName} draft.`,
         heroMedia: workflowImage,
         reviewRequestedBy: team.editorId,
         slug: `${team.code.toLowerCase()}-review-queue`,
         status: 'draft',
-        title: `${team.code} story ready for review`,
+        title: `${team.countryName} story ready for review`,
         workflowState: 'in-review',
       }),
     ])
@@ -1151,7 +1177,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     locations.slice(0, 2).map((location) => ({
       ...location,
       country: team.countryId,
-      countryName: demoCountries.find(({ code }) => code === team.code)?.name ?? team.code,
+      countryName: team.countryName,
       slug: `${team.code.toLowerCase()}-${location.slug}`,
     })),
   )
@@ -1173,7 +1199,12 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     if (existing.docs[0]) {
       await payload.update({
         collection: 'locations',
-        data: { ...data, heroMedia, _status: 'published' },
+        data: {
+          ...data,
+          heroMedia,
+          meta: { description: data.description, image: heroMedia, title: data.title },
+          _status: 'published',
+        },
         draft: false,
         id: existing.docs[0].id,
         overrideAccess: true,
@@ -1181,7 +1212,12 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     } else {
       await payload.create({
         collection: 'locations',
-        data: { ...data, heroMedia, _status: 'published' },
+        data: {
+          ...data,
+          heroMedia,
+          meta: { description: data.description, image: heroMedia, title: data.title },
+          _status: 'published',
+        },
         draft: false,
         overrideAccess: true,
       })
@@ -1202,7 +1238,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       description: '先導メディア領域と、海上輸送に焦点を当てたタグを持つ記録です。',
-      locale: 'jp' as const,
+      locale: 'ja' as const,
       slug: 'port-city-record',
       title: '港湾都市の記録',
     },
@@ -1216,7 +1252,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     {
       description:
         '読みやすい物流ソリューション導線を備えた、焦点の定まった複合一貫輸送の記録です。',
-      locale: 'jp' as const,
+      locale: 'ja' as const,
       slug: 'inland-hub-record',
       title: '内陸ハブの記録',
     },
@@ -1229,7 +1265,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     },
     {
       description: 'ひとつの記録でも、管理されたタグによって複数のサービス導線につなげられます。',
-      locale: 'jp' as const,
+      locale: 'ja' as const,
       slug: 'regional-point-record',
       title: '地域拠点の記録',
     },
@@ -1251,7 +1287,11 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     if (location) {
       await payload.update({
         collection: 'locations',
-        data: { description: translation.description, title: translation.title },
+        data: {
+          description: translation.description,
+          meta: { description: translation.description, title: translation.title },
+          title: translation.title,
+        },
         draft: false,
         id: location.id,
         locale: translation.locale,
@@ -1276,6 +1316,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     const pageData = {
       lead: data.lead,
       layout: data.layout,
+      meta: { description: data.lead, title: data.title },
       ...(data.parent === undefined ? {} : { parent: data.parent }),
       ...(data.reviewNote === undefined ? {} : { reviewNote: data.reviewNote }),
       ...(data.reviewRequestedBy === undefined
@@ -1314,6 +1355,98 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     getSeedMediaId(stories[4].image),
     getSeedMediaId(stories[6].image),
   ])
+
+  const shippingPageId = await upsertPage({
+    lead: 'A concise service overview that helps visitors choose an illustrative route before they begin an enquiry.',
+    layout: [
+      richTextPageBlock([
+        'Shipping questions rarely begin with every operational detail in place. This overview helps a visitor choose the relevant starting point, then gives the enquiry form the context it needs.',
+        'The routes are intentionally illustrative. They explain how the demo is organised without claiming rates, coverage, sailing schedules, or live shipment information.',
+      ]),
+      featurePageBlock(
+        'Choose the question before the form.',
+        'The service detail pages explain the kind of context that makes an enquiry useful, while the shared form keeps the final action familiar and focused.',
+        companyImage,
+        'Start an enquiry',
+        '/#enquiry',
+      ),
+    ],
+    slug: 'shipping',
+    status: 'published',
+    title: 'Shipping services',
+  })
+
+  const oceanFreightPageId = await upsertPage({
+    lead: 'An illustrative ocean-freight route that helps visitors prepare a clear first question without suggesting a live booking or tracking service.',
+    layout: [
+      richTextPageBlock([
+        'For an ocean-freight enquiry, the most useful first step is to describe the shipment context plainly: where it is starting, where it is going, and what decision the visitor is trying to make.',
+        'This page is a content demonstration, not an operating service. It does not confirm equipment, transit times, routes, pricing, or availability.',
+      ]),
+      featurePageBlock(
+        'Pair service context with a relevant record.',
+        'The illustrative location index can add context to the service conversation while keeping the distinction between a content record and confirmed coverage visible.',
+        workingImage,
+        'Browse ocean-freight locations',
+        '/locations?service=ocean-freight',
+      ),
+      calloutPageBlock(
+        'Ready to describe the shipment?',
+        'Choose Request a quote in the enquiry form to provide an origin, destination, and service context.',
+        'Request a quote',
+        '/#enquiry',
+      ),
+    ],
+    parent: shippingPageId,
+    slug: 'ocean-freight',
+    status: 'published',
+    title: 'Ocean freight',
+  })
+
+  const logisticsSolutionsPageId = await upsertPage({
+    lead: 'An illustrative logistics route that connects a visitor’s planning question to the public locations and enquiry paths in this demo.',
+    layout: [
+      richTextPageBlock([
+        'Logistics questions often need a little more context before an enquiry can be useful. This route gives the visitor a clear place to review the illustrative location records and decide what to share.',
+        'The records and routes in this demo are editorial examples. They do not represent facilities, service commitments, or confirmed operational coverage.',
+      ]),
+      featurePageBlock(
+        'Use the location index as context, not proof.',
+        'Published location cards show a consistent content model: description, service tags, media, and a next action without unsupported local claims.',
+        standardsImage,
+        'Browse logistics locations',
+        '/locations?service=logistics-solutions',
+      ),
+      calloutPageBlock(
+        'Continue with the right detail.',
+        'The quote path collects an origin, destination, and service choice so the demo operations team can read the enquiry in context.',
+        'Start an enquiry',
+        '/#enquiry',
+      ),
+    ],
+    parent: shippingPageId,
+    slug: 'logistics-solutions',
+    status: 'published',
+    title: 'Logistics solutions',
+  })
+
+  await upsertPage({
+    lead: 'A concise service overview that helps visitors choose an illustrative route before they begin an enquiry.',
+    layout: [
+      richTextPageBlock([
+        'Shipping questions rarely begin with every operational detail in place. This overview helps a visitor choose the relevant starting point, then gives the enquiry form the context it needs.',
+        'The routes are intentionally illustrative. They explain how the demo is organised without claiming rates, coverage, sailing schedules, or live shipment information.',
+      ]),
+      pageLinksBlock(
+        'Explore the service routes',
+        'Each service page gives the visitor a small amount of context, a relevant related route, and a clear next step.',
+        [oceanFreightPageId, logisticsSolutionsPageId],
+      ),
+    ],
+    slug: 'shipping',
+    status: 'published',
+    title: 'Shipping services',
+  })
 
   const companyPageId = await upsertPage({
     lead: 'A CMS-managed parent page that demonstrates grouped content, reusable blocks, and careful public routing without a custom template for every page.',
@@ -1467,6 +1600,8 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     title: 'Company',
   })
 
+  const homepageHeroId = await getSeedMediaId(homepageHero)
+
   await payload.updateGlobal({
     slug: 'homepage',
     data: {
@@ -1474,9 +1609,9 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
       heroTitle: 'Shipping, made clearer.',
       heroBody:
         'A focused demonstration of service paths, illustrative locations, editorial updates, and the right enquiry.',
-      heroMedia: await getSeedMediaId(homepageHero),
+      heroMedia: homepageHeroId,
       primaryCta: { label: 'Start an enquiry', href: '/#enquiry' },
-      secondaryCta: { label: 'Visit the newsroom', href: '/news' },
+      secondaryCta: { label: 'Read The Dispatch', href: '/news' },
       aboutTitle: 'A small set of useful paths',
       aboutBody:
         'The homepage leads with essential options instead of turning the demo into a general page builder.',
@@ -1486,59 +1621,110 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         'The demo distinguishes a general message, a quote request, and a shipment enquiry without presenting real-time tracking.',
       newsletterTitle: 'Editorial updates, when they are published.',
       newsletterBody: 'A compact footer entry for the demo’s newsletter flow.',
+      meta: {
+        description:
+          'An illustrative shipping and logistics demo with CMS-managed service paths, locations, and editorial updates.',
+        image: homepageHeroId,
+        title: 'Shipping, made clearer',
+      },
       _status: 'published',
     },
     draft: false,
     overrideAccess: true,
   })
 
-  await Promise.all([
-    payload.updateGlobal({
-      slug: 'homepage',
-      data: {
-        aboutBody:
-          'La página principal prioriza las opciones esenciales sin convertir la demostración en un creador de páginas general.',
-        aboutTitle: 'Un conjunto pequeño de rutas útiles',
-        contactBody:
-          'La demostración distingue un mensaje general, una solicitud de presupuesto y una consulta de envío sin presentar seguimiento en tiempo real.',
-        contactTitle: 'Dirige cada pregunta al formulario adecuado.',
-        eyebrow: 'Una demostración de sitio público',
-        heroBody:
-          'Una demostración enfocada en rutas de servicio, ubicaciones ilustrativas, actualizaciones editoriales y la consulta adecuada.',
-        heroTitle: 'Envíos, con mayor claridad.',
-        newsletterBody:
-          'Una entrada de pie de página compacta para el flujo de boletines de la demostración.',
-        newsletterTitle: 'Actualizaciones editoriales, cuando se publican.',
-        primaryCta: { label: 'Iniciar una consulta', href: '/#enquiry' },
-        secondaryCta: { label: 'Visitar la sala de prensa', href: '/news' },
+  await payload.updateGlobal({
+    slug: 'homepage',
+    data: {
+      aboutBody:
+        'La página principal prioriza las opciones esenciales sin convertir la demostración en un creador de páginas general.',
+      aboutTitle: 'Un conjunto pequeño de rutas útiles',
+      contactBody:
+        'La demostración distingue un mensaje general, una solicitud de presupuesto y una consulta de envío sin presentar seguimiento en tiempo real.',
+      contactTitle: 'Dirige cada pregunta al formulario adecuado.',
+      eyebrow: 'Una demostración de sitio público',
+      heroBody:
+        'Una demostración enfocada en rutas de servicio, ubicaciones ilustrativas, actualizaciones editoriales y la consulta adecuada.',
+      heroTitle: 'Envíos, con mayor claridad.',
+      newsletterBody:
+        'Una entrada de pie de página compacta para el flujo de boletines de la demostración.',
+      newsletterTitle: 'Actualizaciones editoriales, cuando se publican.',
+      meta: {
+        description:
+          'Una demostración ilustrativa de envíos y logística con rutas de servicio, ubicaciones y actualizaciones editoriales gestionadas en el CMS.',
+        title: 'Envíos, con mayor claridad',
       },
-      draft: false,
-      locale: 'es',
-      overrideAccess: true,
-    }),
-    payload.updateGlobal({
-      slug: 'homepage',
-      data: {
-        aboutBody:
-          'このホームページでは、デモを汎用的なページビルダーにせず、必要な選択肢を優先しています。',
-        aboutTitle: '役立つ経路を厳選',
-        contactBody:
-          'このデモでは、一般的なメッセージ、見積もり依頼、配送に関するお問い合わせを区別し、リアルタイム追跡とは表示しません。',
-        contactTitle: '質問ごとに適切なフォームへ。',
-        eyebrow: '公開サイトのデモンストレーション',
-        heroBody:
-          'サービス経路、説明用の拠点、編集記事、適切なお問い合わせを示す、焦点を絞ったデモです。',
-        heroTitle: '配送を、もっとわかりやすく。',
-        newsletterBody: 'デモのニュースレターフロー用に用意した、簡潔なフッター項目です。',
-        newsletterTitle: '公開時に届く、編集アップデート。',
-        primaryCta: { label: 'お問い合わせを始める', href: '/#enquiry' },
-        secondaryCta: { label: 'ニュースルームを見る', href: '/news' },
+      primaryCta: { label: 'Iniciar una consulta', href: '/#enquiry' },
+      secondaryCta: { label: 'Leer The Dispatch', href: '/news' },
+    },
+    draft: false,
+    locale: 'es',
+    overrideAccess: true,
+  })
+
+  await payload.updateGlobal({
+    slug: 'homepage',
+    data: {
+      aboutBody:
+        'このホームページでは、デモを汎用的なページビルダーにせず、必要な選択肢を優先しています。',
+      aboutTitle: '役立つ経路を厳選',
+      contactBody:
+        'このデモでは、一般的なメッセージ、見積もり依頼、配送に関するお問い合わせを区別し、リアルタイム追跡とは表示しません。',
+      contactTitle: '質問ごとに適切なフォームへ。',
+      eyebrow: '公開サイトのデモンストレーション',
+      heroBody:
+        'サービス経路、説明用の拠点、編集記事、適切なお問い合わせを示す、焦点を絞ったデモです。',
+      heroTitle: '配送を、もっとわかりやすく。',
+      newsletterBody: 'デモのニュースレターフロー用に用意した、簡潔なフッター項目です。',
+      newsletterTitle: '公開時に届く、編集アップデート。',
+      meta: {
+        description:
+          'CMSで管理するサービス導線、拠点情報、編集アップデートを備えた、配送と物流の説明用デモです。',
+        title: '配送を、もっとわかりやすく',
       },
-      draft: false,
-      locale: 'jp',
-      overrideAccess: true,
-    }),
-  ])
+      primaryCta: { label: 'お問い合わせを始める', href: '/#enquiry' },
+      secondaryCta: { label: 'The Dispatchを読む', href: '/news' },
+    },
+    draft: false,
+    locale: 'ja',
+    overrideAccess: true,
+  })
+
+  await payload.updateGlobal({
+    slug: 'seo-settings',
+    data: {
+      allowIndexing: true,
+      defaultDescription:
+        'An illustrative shipping and logistics demo with CMS-managed service paths, locations, and The Dispatch newsroom.',
+      defaultSocialImage: homepageHeroId,
+      defaultTitle: 'Shipping & logistics',
+      siteName: 'Shipping & logistics',
+      twitterSite: '@TheDispatchDemo',
+    },
+    overrideAccess: true,
+  })
+
+  await payload.updateGlobal({
+    slug: 'seo-settings',
+    data: {
+      defaultDescription:
+        'Una demostración ilustrativa de envíos y logística con rutas de servicio, ubicaciones y la sala de prensa The Dispatch.',
+      defaultTitle: 'Envíos y logística',
+    },
+    locale: 'es',
+    overrideAccess: true,
+  })
+
+  await payload.updateGlobal({
+    slug: 'seo-settings',
+    data: {
+      defaultDescription:
+        'サービス導線、拠点情報、The DispatchニュースルームをCMSで管理する、配送と物流の説明用デモです。',
+      defaultTitle: '配送と物流',
+    },
+    locale: 'ja',
+    overrideAccess: true,
+  })
 
   await payload.destroy()
 }

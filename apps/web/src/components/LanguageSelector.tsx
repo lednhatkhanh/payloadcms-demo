@@ -3,6 +3,7 @@
 import {
   contentLocaleCookie,
   contentLocaleCookieMaxAge,
+  contentLocaleLabels,
   contentLocales,
   isContentLocale,
 } from '@repo/payload-config/locales'
@@ -34,7 +35,10 @@ export function LanguageSelector() {
     <SelectField
       label="Language"
       onSelectionChange={changeLanguage}
-      options={contentLocales.map((locale) => ({ label: locale.toUpperCase(), value: locale }))}
+      options={contentLocales.map((locale) => ({
+        label: contentLocaleLabels[locale],
+        value: locale,
+      }))}
       selectedKey={selectedLocale(pathname)}
       size="compact"
     />

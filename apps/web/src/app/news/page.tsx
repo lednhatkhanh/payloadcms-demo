@@ -19,12 +19,25 @@ import { Suspense } from 'react'
 
 import { NewsCard } from '@/components/NewsCard'
 import { SiteFooter } from '@/components/SiteFooter'
-import { getCountryFilters, getPublishedNews, newsHref, type NewsSummary } from '@/lib/content'
+import {
+  getCountryFilters,
+  getPublishedNews,
+  getSeoSettings,
+  newsHref,
+  type NewsSummary,
+} from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
+import { buildPageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  description: 'Company, product, people, and ideas from The Dispatch.',
-  title: 'News',
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getSiteLocale()
+  return buildPageMetadata({
+    description: 'Company, product, people, and ideas from The Dispatch.',
+    locale,
+    path: '/news',
+    settings: await getSeoSettings(locale),
+    title: 'News',
+  })
 }
 
 type NewsCategory = 'company' | 'product' | 'people' | 'ideas'

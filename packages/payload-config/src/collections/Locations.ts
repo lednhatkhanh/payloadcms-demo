@@ -1,7 +1,23 @@
-import { slugField, type CollectionConfig } from 'payload'
+import {
+  slugField,
+  type CollectionAfterChangeHook,
+  type CollectionAfterDeleteHook,
+  type CollectionConfig,
+} from 'payload'
 
 import { countryMember, publishedCountryContentOrMember } from '../access'
 import { countryField, enforceCountryMembership } from '../country'
+import { revalidatePublicContent } from '../revalidation'
+
+const revalidateLocations: CollectionAfterChangeHook = async ({ doc }) => {
+  await revalidatePublicContent(['locations'])
+  return doc
+}
+
+const revalidateDeletedLocation: CollectionAfterDeleteHook = async ({ doc }) => {
+  await revalidatePublicContent(['locations'])
+  return doc
+}
 
 export const Locations: CollectionConfig = {
   slug: 'locations',
@@ -48,7 +64,11 @@ export const Locations: CollectionConfig = {
     { name: 'city', type: 'text', required: true, admin: { position: 'sidebar' } },
     { name: 'countryName', type: 'text', required: true, admin: { position: 'sidebar' } },
   ],
-  hooks: { beforeChange: [enforceCountryMembership] },
+  hooks: {
+    afterChange: [revalidateLocations],
+    afterDelete: [revalidateDeletedLocation],
+    beforeChange: [enforceCountryMembership],
+  },
   timestamps: true,
   versions: { drafts: { autosave: true } },
 }

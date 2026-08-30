@@ -1,6 +1,12 @@
-import type { GlobalConfig } from 'payload'
+import type { GlobalAfterChangeHook, GlobalConfig } from 'payload'
 
 import { authenticated, publicGlobalRead } from '../access'
+import { revalidatePublicContent } from '../revalidation'
+
+const revalidateHomepage: GlobalAfterChangeHook = async ({ doc }) => {
+  await revalidatePublicContent(['homepage'])
+  return doc
+}
 
 export const Homepage: GlobalConfig = {
   slug: 'homepage',
@@ -49,5 +55,6 @@ export const Homepage: GlobalConfig = {
     { name: 'newsletterTitle', type: 'text', localized: true, required: true },
     { name: 'newsletterBody', type: 'textarea', localized: true, required: true },
   ],
+  hooks: { afterChange: [revalidateHomepage] },
   versions: { drafts: { autosave: true } },
 }

@@ -11,6 +11,7 @@ import * as migration_20260830_174600_add_operations_role from './20260830_17460
 import * as migration_20260830_174700_fix_user_country_row_ids from './20260830_174700_fix_user_country_row_ids'
 import * as migration_20260830_174800_add_country_lock_relations from './20260830_174800_add_country_lock_relations'
 import * as migration_20260830_174900_restore_page_titles from './20260830_174900_restore_page_titles'
+import * as migration_20260830_183900_add_seo_configuration from './20260830_183900_add_seo_configuration'
 
 export const migrations = [
   {
@@ -77,5 +78,10 @@ export const migrations = [
     up: migration_20260830_174900_restore_page_titles.up,
     down: migration_20260830_174900_restore_page_titles.down,
     name: '20260830_174900_restore_page_titles',
+  },
+  {
+    up: migration_20260830_183900_add_seo_configuration.up,
+    down: migration_20260830_183900_add_seo_configuration.down,
+    name: '20260830_183900_add_seo_configuration',
   },
 ]

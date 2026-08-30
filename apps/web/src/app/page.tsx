@@ -45,38 +45,47 @@ import {
   getPublishedPageChildren,
   getPublishedLocations,
   getPublishedNews,
+  getSeoSettings,
   type LocationService,
   type ManagedPageSummary,
   type NewsSummary,
 } from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
+import { buildPageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  description:
-    'A focused shipping and logistics demonstration with service paths, illustrative locations, and The Dispatch newsroom.',
-  title: 'Shipping & logistics',
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getSiteLocale()
+  const [homepage, settings] = await Promise.all([getHomepage(locale), getSeoSettings(locale)])
+  return buildPageMetadata({
+    description: homepage.heroBody,
+    fallbackImage: homepage.hero,
+    locale,
+    path: '/',
+    seo: homepage.seo,
+    settings,
+    title: homepage.heroTitle,
+  })
 }
 
 const services = [
   {
-    description: 'An at-a-glance entry point for the demo’s core shipping offer.',
-    href: '/#enquiry',
-    label: 'Explore shipping',
-    number: '01 / Overview',
+    description:
+      'An overview of the two illustrative service paths and the information each enquiry needs.',
+    href: '/shipping',
+    label: 'Explore services',
     title: 'Shipping services',
   },
   {
-    description: 'A representative service detail route for visitors evaluating a shipping mode.',
-    href: '/#enquiry',
-    label: 'View the detail',
-    number: '02 / Detail',
+    description: 'A focused detail page for visitors who want to frame an ocean-freight question.',
+    href: '/shipping/ocean-freight',
+    label: 'Read the ocean-freight page',
     title: 'Ocean freight',
   },
   {
-    description: 'A companion route to illustrative logistics locations and their service context.',
-    href: '/locations?service=logistics-solutions',
-    label: 'Browse locations',
-    number: '03 / Detail',
+    description:
+      'A companion page connecting a logistics question with illustrative location records.',
+    href: '/shipping/logistics-solutions',
+    label: 'Read the logistics page',
     title: 'Logistics solutions',
   },
 ] as const
@@ -91,29 +100,9 @@ export default function HomePage() {
     <>
       <Section id="about" space="hero">
         <Container>
-          <HomeHeroGrid>
-            <HeroContent>
-              <Text color="brand" variant="label">
-                A public-site demonstration
-              </Text>
-              <Text as="h1" variant="hero">
-                Shipping, made <Accent>clearer.</Accent>
-              </Text>
-              <Text color="muted" variant="lead">
-                A focused demonstration of how a shipping and logistics site can help visitors
-                explore services, find illustrative locations, read editorial updates, and send the
-                right enquiry.
-              </Text>
-              <Cluster>
-                <ButtonLink href="/#enquiry" size="lg" variant="primary">
-                  Start an enquiry <Icon source={ArrowRight} size="sm" />
-                </ButtonLink>
-              </Cluster>
-            </HeroContent>
-            <Suspense fallback={<HeroPlaceholder />}>
-              <HomepageHeroMedia />
-            </Suspense>
-          </HomeHeroGrid>
+          <Suspense fallback={<HomepageHeroLoadingState />}>
+            <HomepageHero />
+          </Suspense>
         </Container>
       </Section>
 
@@ -140,9 +129,6 @@ export default function HomePage() {
               {services.map((service) => (
                 <ServiceCard key={service.title}>
                   <Stack gap="md">
-                    <Text color="muted" variant="meta">
-                      {service.number}
-                    </Text>
                     <Text as="h3" variant="h3">
                       {service.title}
                     </Text>
@@ -458,7 +444,7 @@ function HomepageStoryCard({
       ) : (
         <StoryCardMedia alt={article.hero.alt} src={article.hero.url} />
       )}
-      {featured ? <StoryCardMedia alt={article.hero.alt} src={article.hero.url} /> : null}
+      {featured ? <StoryCardMedia alt={article.hero.alt} preload src={article.hero.url} /> : null}
       {!featured ? (
         <>
           <Text color="muted" variant="kicker">
@@ -474,15 +460,55 @@ function HomepageStoryCard({
   )
 }
 
-async function HomepageHeroMedia() {
+async function HomepageHero() {
   const homepage = await getHomepage(await getSiteLocale())
-  return homepage.hero ? (
-    <HeroMedia
-      alt={homepage.hero.alt}
-      caption="Illustrative harbor scene · For demonstrative use"
-      src={homepage.hero.url}
-    />
-  ) : (
-    <HeroPlaceholder />
+  return (
+    <HomeHeroGrid>
+      <HeroContent>
+        <Text color="brand" variant="label">
+          {homepage.eyebrow}
+        </Text>
+        <Text as="h1" variant="hero">
+          {homepage.heroTitle}
+        </Text>
+        <Text color="muted" variant="lead">
+          {homepage.heroBody}
+        </Text>
+        <Cluster>
+          <ButtonLink href={homepage.primaryCta.href} size="lg" variant="primary">
+            {homepage.primaryCta.label} <Icon source={ArrowRight} size="sm" />
+          </ButtonLink>
+          <ButtonLink href={homepage.secondaryCta.href} size="lg" variant="secondary">
+            {homepage.secondaryCta.label}
+          </ButtonLink>
+        </Cluster>
+      </HeroContent>
+      {homepage.hero ? (
+        <HeroMedia
+          alt={homepage.hero.alt}
+          caption="Illustrative harbor scene · For demonstrative use"
+          src={homepage.hero.url}
+        />
+      ) : (
+        <HeroPlaceholder />
+      )}
+    </HomeHeroGrid>
+  )
+}
+
+function HomepageHeroLoadingState() {
+  return (
+    <HomeHeroGrid>
+      <HeroContent>
+        <Text as="h1" variant="hero">
+          Shipping, made <Accent>clearer.</Accent>
+        </Text>
+        <Text color="muted" variant="lead">
+          A focused demonstration of service paths, illustrative locations, editorial updates, and
+          the right enquiry.
+        </Text>
+      </HeroContent>
+      <HeroPlaceholder />
+    </HomeHeroGrid>
   )
 }

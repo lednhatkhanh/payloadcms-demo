@@ -1,4 +1,11 @@
-import { slugField, type Block, type CollectionConfig, type Validate } from 'payload'
+import {
+  slugField,
+  type Block,
+  type CollectionAfterChangeHook,
+  type CollectionAfterDeleteHook,
+  type CollectionConfig,
+  type Validate,
+} from 'payload'
 
 import {
   administrator,
@@ -7,11 +14,22 @@ import {
   publishedOrAuthenticated,
 } from '../access'
 import { pagePreviewUrl } from '../preview'
+import { revalidatePublicContent } from '../revalidation'
 import {
   editorialWorkflowFields,
   enforceEditorialWorkflow,
   logEditorialActivity,
 } from '../workflow'
+
+const revalidatePages: CollectionAfterChangeHook = async ({ doc }) => {
+  await revalidatePublicContent(['pages'])
+  return doc
+}
+
+const revalidateDeletedPage: CollectionAfterDeleteHook = async ({ doc }) => {
+  await revalidatePublicContent(['pages'])
+  return doc
+}
 
 const reservedPageSlugs = new Set([
   '_next',
@@ -218,7 +236,8 @@ export const Pages: CollectionConfig = {
     ...editorialWorkflowFields,
   ],
   hooks: {
-    afterChange: [logEditorialActivity('pages')],
+    afterChange: [revalidatePages, logEditorialActivity('pages')],
+    afterDelete: [revalidateDeletedPage],
     beforeChange: [enforceEditorialWorkflow],
   },
   timestamps: true,

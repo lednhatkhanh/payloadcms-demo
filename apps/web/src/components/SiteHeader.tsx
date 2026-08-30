@@ -31,7 +31,7 @@ export function SiteHeader() {
             {isMenuOpen ? 'Close' : 'Menu'}
           </Button>
           <HeaderNavigation isOpen={isMenuOpen}>
-            <Link href="/#services" onPress={closeMenu} variant="navigation">
+            <Link href="/shipping" onPress={closeMenu} variant="navigation">
               Shipping
             </Link>
             <Link href="/locations" onPress={closeMenu} variant="navigation">

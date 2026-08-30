@@ -8,8 +8,9 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
-import { getLocationBySlug, type LocationService } from '@/lib/content'
+import { getLocationBySlug, getSeoSettings, type LocationService } from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
+import { buildPageMetadata } from '@/lib/seo'
 
 type PageProps = { readonly params: Promise<{ readonly slug: string }> }
 
@@ -26,14 +27,23 @@ const locationServicePaths: Record<
     href: '/locations?service=logistics-solutions',
     label: 'Browse logistics locations',
   },
-  'ocean-freight': { href: '/#services', label: 'Explore ocean freight' },
+  'ocean-freight': { href: '/shipping/ocean-freight', label: 'Explore ocean freight' },
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const location = await getLocationBySlug(slug, await getSiteLocale())
+  const locale = await getSiteLocale()
+  const location = await getLocationBySlug(slug, locale)
   return location
-    ? { description: location.description, title: location.title }
+    ? buildPageMetadata({
+        description: location.description,
+        fallbackImage: location.hero,
+        locale,
+        path: `/locations/${slug}`,
+        seo: location.seo,
+        settings: await getSeoSettings(locale),
+        title: location.title,
+      })
     : { title: 'Location not found' }
 }
 

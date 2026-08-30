@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
+import { seoPlugin } from '@payloadcms/plugin-seo'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { serverEnvironment } from '@repo/contracts/env'
 import path from 'node:path'
@@ -18,6 +19,7 @@ import { Pages } from './collections/Pages'
 import { Users } from './collections/Users'
 import { isGlobalAccount } from './access'
 import { Homepage } from './globals/Homepage'
+import { SeoSettings } from './globals/SeoSettings'
 import { contentLocales, defaultContentLocale } from './locales'
 import { publishScheduledContent } from './scheduledPublishing'
 
@@ -58,10 +60,10 @@ export default buildConfig({
     push: false,
   }),
   editor: lexicalEditor(),
-  globals: [Homepage],
+  globals: [Homepage, SeoSettings],
   localization: {
     defaultLocale: defaultContentLocale,
-    fallback: true,
+    fallback: false,
     locales: [...contentLocales],
   },
   jobs: {
@@ -70,6 +72,12 @@ export default buildConfig({
   },
   maxDepth: 2,
   plugins: [
+    seoPlugin({
+      collections: ['locations', 'news', 'pages'],
+      globals: ['homepage'],
+      tabbedUI: true,
+      uploadsCollection: 'media',
+    }),
     multiTenantPlugin({
       collections: {
         locations: { customTenantField: true },

@@ -24,12 +24,24 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
-import { getPublishedLocations, type LocationService, type LocationSummary } from '@/lib/content'
+import {
+  getPublishedLocations,
+  getSeoSettings,
+  type LocationService,
+  type LocationSummary,
+} from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
+import { buildPageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  description: 'Published illustrative location records for the shipping and logistics demo.',
-  title: 'Locations',
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getSiteLocale()
+  return buildPageMetadata({
+    description: 'Published illustrative location records for the shipping and logistics demo.',
+    locale,
+    path: '/locations',
+    settings: await getSeoSettings(locale),
+    title: 'Locations',
+  })
 }
 
 type PageProps = { readonly searchParams: Promise<{ readonly service?: string }> }

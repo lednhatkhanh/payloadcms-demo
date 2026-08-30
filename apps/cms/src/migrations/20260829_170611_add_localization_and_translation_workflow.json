@@ -7209,7 +7209,7 @@
     "public._locales": {
       "name": "_locales",
       "schema": "public",
-      "values": ["en", "jp", "es"]
+      "values": ["en", "ja", "es"]
     },
     "public.enum_users_roles": {
       "name": "enum_users_roles",
@@ -7219,7 +7219,7 @@
     "public.enum_news_translation_locales": {
       "name": "enum_news_translation_locales",
       "schema": "public",
-      "values": ["jp", "es"]
+      "values": ["ja", "es"]
     },
     "public.enum_news_category": {
       "name": "enum_news_category",
@@ -7239,7 +7239,7 @@
     "public.enum__news_v_version_translation_locales": {
       "name": "enum__news_v_version_translation_locales",
       "schema": "public",
-      "values": ["jp", "es"]
+      "values": ["ja", "es"]
     },
     "public.enum__news_v_version_category": {
       "name": "enum__news_v_version_category",
@@ -7259,7 +7259,7 @@
     "public.enum__news_v_published_locale": {
       "name": "enum__news_v_published_locale",
       "schema": "public",
-      "values": ["en", "jp", "es"]
+      "values": ["en", "ja", "es"]
     },
     "public.enum_locations_service_tags": {
       "name": "enum_locations_service_tags",
@@ -7284,12 +7284,12 @@
     "public.enum__locations_v_published_locale": {
       "name": "enum__locations_v_published_locale",
       "schema": "public",
-      "values": ["en", "jp", "es"]
+      "values": ["en", "ja", "es"]
     },
     "public.enum_pages_translation_locales": {
       "name": "enum_pages_translation_locales",
       "schema": "public",
-      "values": ["jp", "es"]
+      "values": ["ja", "es"]
     },
     "public.enum_pages_workflow_state": {
       "name": "enum_pages_workflow_state",
@@ -7304,7 +7304,7 @@
     "public.enum__pages_v_version_translation_locales": {
       "name": "enum__pages_v_version_translation_locales",
       "schema": "public",
-      "values": ["jp", "es"]
+      "values": ["ja", "es"]
     },
     "public.enum__pages_v_version_workflow_state": {
       "name": "enum__pages_v_version_workflow_state",
@@ -7319,7 +7319,7 @@
     "public.enum__pages_v_published_locale": {
       "name": "enum__pages_v_published_locale",
       "schema": "public",
-      "values": ["en", "jp", "es"]
+      "values": ["en", "ja", "es"]
     },
     "public.enum_homepage_status": {
       "name": "enum_homepage_status",
@@ -7334,7 +7334,7 @@
     "public.enum__homepage_v_published_locale": {
       "name": "enum__homepage_v_published_locale",
       "schema": "public",
-      "values": ["en", "jp", "es"]
+      "values": ["en", "ja", "es"]
     }
   },
   "schemas": {},

@@ -2,8 +2,8 @@ import { sql, type MigrateDownArgs, type MigrateUpArgs } from '@payloadcms/db-po
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-    CREATE TYPE "public"."enum_countries_supported_locales" AS ENUM('en', 'jp', 'es');
-    CREATE TYPE "public"."enum_countries_default_locale" AS ENUM('en', 'jp', 'es');
+    CREATE TYPE "public"."enum_countries_supported_locales" AS ENUM('en', 'ja', 'es');
+    CREATE TYPE "public"."enum_countries_default_locale" AS ENUM('en', 'ja', 'es');
     CREATE TYPE "public"."enum_news_scope" AS ENUM('global', 'country');
     CREATE TYPE "public"."enum__news_v_version_scope" AS ENUM('global', 'country');
 

@@ -14,5 +14,5 @@ export async function getSiteLocale(): Promise<ContentLocale> {
 }
 
 export function localeTag(locale: ContentLocale): string {
-  return locale === 'jp' ? 'ja-JP' : locale === 'es' ? 'es-ES' : 'en-US'
+  return locale === 'ja' ? 'ja-JP' : locale === 'es' ? 'es-ES' : 'en-US'
 }

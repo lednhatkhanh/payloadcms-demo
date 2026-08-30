@@ -2,7 +2,14 @@ import { createHmac } from 'node:crypto'
 
 import { serverEnvironment } from '@repo/contracts/env'
 
-export const publicCacheTags = ['countries', 'news'] as const
+export const publicCacheTags = [
+  'countries',
+  'homepage',
+  'locations',
+  'news',
+  'pages',
+  'seo',
+] as const
 
 export type PublicCacheTag = (typeof publicCacheTags)[number]
 
@@ -11,7 +18,7 @@ export const cacheInvalidationToken = createHmac('sha256', serverEnvironment.PAY
   .digest('hex')
 
 export function isPublicCacheTag(value: unknown): value is PublicCacheTag {
-  return value === 'countries' || value === 'news'
+  return publicCacheTags.some((tag) => tag === value)
 }
 
 export async function revalidatePublicContent(tags: readonly PublicCacheTag[]): Promise<void> {

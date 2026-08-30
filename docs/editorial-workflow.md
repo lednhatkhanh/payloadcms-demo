@@ -10,7 +10,7 @@ This demo separates **country** from **language**:
 The public site has three language routes:
 
 - `/en` — English, the default and source locale
-- `/jp` — Japanese
+- `/ja` — Japanese
 - `/es` — Spanish
 
 Unprefixed public links redirect to the visitor's most recently selected language; a first visit defaults to English. Empty localized fields fall back to English until their translation is complete. English is the source locale, so it is not selectable in a translation request.

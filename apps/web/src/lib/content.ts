@@ -23,6 +23,7 @@ export interface HomepageContent {
   readonly newsletterTitle: string
   readonly primaryCta: { readonly href: string; readonly label: string }
   readonly secondaryCta: { readonly href: string; readonly label: string }
+  readonly seo?: SeoMetadata
 }
 
 export interface NewsSummary {
@@ -33,6 +34,7 @@ export interface NewsSummary {
   readonly publishedAt: string
   readonly slug: string
   readonly title: string
+  readonly seo?: SeoMetadata
 }
 
 export interface NewsArticle extends NewsSummary {
@@ -55,14 +57,53 @@ export interface ManagedPage {
   readonly lead: string
   readonly slug: string
   readonly title: string
+  readonly seo?: SeoMetadata
 }
 
-type ManagedPageLookup = Pick<Page, 'id' | 'layout' | 'lead' | 'slug' | 'title'>
+type ManagedPageLookup = Pick<Page, 'id' | 'layout' | 'lead' | 'meta' | 'slug' | 'title'>
 export type ManagedPageSummary = Pick<ManagedPage, 'lead' | 'slug' | 'title'>
 
 export interface MediaReference {
   readonly alt: string
   readonly url: string
+}
+
+export interface SeoMetadata {
+  readonly description?: string
+  readonly image?: MediaReference
+  readonly title?: string
+}
+
+export interface SeoSettingsContent {
+  readonly allowIndexing: boolean
+  readonly defaultDescription: string
+  readonly defaultSocialImage?: MediaReference
+  readonly defaultTitle: string
+  readonly googleSiteVerification?: string
+  readonly siteName: string
+  readonly twitterSite?: string
+}
+
+export interface SitemapContent {
+  readonly locations: readonly SitemapLocation[]
+  readonly news: readonly SitemapNews[]
+  readonly pages: readonly SitemapPage[]
+}
+
+export interface SitemapLocation {
+  readonly slug: string
+  readonly updatedAt?: string | undefined
+}
+
+export interface SitemapNews {
+  readonly countryCode?: string
+  readonly slug: string
+  readonly updatedAt?: string | undefined
+}
+
+export interface SitemapPage {
+  readonly path: string
+  readonly updatedAt?: string | undefined
 }
 
 export type LocationService = 'logistics-solutions' | 'ocean-freight'
@@ -73,6 +114,7 @@ export interface LocationSummary {
   readonly serviceTags: readonly LocationService[]
   readonly slug: string
   readonly title: string
+  readonly seo?: SeoMetadata
 }
 
 export interface LocationRecord extends LocationSummary {
@@ -93,7 +135,7 @@ const defaultHomepage: HomepageContent = {
   newsletterBody: 'A short letter when there is something genuinely useful to share.',
   newsletterTitle: 'The important parts, occasionally.',
   primaryCta: { href: '/news', label: 'Read the latest' },
-  secondaryCta: { href: '/#contact', label: 'Talk with us' },
+  secondaryCta: { href: '/#enquiry', label: 'Talk with us' },
 }
 
 function stringValue(value: unknown, fallback = ''): string {
@@ -110,6 +152,20 @@ function mediaValue(value: unknown): MediaReference | undefined {
     url: filename
       ? `/api/media/${encodeURIComponent(filename)}`
       : new URL(url, serverEnvironment.NEXT_PUBLIC_CMS_URL).toString(),
+  }
+}
+
+function seoValue(value: unknown): SeoMetadata | undefined {
+  if (typeof value !== 'object' || value === null) return undefined
+  const record = value as Record<string, unknown>
+  const description = stringValue(record.description)
+  const image = mediaValue(record.image)
+  const title = stringValue(record.title)
+  if (!description && !image && !title) return undefined
+  return {
+    ...(description ? { description } : {}),
+    ...(image ? { image } : {}),
+    ...(title ? { title } : {}),
   }
 }
 
@@ -133,6 +189,7 @@ function mapSummary(doc: Record<string, unknown>): NewsSummary | undefined {
   const title = stringValue(doc.title)
   const hero = mediaValue(doc.heroMedia)
   const country = countryValue(doc.country)
+  const seo = seoValue(doc.meta)
   if (!slug || !title || !hero) return undefined
   return {
     category: stringValue(doc.category, 'News'),
@@ -142,6 +199,7 @@ function mapSummary(doc: Record<string, unknown>): NewsSummary | undefined {
     publishedAt: stringValue(doc.publishedAt),
     slug,
     title,
+    ...(seo ? { seo } : {}),
   }
 }
 
@@ -212,24 +270,28 @@ function mapLocationSummary(doc: Record<string, unknown>): LocationSummary | und
   const serviceTags = locationServiceValues(doc.serviceTags)
   if (!slug || !title || serviceTags.length === 0) return undefined
   const hero = mediaValue(doc.heroMedia)
+  const seo = seoValue(doc.meta)
   return {
     description: stringValue(doc.description),
     ...(hero ? { hero } : {}),
     serviceTags,
     slug,
     title,
+    ...(seo ? { seo } : {}),
   }
 }
 
 function mapManagedPage(
-  page: Pick<Page, 'id' | 'layout' | 'lead' | 'slug' | 'title'>,
+  page: Pick<Page, 'id' | 'layout' | 'lead' | 'meta' | 'slug' | 'title'>,
 ): ManagedPage {
+  const seo = seoValue(page.meta)
   return {
     id: page.id,
     layout: page.layout,
     lead: page.lead,
     slug: page.slug,
     title: page.title,
+    ...(seo ? { seo } : {}),
   }
 }
 
@@ -248,6 +310,9 @@ function pageParentId(page: Pick<Page, 'parent'>): number | undefined {
 }
 
 export async function getHomepage(locale: ContentLocale): Promise<HomepageContent> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('homepage', `homepage:${locale}`)
   const payload = await getPayload({ config })
   const homepage = await payload.findGlobal({
     slug: 'homepage',
@@ -266,12 +331,14 @@ export async function getHomepage(locale: ContentLocale): Promise<HomepageConten
       heroTitle: true,
       newsletterBody: true,
       newsletterTitle: true,
+      meta: true,
       primaryCta: true,
       secondaryCta: true,
     },
   })
 
   const hero = mediaValue(homepage.heroMedia)
+  const seo = seoValue(homepage.meta)
   return {
     aboutBody: stringValue(homepage.aboutBody, defaultHomepage.aboutBody),
     aboutTitle: stringValue(homepage.aboutTitle, defaultHomepage.aboutTitle),
@@ -291,6 +358,146 @@ export async function getHomepage(locale: ContentLocale): Promise<HomepageConten
       href: stringValue(homepage.secondaryCta?.href, defaultHomepage.secondaryCta.href),
       label: stringValue(homepage.secondaryCta?.label, defaultHomepage.secondaryCta.label),
     },
+    ...(seo ? { seo } : {}),
+  }
+}
+
+export async function getSeoSettings(locale: ContentLocale): Promise<SeoSettingsContent> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('seo', `seo:${locale}`)
+  const payload = await getPayload({ config })
+  const settings = await payload.findGlobal({
+    slug: 'seo-settings',
+    depth: 1,
+    draft: false,
+    locale,
+    overrideAccess: false,
+    select: {
+      allowIndexing: true,
+      defaultDescription: true,
+      defaultSocialImage: true,
+      defaultTitle: true,
+      googleSiteVerification: true,
+      siteName: true,
+      twitterSite: true,
+    },
+  })
+
+  const defaultSocialImage = mediaValue(settings.defaultSocialImage)
+  const googleSiteVerification = stringValue(settings.googleSiteVerification)
+  const twitterSite = stringValue(settings.twitterSite)
+  return {
+    allowIndexing: settings.allowIndexing !== false,
+    defaultDescription: stringValue(
+      settings.defaultDescription,
+      'A focused shipping and logistics demonstration with service paths, illustrative locations, and The Dispatch newsroom.',
+    ),
+    ...(defaultSocialImage ? { defaultSocialImage } : {}),
+    defaultTitle: stringValue(settings.defaultTitle, 'Shipping & logistics'),
+    ...(googleSiteVerification ? { googleSiteVerification } : {}),
+    siteName: stringValue(settings.siteName, 'Shipping & logistics'),
+    ...(twitterSite ? { twitterSite } : {}),
+  }
+}
+
+function recordId(value: unknown): number | undefined {
+  if (typeof value !== 'object' || value === null || !('id' in value)) return undefined
+  return typeof value.id === 'number' ? value.id : undefined
+}
+
+function updatedAtValue(value: unknown): string | undefined {
+  const updatedAt = stringValue(value)
+  return updatedAt || undefined
+}
+
+export async function getSitemapContent(): Promise<SitemapContent> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('locations', 'news', 'pages')
+  const payload = await getPayload({ config })
+  const [pageResult, newsResult, locationResult] = await Promise.all([
+    payload.find({
+      collection: 'pages',
+      depth: 0,
+      draft: false,
+      limit: 100,
+      locale: 'en',
+      overrideAccess: false,
+      select: { parent: true, slug: true, updatedAt: true },
+      sort: 'createdAt',
+    }),
+    payload.find({
+      collection: 'news',
+      depth: 1,
+      draft: false,
+      limit: 100,
+      locale: 'en',
+      overrideAccess: false,
+      select: { country: true, slug: true, updatedAt: true },
+      sort: 'createdAt',
+    }),
+    payload.find({
+      collection: 'locations',
+      depth: 0,
+      draft: false,
+      limit: 100,
+      locale: 'en',
+      overrideAccess: false,
+      select: { slug: true, updatedAt: true },
+      sort: 'createdAt',
+    }),
+  ])
+
+  const pageRecords = pageResult.docs.flatMap((page) => {
+    const record = page as unknown as Record<string, unknown>
+    const id = recordId(record)
+    const slug = stringValue(record.slug)
+    return id !== undefined && slug
+      ? [
+          {
+            id,
+            parentId: typeof record.parent === 'number' ? record.parent : undefined,
+            slug,
+            updatedAt: updatedAtValue(record.updatedAt),
+          },
+        ]
+      : []
+  })
+  const pagesById = new Map(pageRecords.map((page) => [page.id, page]))
+
+  function pagePath(page: (typeof pageRecords)[number], depth = 0): string | undefined {
+    if (depth >= 8) return undefined
+    if (page.parentId === undefined) return `/${page.slug}`
+    const parent = pagesById.get(page.parentId)
+    const parentPath = parent ? pagePath(parent, depth + 1) : undefined
+    return parentPath ? `${parentPath}/${page.slug}` : undefined
+  }
+
+  return {
+    locations: locationResult.docs.flatMap((location) => {
+      const record = location as unknown as Record<string, unknown>
+      const slug = stringValue(record.slug)
+      return slug ? [{ slug, updatedAt: updatedAtValue(record.updatedAt) }] : []
+    }),
+    news: newsResult.docs.flatMap((news) => {
+      const record = news as unknown as Record<string, unknown>
+      const slug = stringValue(record.slug)
+      const country = countryValue(record.country)
+      return slug
+        ? [
+            {
+              ...(country ? { countryCode: country.code } : {}),
+              slug,
+              updatedAt: updatedAtValue(record.updatedAt),
+            },
+          ]
+        : []
+    }),
+    pages: pageRecords.flatMap((page) => {
+      const pagePathValue = pagePath(page)
+      return pagePathValue ? [{ path: pagePathValue, updatedAt: page.updatedAt }] : []
+    }),
   }
 }
 
@@ -321,6 +528,7 @@ export async function getPublishedNews(
       country: true,
       excerpt: true,
       heroMedia: true,
+      meta: true,
       publishedAt: true,
       slug: true,
       title: true,
@@ -374,6 +582,7 @@ export async function getNewsBySlug(
       country: true,
       excerpt: true,
       heroMedia: true,
+      meta: true,
       publishedAt: true,
       slug: true,
       title: true,
@@ -415,6 +624,7 @@ export async function getPreviewNewsById(
       country: true,
       excerpt: true,
       heroMedia: true,
+      meta: true,
       publishedAt: true,
       slug: true,
       title: true,
@@ -449,6 +659,9 @@ export async function getNewsPreviewPathById(
 export async function getPublishedLocations(
   locale: ContentLocale,
 ): Promise<readonly LocationSummary[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('locations', `locations:${locale}`)
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'locations',
@@ -460,6 +673,7 @@ export async function getPublishedLocations(
     select: {
       description: true,
       heroMedia: true,
+      meta: true,
       serviceTags: true,
       slug: true,
       title: true,
@@ -477,6 +691,9 @@ export async function getLocationBySlug(
   slug: string,
   locale: ContentLocale,
 ): Promise<LocationRecord | undefined> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('locations', `location:${slug}`, `locations:${locale}`)
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'locations',
@@ -491,6 +708,7 @@ export async function getLocationBySlug(
       countryName: true,
       description: true,
       heroMedia: true,
+      meta: true,
       serviceTags: true,
       slug: true,
       title: true,
@@ -522,7 +740,7 @@ async function findPageBySegment(
     locale,
     limit: 1,
     overrideAccess: draft,
-    select: { layout: true, lead: true, slug: true, title: true },
+    select: { layout: true, lead: true, meta: true, slug: true, title: true },
     where:
       parent === undefined
         ? { and: [{ slug: { equals: slug } }, { parent: { exists: false } }] }
@@ -557,6 +775,9 @@ export async function getPageByPath(
   locale: ContentLocale,
   draft = false,
 ): Promise<ManagedPage | undefined> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('pages', `page:${segments.join('/')}`, `pages:${locale}`)
   if (segments.length === 0) return undefined
   return lookupPageByPath(segments, draft, locale)
 }
@@ -565,6 +786,9 @@ async function getPageChildrenByParentSlug(
   parentSlug: string,
   locale: ContentLocale,
 ): Promise<readonly ManagedPageSummary[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('pages', `page-children:${parentSlug}`, `pages:${locale}`)
   const payload = await getPayload({ config })
   const parentResult = await payload.find({
     collection: 'pages',

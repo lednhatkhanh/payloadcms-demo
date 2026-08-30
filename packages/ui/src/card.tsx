@@ -190,13 +190,22 @@ export function StoryCardFooter({ children }: { readonly children: ReactNode }) 
   )
 }
 
-export function StoryCardMedia({ alt, src }: { readonly alt: string; readonly src: string }) {
+export function StoryCardMedia({
+  alt,
+  preload = false,
+  src,
+}: {
+  readonly alt: string
+  readonly preload?: boolean
+  readonly src: string
+}) {
   return (
     <div className="relative mb-space-card-media h-media-story overflow-hidden rounded-md bg-brand-100">
       <Image
         alt={alt}
         className="object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none"
         fill
+        preload={preload}
         sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
         src={src}
       />

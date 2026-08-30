@@ -195,7 +195,7 @@ export const editorialWorkflowFields: Field[] = [
     type: 'select',
     hasMany: true,
     options: [
-      { label: contentLocaleLabels.jp, value: 'jp' },
+      { label: contentLocaleLabels.ja, value: 'ja' },
       { label: contentLocaleLabels.es, value: 'es' },
     ],
     admin: {

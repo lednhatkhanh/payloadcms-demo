@@ -2,15 +2,15 @@ import { sql, type MigrateDownArgs, type MigrateUpArgs } from '@payloadcms/db-po
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
-   CREATE TYPE "public"."_locales" AS ENUM('en', 'jp', 'es');
-  CREATE TYPE "public"."enum_news_translation_locales" AS ENUM('jp', 'es');
-  CREATE TYPE "public"."enum__news_v_version_translation_locales" AS ENUM('jp', 'es');
-  CREATE TYPE "public"."enum__news_v_published_locale" AS ENUM('en', 'jp', 'es');
-  CREATE TYPE "public"."enum__locations_v_published_locale" AS ENUM('en', 'jp', 'es');
-  CREATE TYPE "public"."enum_pages_translation_locales" AS ENUM('jp', 'es');
-  CREATE TYPE "public"."enum__pages_v_version_translation_locales" AS ENUM('jp', 'es');
-  CREATE TYPE "public"."enum__pages_v_published_locale" AS ENUM('en', 'jp', 'es');
-  CREATE TYPE "public"."enum__homepage_v_published_locale" AS ENUM('en', 'jp', 'es');
+   CREATE TYPE "public"."_locales" AS ENUM('en', 'ja', 'es');
+  CREATE TYPE "public"."enum_news_translation_locales" AS ENUM('ja', 'es');
+  CREATE TYPE "public"."enum__news_v_version_translation_locales" AS ENUM('ja', 'es');
+  CREATE TYPE "public"."enum__news_v_published_locale" AS ENUM('en', 'ja', 'es');
+  CREATE TYPE "public"."enum__locations_v_published_locale" AS ENUM('en', 'ja', 'es');
+  CREATE TYPE "public"."enum_pages_translation_locales" AS ENUM('ja', 'es');
+  CREATE TYPE "public"."enum__pages_v_version_translation_locales" AS ENUM('ja', 'es');
+  CREATE TYPE "public"."enum__pages_v_published_locale" AS ENUM('en', 'ja', 'es');
+  CREATE TYPE "public"."enum__homepage_v_published_locale" AS ENUM('en', 'ja', 'es');
   ALTER TYPE "public"."enum_users_roles" ADD VALUE 'translator' BEFORE 'reviewer';
   ALTER TYPE "public"."enum_news_workflow_state" ADD VALUE 'translation-requested' BEFORE 'in-review';
   ALTER TYPE "public"."enum__news_v_version_workflow_state" ADD VALUE 'translation-requested' BEFORE 'in-review';

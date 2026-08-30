@@ -10,8 +10,9 @@ import { Suspense } from 'react'
 import { LivePreviewRefresh } from '@/components/LivePreviewRefresh'
 import { PageBlocks } from '@/components/PageBlocks'
 import { SiteFooter } from '@/components/SiteFooter'
-import { getPageByPath } from '@/lib/content'
+import { getPageByPath, getSeoSettings } from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
+import { buildPageMetadata } from '@/lib/seo'
 
 type PreviewSearchParams = { readonly id?: string; readonly preview?: string }
 type PageProps = {
@@ -28,9 +29,18 @@ function previewPageId(searchParams: PreviewSearchParams): number | undefined {
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { segments } = await params
   const previewPage = previewPageId(await searchParams)
-  const page = await getPageByPath(segments, await getSiteLocale(), previewPage !== undefined)
+  const locale = await getSiteLocale()
+  const page = await getPageByPath(segments, locale, previewPage !== undefined)
   return page && (previewPage === undefined || page.id === previewPage)
-    ? { description: page.lead, title: page.title }
+    ? buildPageMetadata({
+        description: page.lead,
+        locale,
+        noIndex: previewPage !== undefined,
+        path: `/${segments.join('/')}`,
+        seo: page.seo,
+        settings: await getSeoSettings(locale),
+        title: page.title,
+      })
     : { title: 'Page not found' }
 }
 

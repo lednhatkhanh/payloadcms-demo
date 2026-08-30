@@ -102,16 +102,18 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'jp' | 'es') | ('en' | 'jp' | 'es')[];
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'ja' | 'es') | ('en' | 'ja' | 'es')[];
   globals: {
     homepage: Homepage;
+    'seo-settings': SeoSetting;
     'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'seo-settings': SeoSettingsSelect<false> | SeoSettingsSelect<true>;
     'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
-  locale: 'en' | 'jp' | 'es';
+  locale: 'en' | 'ja' | 'es';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -193,8 +195,8 @@ export interface Country {
   id: number;
   name: string;
   code: string;
-  supportedLocales: ('en' | 'jp' | 'es')[];
-  defaultLocale: 'en' | 'jp' | 'es';
+  supportedLocales: ('en' | 'ja' | 'es')[];
+  defaultLocale: 'en' | 'ja' | 'es';
   updatedAt: string;
   createdAt: string;
 }
@@ -300,7 +302,7 @@ export interface News {
   /**
    * Choose the language versions that a translator should prepare before requesting translation.
    */
-  translationLocales?: ('jp' | 'es')[] | null;
+  translationLocales?: ('ja' | 'es')[] | null;
   /**
    * Set automatically when an editor requests translation.
    */
@@ -313,6 +315,14 @@ export interface News {
    * Set automatically when a reviewer responds.
    */
   reviewedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -344,6 +354,14 @@ export interface Location {
   serviceTags: ('ocean-freight' | 'logistics-solutions')[];
   city: string;
   countryName: string;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -473,7 +491,7 @@ export interface Page {
   /**
    * Choose the language versions that a translator should prepare before requesting translation.
    */
-  translationLocales?: ('jp' | 'es')[] | null;
+  translationLocales?: ('ja' | 'es')[] | null;
   /**
    * Set automatically when an editor requests translation.
    */
@@ -486,6 +504,14 @@ export interface Page {
    * Set automatically when a reviewer responds.
    */
   reviewedBy?: (number | null) | User;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -861,6 +887,13 @@ export interface NewsSelect<T extends boolean = true> {
   translationRequestedBy?: T;
   translatedBy?: T;
   reviewedBy?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -879,6 +912,13 @@ export interface LocationsSelect<T extends boolean = true> {
   serviceTags?: T;
   city?: T;
   countryName?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -958,6 +998,13 @@ export interface PagesSelect<T extends boolean = true> {
   translationRequestedBy?: T;
   translatedBy?: T;
   reviewedBy?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -1109,7 +1156,54 @@ export interface Homepage {
   contactBody: string;
   newsletterTitle: string;
   newsletterBody: string;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+  };
   _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Site-wide fallbacks used when a page has no SEO override. Canonical URLs are derived from the public route so they stay consistent.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-settings".
+ */
+export interface SeoSetting {
+  id: number;
+  /**
+   * Used in page-title templates and social sharing metadata.
+   */
+  siteName: string;
+  /**
+   * Fallback title for listing pages and records without an SEO title.
+   */
+  defaultTitle: string;
+  /**
+   * Fallback description for search results and social cards. Aim for 120–160 characters.
+   */
+  defaultDescription: string;
+  /**
+   * Used when a page has no SEO image selected.
+   */
+  defaultSocialImage?: (number | null) | Media;
+  /**
+   * Optional X/Twitter account, including the @ symbol.
+   */
+  twitterSite?: string | null;
+  /**
+   * Optional Google Search Console verification token.
+   */
+  googleSiteVerification?: string | null;
+  /**
+   * Turn off only for a non-public preview environment. This also updates robots.txt and page metadata.
+   */
+  allowIndexing: boolean;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1159,7 +1253,30 @@ export interface HomepageSelect<T extends boolean = true> {
   contactBody?: T;
   newsletterTitle?: T;
   newsletterBody?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
   _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-settings_select".
+ */
+export interface SeoSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  defaultTitle?: T;
+  defaultDescription?: T;
+  defaultSocialImage?: T;
+  twitterSite?: T;
+  googleSiteVerification?: T;
+  allowIndexing?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

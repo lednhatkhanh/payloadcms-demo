@@ -24,6 +24,23 @@ pnpm dev
 
 The first visit to Payload Admin creates the initial administrator account.
 
+## Rebuild the demo database
+
+The seed is idempotent, so use this after changing content or seed data:
+
+```bash
+pnpm db:migrate
+pnpm seed
+```
+
+To verify a completely fresh local setup, use the reset-and-reseed command below. It removes only this project’s Docker volume and recreates all local demo records:
+
+```bash
+pnpm db:reseed
+```
+
+See [local setup and recovery](docs/local-setup.md) for the short recovery checklist, [public content](docs/public-content.md) for the page map, and the [SEO guide](docs/seo.md) for metadata and crawler settings.
+
 ## Payload Admin import map
 
 Payload Admin uses a generated import map for its configured components. `pnpm dev` generates it automatically before starting the CMS, so a normal local start needs no extra command.

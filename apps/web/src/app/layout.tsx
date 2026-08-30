@@ -1,11 +1,15 @@
 import '@repo/ui/styles.css'
 
 import { UiProvider } from '@repo/ui/providers'
+import { contentLocales } from '@repo/payload-config/locales'
 import { Noto_Sans } from 'next/font/google'
 import type { Metadata } from 'next'
 
 import { SiteHeader } from '@/components/SiteHeader'
 import { PreviewBanner } from '@/components/PreviewBanner'
+import { getSeoSettings } from '@/lib/content'
+import { localeTag } from '@/lib/locale'
+import { buildSiteMetadata } from '@/lib/seo'
 import { Suspense } from 'react'
 
 const notoSans = Noto_Sans({
@@ -14,16 +18,25 @@ const notoSans = Noto_Sans({
   variable: '--font-noto-sans',
 })
 
-export const metadata: Metadata = {
-  description:
-    'A focused shipping and logistics demonstration with service paths, illustrative locations, and The Dispatch newsroom.',
-  metadataBase: new URL('http://localhost:3000'),
-  title: { default: 'Shipping & logistics', template: '%s — Shipping & logistics' },
+const localeTags = Object.fromEntries(contentLocales.map((locale) => [locale, localeTag(locale)]))
+const documentLocaleScript = `document.documentElement.lang=(${JSON.stringify(localeTags)})[location.pathname.split('/')[1]]??'${localeTag('en')}'`
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildSiteMetadata(await getSeoSettings('en'))
 }
 
 export default function RootLayout({ children }: { readonly children: React.ReactNode }) {
   return (
-    <html className={notoSans.variable} data-scroll-behavior="smooth" dir="ltr" lang="en-US">
+    <html
+      className={notoSans.variable}
+      data-scroll-behavior="smooth"
+      dir="ltr"
+      lang={localeTag('en')}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: documentLocaleScript }} />
+      </head>
       <body>
         <UiProvider>
           <SiteHeader />

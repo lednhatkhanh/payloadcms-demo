@@ -3,7 +3,7 @@ import { SetStepNav } from '@payloadcms/ui'
 import { redirect } from 'next/navigation'
 import type { AdminViewServerProps, Payload } from 'payload'
 
-import { contentLocales, type ContentLocale } from '../locales'
+import { contentLocaleLabels, contentLocales, type ContentLocale } from '../locales'
 
 type EditorialCollection = 'news' | 'pages'
 type WorkflowRequestState = 'approved' | 'changes-requested' | 'in-review' | 'translation-requested'
@@ -275,7 +275,7 @@ async function editorialCoverage(
       const next = existing ?? {
         collection: request.collection,
         id,
-        locales: { en: false, es: false, jp: false },
+        locales: { en: false, es: false, ja: false },
         title,
         workflowState: workflowState(document.workflowState),
       }
@@ -463,7 +463,7 @@ export async function WorkflowInbox({
                   <th scope="col">Content</th>
                   {contentLocales.map((locale) => (
                     <th key={locale} scope="col">
-                      {locale.toUpperCase()}
+                      {contentLocaleLabels[locale]}
                     </th>
                   ))}
                   <th scope="col">Workflow</th>
@@ -488,8 +488,8 @@ export async function WorkflowInbox({
                         />
                         <span className="workflow-inbox__visually-hidden">
                           {item.locales[locale]
-                            ? `${locale} content present`
-                            : `${locale} content missing`}
+                            ? `${contentLocaleLabels[locale]} content present`
+                            : `${contentLocaleLabels[locale]} content missing`}
                         </span>
                       </td>
                     ))}

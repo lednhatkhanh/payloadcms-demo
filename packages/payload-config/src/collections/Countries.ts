@@ -6,7 +6,7 @@ import type {
 
 import { administrator, publicRead } from '../access'
 import type { Country } from '../generated/payload-types'
-import { contentLocales } from '../locales'
+import { contentLocaleLabels, contentLocales } from '../locales'
 import { revalidatePublicContent } from '../revalidation'
 
 const revalidateCountryContent: CollectionAfterChangeHook<Country> = async ({ doc }) => {
@@ -42,13 +42,19 @@ export const Countries: CollectionConfig = {
       name: 'supportedLocales',
       type: 'select',
       hasMany: true,
-      options: contentLocales.map((locale) => ({ label: locale.toUpperCase(), value: locale })),
+      options: contentLocales.map((locale) => ({
+        label: contentLocaleLabels[locale],
+        value: locale,
+      })),
       required: true,
     },
     {
       name: 'defaultLocale',
       type: 'select',
-      options: contentLocales.map((locale) => ({ label: locale.toUpperCase(), value: locale })),
+      options: contentLocales.map((locale) => ({
+        label: contentLocaleLabels[locale],
+        value: locale,
+      })),
       required: true,
     },
   ],

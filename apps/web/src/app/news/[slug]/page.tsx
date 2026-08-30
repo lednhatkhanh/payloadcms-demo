@@ -21,8 +21,9 @@ import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
 import { LivePreviewRefresh } from '@/components/LivePreviewRefresh'
-import { getNewsBySlug, getPreviewNewsById, type NewsArticle } from '@/lib/content'
+import { getNewsBySlug, getPreviewNewsById, getSeoSettings, type NewsArticle } from '@/lib/content'
 import { getSiteLocale, localeTag } from '@/lib/locale'
+import { buildPageMetadata } from '@/lib/seo'
 
 type PageProps = {
   readonly params: Promise<{ slug: string }>
@@ -55,10 +56,24 @@ async function lookupNewsArticle({ params, searchParams }: PageProps): Promise<N
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
-  const { article } = await lookupNewsArticle({ params, searchParams })
-  return article
-    ? { description: article.excerpt, title: article.title }
-    : { title: 'Story not found' }
+  const [{ article, previewId }, { slug }, query, locale] = await Promise.all([
+    lookupNewsArticle({ params, searchParams }),
+    params,
+    searchParams,
+    getSiteLocale(),
+  ])
+  if (!article) return { title: 'Story not found' }
+  const countryQuery = query.country ? `?country=${encodeURIComponent(query.country)}` : ''
+  return buildPageMetadata({
+    description: article.excerpt,
+    fallbackImage: article.hero,
+    locale,
+    noIndex: previewId !== undefined,
+    path: `/news/${slug}${countryQuery}`,
+    seo: article.seo,
+    settings: await getSeoSettings(locale),
+    title: article.title,
+  })
 }
 
 export default function NewsDetailPage({ params, searchParams }: PageProps) {
@@ -167,7 +182,7 @@ async function ArticleDetails({ params, searchParams }: PageProps) {
                   The newsroom can frame a topic. The service and form routes then provide a clear
                   place to continue the conversation.
                 </Text>
-                <Link href="/#services" variant="inline">
+                <Link href="/shipping" variant="inline">
                   Explore shipping <Icon source={ArrowRight} size="sm" />
                 </Link>
               </Stack>
