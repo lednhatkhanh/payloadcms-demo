@@ -29,7 +29,7 @@ import { getSiteLocale } from '@/lib/locale'
 import { buildPageMetadata } from '@/lib/seo'
 
 type PageProps = {
-  readonly params: Promise<{ slug: string }>
+  readonly params: Promise<{ locale: string; slug: string }>
   readonly searchParams: Promise<{
     readonly country?: string
     readonly id?: string

@@ -13,6 +13,7 @@ import {
   StoryCardMeta,
   Tag,
 } from '@repo/ui/card'
+import type { ContentLocale } from '@repo/payload-config/locales'
 import { ArrowRight, Icon } from '@repo/ui/icon'
 import {
   Cluster,
@@ -57,6 +58,7 @@ import {
   type NewsSummary,
 } from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
+import { localizedHref } from '@/lib/navigation'
 import { buildPageMetadata } from '@/lib/seo'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -302,7 +304,8 @@ export default function HomePage() {
 }
 
 async function HomepageLocations() {
-  const locations = await getPublishedLocations(await getSiteLocale())
+  const locale = await getSiteLocale()
+  const locations = await getPublishedLocations(locale)
   if (locations.length === 0) {
     return <Text color="muted">No published illustrative locations yet.</Text>
   }
@@ -310,7 +313,10 @@ async function HomepageLocations() {
   return (
     <FeatureGrid>
       {locations.slice(0, 3).map((location) => (
-        <LocationCard href={`/locations/${location.slug}`} key={location.slug}>
+        <LocationCard
+          href={localizedHref(locale, `/locations/${location.slug}`)}
+          key={location.slug}
+        >
           <LocationCardBody>
             <div>
               <Text color="muted" variant="kicker">
@@ -336,7 +342,8 @@ async function HomepageLocations() {
 }
 
 async function HomepageCompanyPages() {
-  const pages = await getPublishedPageChildren('company', await getSiteLocale())
+  const locale = await getSiteLocale()
+  const pages = await getPublishedPageChildren('company', locale)
   if (pages.length === 0) {
     return <Text color="muted">The Company pages are being prepared.</Text>
   }
@@ -344,15 +351,25 @@ async function HomepageCompanyPages() {
   return (
     <NewsGrid>
       {pages.map((page) => (
-        <HomepageCompanyPageCard key={page.slug} page={page} />
+        <HomepageCompanyPageCard key={page.slug} locale={locale} page={page} />
       ))}
     </NewsGrid>
   )
 }
 
-function HomepageCompanyPageCard({ page }: { readonly page: ManagedPageSummary }) {
+function HomepageCompanyPageCard({
+  locale,
+  page,
+}: {
+  readonly locale: ContentLocale
+  readonly page: ManagedPageSummary
+}) {
   return (
-    <StoryCard href={`/company/${page.slug}`} label={`Read ${page.title}`} size="compact">
+    <StoryCard
+      href={localizedHref(locale, `/company/${page.slug}`)}
+      label={`Read ${page.title}`}
+      size="compact"
+    >
       <StoryCardContent>
         <Stack gap="sm">
           <Text as="h3" variant="h3">
@@ -371,7 +388,8 @@ function HomepageCompanyPageCard({ page }: { readonly page: ManagedPageSummary }
 }
 
 async function NewsroomStories() {
-  const news = await getPublishedNews(await getSiteLocale(), undefined, 3)
+  const locale = await getSiteLocale()
+  const news = await getPublishedNews(locale, undefined, 3)
 
   if (news.length === 0) {
     return (
@@ -389,6 +407,7 @@ async function NewsroomStories() {
           featured={index === 0}
           key={article.slug}
           label={index === 0 ? 'Featured example' : index === 1 ? 'Behind the demo' : 'Guide'}
+          locale={locale}
           meta={
             index === 0
               ? 'Published story example · CMS-managed'
@@ -406,11 +425,13 @@ function HomepageStoryCard({
   article,
   featured,
   label,
+  locale,
   meta,
 }: {
   readonly article: NewsSummary
   readonly featured: boolean
   readonly label: string
+  readonly locale: ContentLocale
   readonly meta: string
 }) {
   const story = (
@@ -423,7 +444,11 @@ function HomepageStoryCard({
   )
 
   return (
-    <StoryCard featured={featured} href={`/news/${article.slug}`} label={`Read ${article.title}`}>
+    <StoryCard
+      featured={featured}
+      href={localizedHref(locale, `/news/${article.slug}`)}
+      label={`Read ${article.title}`}
+    >
       {featured ? (
         <div>
           <Text color="muted" variant="kicker">
@@ -451,7 +476,8 @@ function HomepageStoryCard({
 }
 
 async function HomepageHero() {
-  const homepage = await getHomepage(await getSiteLocale())
+  const locale = await getSiteLocale()
+  const homepage = await getHomepage(locale)
   return (
     <HomeHeroGrid>
       <HeroContent>
@@ -465,10 +491,18 @@ async function HomepageHero() {
           {homepage.heroBody}
         </Text>
         <Cluster>
-          <ButtonLink href={homepage.primaryCta.href} size="lg" variant="primary">
+          <ButtonLink
+            href={localizedHref(locale, homepage.primaryCta.href)}
+            size="lg"
+            variant="primary"
+          >
             {homepage.primaryCta.label} <Icon source={ArrowRight} size="sm" />
           </ButtonLink>
-          <ButtonLink href={homepage.secondaryCta.href} size="lg" variant="secondary">
+          <ButtonLink
+            href={localizedHref(locale, homepage.secondaryCta.href)}
+            size="lg"
+            variant="secondary"
+          >
             {homepage.secondaryCta.label}
           </ButtonLink>
         </Cluster>

@@ -30,6 +30,10 @@ import {
 import { getSiteLocale } from '@/lib/locale'
 import { buildPageMetadata } from '@/lib/seo'
 
+type PageProps = {
+  readonly searchParams: Promise<{ readonly category?: string; readonly country?: string }>
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getSiteLocale()
   return buildPageMetadata({
@@ -42,10 +46,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type NewsCategory = 'company' | 'product' | 'people' | 'ideas'
-
-type PageProps = {
-  readonly searchParams: Promise<{ readonly category?: string; readonly country?: string }>
-}
 
 const filters: readonly { readonly label: string; readonly value: 'all' | NewsCategory }[] = [
   { label: 'All stories', value: 'all' },

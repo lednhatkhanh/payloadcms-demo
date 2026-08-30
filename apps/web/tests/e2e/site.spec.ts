@@ -20,6 +20,25 @@ test('a reader can reach a seeded story', async ({ page }) => {
   await expect(page.getByRole('article')).toBeVisible()
 })
 
+test('managed page links preserve the canonical locale during soft navigation', async ({
+  page,
+}) => {
+  await page.goto('/en')
+  const favicon = await page.request.get('/favicon.ico')
+  const link = page.getByRole('link', { name: 'Read Ways of working' })
+
+  expect(favicon.ok()).toBe(true)
+  expect(favicon.headers()['content-type']).toContain('image/svg+xml')
+  await expect(link).toHaveAttribute('href', '/en/company/ways-of-working')
+  await link.click()
+
+  await expect(page).toHaveURL(/\/en\/company\/ways-of-working$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Ways of working' })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Shipping, made clearer.' }),
+  ).toHaveCount(0)
+})
+
 test('unknown stories render the editorial 404', async ({ page }) => {
   await page.goto('/news/not-a-real-story')
   await expect(

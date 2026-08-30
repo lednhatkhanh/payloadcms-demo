@@ -34,6 +34,10 @@ import {
 import { getSiteLocale } from '@/lib/locale'
 import { buildPageMetadata } from '@/lib/seo'
 
+type PageProps = {
+  readonly searchParams: Promise<{ readonly service?: string }>
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getSiteLocale()
   return buildPageMetadata({
@@ -44,8 +48,6 @@ export async function generateMetadata(): Promise<Metadata> {
     title: 'Locations',
   })
 }
-
-type PageProps = { readonly searchParams: Promise<{ readonly service?: string }> }
 
 const locationServiceLabels: Record<LocationService, string> = {
   'logistics-solutions': 'Logistics solutions',

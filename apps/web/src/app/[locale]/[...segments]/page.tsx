@@ -17,7 +17,7 @@ import { buildPageMetadata } from '@/lib/seo'
 
 type PreviewSearchParams = { readonly id?: string; readonly preview?: string }
 type PageProps = {
-  readonly params: Promise<{ segments: string[] }>
+  readonly params: Promise<{ locale: string; segments: string[] }>
   readonly searchParams: Promise<PreviewSearchParams>
 }
 

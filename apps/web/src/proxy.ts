@@ -23,7 +23,7 @@ function localeResponse(response: NextResponse, locale: ContentLocale): NextResp
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const [, firstSegment, ...remainingSegments] = pathname.split('/')
+  const firstSegment = pathname.split('/')[1]
 
   if (!isContentLocale(firstSegment)) {
     const destination = request.nextUrl.clone()
@@ -31,15 +31,7 @@ export function proxy(request: NextRequest) {
     return localeResponse(NextResponse.redirect(destination), localeForRequest(request))
   }
 
-  const rewrittenUrl = request.nextUrl.clone()
-  rewrittenUrl.pathname = `/${remainingSegments.join('/')}`
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-site-locale', firstSegment)
-
-  return localeResponse(
-    NextResponse.rewrite(rewrittenUrl, { request: { headers: requestHeaders } }),
-    firstSegment,
-  )
+  return localeResponse(NextResponse.next(), firstSegment)
 }
 
 export const config = {

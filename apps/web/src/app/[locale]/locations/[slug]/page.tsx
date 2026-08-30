@@ -13,7 +13,9 @@ import { getLocationBySlug, getSeoSettings, type LocationService } from '@/lib/c
 import { getSiteLocale } from '@/lib/locale'
 import { buildPageMetadata } from '@/lib/seo'
 
-type PageProps = { readonly params: Promise<{ readonly slug: string }> }
+type PageProps = {
+  readonly params: Promise<{ readonly locale: string; readonly slug: string }>
+}
 
 const locationServiceLabels: Record<LocationService, string> = {
   'logistics-solutions': 'Logistics solutions',

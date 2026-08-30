@@ -1,16 +1,16 @@
 import '@repo/ui/styles.css'
 
-import { UiProvider } from '@repo/ui/providers'
 import { contentLocales } from '@repo/payload-config/locales'
-import { Noto_Sans } from 'next/font/google'
+import { UiProvider } from '@repo/ui/providers'
 import type { Metadata } from 'next'
-
-import { SiteHeader } from '@/components/SiteHeader'
-import { PreviewBanner } from '@/components/PreviewBanner'
-import { getSeoSettings } from '@/lib/content'
-import { localeTag } from '@/lib/locale'
-import { buildSiteMetadata } from '@/lib/seo'
+import { Noto_Sans } from 'next/font/google'
 import { Suspense } from 'react'
+
+import { PreviewBanner } from '@/components/PreviewBanner'
+import { SiteHeader } from '@/components/SiteHeader'
+import { getSeoSettings } from '@/lib/content'
+import { getSiteLocale, localeTag } from '@/lib/locale'
+import { buildSiteMetadata } from '@/lib/seo'
 
 const notoSans = Noto_Sans({
   display: 'swap',
@@ -18,25 +18,24 @@ const notoSans = Noto_Sans({
   variable: '--font-noto-sans',
 })
 
-const localeTags = Object.fromEntries(contentLocales.map((locale) => [locale, localeTag(locale)]))
-const documentLocaleScript = `document.documentElement.lang=(${JSON.stringify(localeTags)})[location.pathname.split('/')[1]]`
-
 export async function generateMetadata(): Promise<Metadata> {
   return buildSiteMetadata(await getSeoSettings('en'))
 }
 
-export default function RootLayout({ children }: { readonly children: React.ReactNode }) {
+export function generateStaticParams() {
+  return contentLocales.map((locale) => ({ locale }))
+}
+
+export default async function RootLayout({ children }: { readonly children: React.ReactNode }) {
+  const locale = await getSiteLocale()
+
   return (
     <html
       className={notoSans.variable}
       data-scroll-behavior="smooth"
       dir="ltr"
-      lang={localeTag('en')}
-      suppressHydrationWarning
+      lang={localeTag(locale)}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: documentLocaleScript }} />
-      </head>
       <body>
         <UiProvider>
           <SiteHeader />

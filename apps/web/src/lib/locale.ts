@@ -1,11 +1,10 @@
 import 'server-only'
 
 import { isContentLocale, type ContentLocale } from '@repo/payload-config/locales'
-import { headers } from 'next/headers'
+import { locale as routeLocale } from 'next/root-params'
 
 export async function getSiteLocale(): Promise<ContentLocale> {
-  const requestHeaders = await headers()
-  const locale = requestHeaders.get('x-site-locale') ?? undefined
+  const locale = await routeLocale()
   if (!isContentLocale(locale)) throw new Error('A canonical site locale is required')
   return locale
 }
