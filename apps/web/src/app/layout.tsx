@@ -19,7 +19,7 @@ const notoSans = Noto_Sans({
 })
 
 const localeTags = Object.fromEntries(contentLocales.map((locale) => [locale, localeTag(locale)]))
-const documentLocaleScript = `document.documentElement.lang=(${JSON.stringify(localeTags)})[location.pathname.split('/')[1]]??'${localeTag('en')}'`
+const documentLocaleScript = `document.documentElement.lang=(${JSON.stringify(localeTags)})[location.pathname.split('/')[1]]`
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildSiteMetadata(await getSeoSettings('en'))

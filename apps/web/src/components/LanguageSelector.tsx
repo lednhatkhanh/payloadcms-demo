@@ -17,13 +17,15 @@ function localePath(locale: string, pathname: string): string {
   return `/${locale}${pageSegments.length > 0 ? `/${pageSegments.join('/')}` : ''}`
 }
 
-function selectedLocale(pathname: string): string {
+function selectedLocale(pathname: string): string | undefined {
   const locale = pathname.split('/').filter(Boolean)[0]
-  return isContentLocale(locale) ? locale : 'en'
+  return isContentLocale(locale) ? locale : undefined
 }
 
 export function LanguageSelector() {
   const pathname = usePathname()
+  const locale = selectedLocale(pathname)
+  if (!locale) return null
 
   function changeLanguage(key: Key | null) {
     if (typeof key !== 'string' || !isContentLocale(key)) return
@@ -35,11 +37,11 @@ export function LanguageSelector() {
     <SelectField
       label="Language"
       onSelectionChange={changeLanguage}
-      options={contentLocales.map((locale) => ({
-        label: contentLocaleLabels[locale],
-        value: locale,
+      options={contentLocales.map((optionLocale) => ({
+        label: contentLocaleLabels[optionLocale],
+        value: optionLocale,
       }))}
-      selectedKey={selectedLocale(pathname)}
+      selectedKey={locale}
       size="compact"
     />
   )

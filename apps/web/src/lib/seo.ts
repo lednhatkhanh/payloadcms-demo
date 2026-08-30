@@ -9,7 +9,7 @@ import type { MediaReference, SeoMetadata, SeoSettingsContent } from '@/lib/cont
 
 type PageMetadataInput = {
   readonly description: string
-  readonly fallbackImage?: MediaReference | undefined
+  readonly pageImage?: MediaReference | undefined
   readonly locale: ContentLocale
   readonly noIndex?: boolean
   readonly path: string
@@ -38,7 +38,7 @@ function socialImageUrl(image: MediaReference | undefined): string | undefined {
 
 export function buildPageMetadata({
   description,
-  fallbackImage,
+  pageImage,
   locale,
   noIndex = false,
   path,
@@ -46,9 +46,9 @@ export function buildPageMetadata({
   settings,
   title,
 }: PageMetadataInput): Metadata {
-  const pageTitle = seo?.title || title || settings.defaultTitle
-  const pageDescription = seo?.description || description || settings.defaultDescription
-  const socialImage = socialImageUrl(seo?.image ?? fallbackImage ?? settings.defaultSocialImage)
+  const pageTitle = seo?.title || title
+  const pageDescription = seo?.description || description
+  const socialImage = socialImageUrl(seo?.image ?? pageImage ?? settings.defaultSocialImage)
   const canonical = absoluteUrl(localizedPath(locale, path))
   const shouldIndex = settings.allowIndexing && !noIndex
 

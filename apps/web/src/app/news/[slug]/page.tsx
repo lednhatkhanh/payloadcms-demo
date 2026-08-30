@@ -66,7 +66,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const countryQuery = query.country ? `?country=${encodeURIComponent(query.country)}` : ''
   return buildPageMetadata({
     description: article.excerpt,
-    fallbackImage: article.hero,
+    pageImage: article.hero,
     locale,
     noIndex: previewId !== undefined,
     path: `/news/${slug}${countryQuery}`,

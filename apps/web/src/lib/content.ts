@@ -3,7 +3,7 @@ import 'server-only'
 import config from '@repo/payload-config'
 import { mediaDirectory } from '@repo/payload-config/paths'
 import type { News, Page } from '@repo/payload-config/types'
-import type { ContentLocale } from '@repo/payload-config/locales'
+import { contentLocales, type ContentLocale } from '@repo/payload-config/locales'
 import { serverEnvironment } from '@repo/contracts/env'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -91,17 +91,20 @@ export interface SitemapContent {
 }
 
 export interface SitemapLocation {
+  readonly locales: readonly ContentLocale[]
   readonly slug: string
   readonly updatedAt?: string | undefined
 }
 
 export interface SitemapNews {
   readonly countryCode?: string
+  readonly locales: readonly ContentLocale[]
   readonly slug: string
   readonly updatedAt?: string | undefined
 }
 
 export interface SitemapPage {
+  readonly locales: readonly ContentLocale[]
   readonly path: string
   readonly updatedAt?: string | undefined
 }
@@ -122,24 +125,8 @@ export interface LocationRecord extends LocationSummary {
   readonly countryName: string
 }
 
-const defaultHomepage: HomepageContent = {
-  aboutBody:
-    'We publish fewer, better updates: direct reporting, durable explanations, and a point of view you can understand.',
-  aboutTitle: 'Built for useful context',
-  contactBody: 'Send a note to the editorial team. We read every thoughtful message.',
-  contactTitle: 'Have a question worth exploring?',
-  eyebrow: 'Independent thinking, clearly told',
-  heroBody:
-    'The Dispatch is a considered record of the products, people, and ideas shaping what comes next.',
-  heroTitle: 'News with room to breathe.',
-  newsletterBody: 'A short letter when there is something genuinely useful to share.',
-  newsletterTitle: 'The important parts, occasionally.',
-  primaryCta: { href: '/news', label: 'Read the latest' },
-  secondaryCta: { href: '/#enquiry', label: 'Talk with us' },
-}
-
-function stringValue(value: unknown, fallback = ''): string {
-  return typeof value === 'string' ? value : fallback
+function stringValue(value: unknown): string {
+  return typeof value === 'string' ? value : ''
 }
 
 function mediaValue(value: unknown): MediaReference | undefined {
@@ -192,7 +179,7 @@ function mapSummary(doc: Record<string, unknown>): NewsSummary | undefined {
   const seo = seoValue(doc.meta)
   if (!slug || !title || !hero) return undefined
   return {
-    category: stringValue(doc.category, 'News'),
+    category: stringValue(doc.category),
     ...(country ? { country } : {}),
     excerpt: stringValue(doc.excerpt),
     hero,
@@ -234,7 +221,9 @@ async function countryIdsForLocale(locale: ContentLocale): Promise<readonly numb
     collection: 'countries',
     depth: 0,
     draft: false,
+    fallbackLocale: false,
     limit: 12,
+    locale,
     overrideAccess: false,
     select: { supportedLocales: true },
   })
@@ -252,7 +241,9 @@ export async function getCountryFilters(locale: ContentLocale): Promise<readonly
     collection: 'countries',
     depth: 0,
     draft: false,
+    fallbackLocale: false,
     limit: 12,
+    locale,
     overrideAccess: false,
     select: { code: true, name: true, supportedLocales: true },
     sort: 'name',
@@ -283,21 +274,27 @@ function mapLocationSummary(doc: Record<string, unknown>): LocationSummary | und
 
 function mapManagedPage(
   page: Pick<Page, 'id' | 'layout' | 'lead' | 'meta' | 'slug' | 'title'>,
-): ManagedPage {
+): ManagedPage | undefined {
+  const lead = stringValue(page.lead)
+  if (!lead || !Array.isArray(page.layout) || page.layout.length === 0) return undefined
   const seo = seoValue(page.meta)
   return {
     id: page.id,
     layout: page.layout,
-    lead: page.lead,
+    lead,
     slug: page.slug,
     title: page.title,
     ...(seo ? { seo } : {}),
   }
 }
 
-function mapManagedPageSummary(page: Pick<Page, 'lead' | 'slug' | 'title'>): ManagedPageSummary {
+function mapManagedPageSummary(
+  page: Pick<Page, 'lead' | 'slug' | 'title'>,
+): ManagedPageSummary | undefined {
+  const lead = stringValue(page.lead)
+  if (!lead) return undefined
   return {
-    lead: page.lead,
+    lead,
     slug: page.slug,
     title: page.title,
   }
@@ -318,6 +315,7 @@ export async function getHomepage(locale: ContentLocale): Promise<HomepageConten
     slug: 'homepage',
     depth: 1,
     draft: false,
+    fallbackLocale: false,
     locale,
     overrideAccess: false,
     select: {
@@ -340,24 +338,18 @@ export async function getHomepage(locale: ContentLocale): Promise<HomepageConten
   const hero = mediaValue(homepage.heroMedia)
   const seo = seoValue(homepage.meta)
   return {
-    aboutBody: stringValue(homepage.aboutBody, defaultHomepage.aboutBody),
-    aboutTitle: stringValue(homepage.aboutTitle, defaultHomepage.aboutTitle),
-    contactBody: stringValue(homepage.contactBody, defaultHomepage.contactBody),
-    contactTitle: stringValue(homepage.contactTitle, defaultHomepage.contactTitle),
-    eyebrow: stringValue(homepage.eyebrow, defaultHomepage.eyebrow),
-    heroBody: stringValue(homepage.heroBody, defaultHomepage.heroBody),
+    aboutBody: homepage.aboutBody,
+    aboutTitle: homepage.aboutTitle,
+    contactBody: homepage.contactBody,
+    contactTitle: homepage.contactTitle,
+    eyebrow: homepage.eyebrow,
+    heroBody: homepage.heroBody,
     ...(hero ? { hero } : {}),
-    heroTitle: stringValue(homepage.heroTitle, defaultHomepage.heroTitle),
-    newsletterBody: stringValue(homepage.newsletterBody, defaultHomepage.newsletterBody),
-    newsletterTitle: stringValue(homepage.newsletterTitle, defaultHomepage.newsletterTitle),
-    primaryCta: {
-      href: stringValue(homepage.primaryCta?.href, defaultHomepage.primaryCta.href),
-      label: stringValue(homepage.primaryCta?.label, defaultHomepage.primaryCta.label),
-    },
-    secondaryCta: {
-      href: stringValue(homepage.secondaryCta?.href, defaultHomepage.secondaryCta.href),
-      label: stringValue(homepage.secondaryCta?.label, defaultHomepage.secondaryCta.label),
-    },
+    heroTitle: homepage.heroTitle,
+    newsletterBody: homepage.newsletterBody,
+    newsletterTitle: homepage.newsletterTitle,
+    primaryCta: homepage.primaryCta,
+    secondaryCta: homepage.secondaryCta,
     ...(seo ? { seo } : {}),
   }
 }
@@ -371,6 +363,7 @@ export async function getSeoSettings(locale: ContentLocale): Promise<SeoSettings
     slug: 'seo-settings',
     depth: 1,
     draft: false,
+    fallbackLocale: false,
     locale,
     overrideAccess: false,
     select: {
@@ -388,15 +381,12 @@ export async function getSeoSettings(locale: ContentLocale): Promise<SeoSettings
   const googleSiteVerification = stringValue(settings.googleSiteVerification)
   const twitterSite = stringValue(settings.twitterSite)
   return {
-    allowIndexing: settings.allowIndexing !== false,
-    defaultDescription: stringValue(
-      settings.defaultDescription,
-      'A focused shipping and logistics demonstration with service paths, illustrative locations, and The Dispatch newsroom.',
-    ),
+    allowIndexing: settings.allowIndexing,
+    defaultDescription: settings.defaultDescription,
     ...(defaultSocialImage ? { defaultSocialImage } : {}),
-    defaultTitle: stringValue(settings.defaultTitle, 'Shipping & logistics'),
+    defaultTitle: settings.defaultTitle,
     ...(googleSiteVerification ? { googleSiteVerification } : {}),
-    siteName: stringValue(settings.siteName, 'Shipping & logistics'),
+    siteName: settings.siteName,
     ...(twitterSite ? { twitterSite } : {}),
   }
 }
@@ -416,40 +406,70 @@ export async function getSitemapContent(): Promise<SitemapContent> {
   cacheLife('hours')
   cacheTag('locations', 'news', 'pages')
   const payload = await getPayload({ config })
-  const [pageResult, newsResult, locationResult] = await Promise.all([
-    payload.find({
-      collection: 'pages',
-      depth: 0,
-      draft: false,
-      limit: 100,
-      locale: 'en',
-      overrideAccess: false,
-      select: { parent: true, slug: true, updatedAt: true },
-      sort: 'createdAt',
+  const localizedResults = await Promise.all(
+    contentLocales.map(async (locale) => {
+      const [pages, news, locations] = await Promise.all([
+        payload.find({
+          collection: 'pages',
+          depth: 0,
+          draft: false,
+          fallbackLocale: false,
+          limit: 100,
+          locale,
+          overrideAccess: false,
+          select: { layout: true, lead: true, parent: true, slug: true, updatedAt: true },
+          sort: 'createdAt',
+        }),
+        payload.find({
+          collection: 'news',
+          depth: 1,
+          draft: false,
+          fallbackLocale: false,
+          limit: 100,
+          locale,
+          overrideAccess: false,
+          select: { country: true, excerpt: true, slug: true, title: true, updatedAt: true },
+          sort: 'createdAt',
+        }),
+        payload.find({
+          collection: 'locations',
+          depth: 0,
+          draft: false,
+          fallbackLocale: false,
+          limit: 100,
+          locale,
+          overrideAccess: false,
+          select: { description: true, slug: true, title: true, updatedAt: true },
+          sort: 'createdAt',
+        }),
+      ])
+      return { locale, locations, news, pages }
     }),
-    payload.find({
-      collection: 'news',
-      depth: 1,
-      draft: false,
-      limit: 100,
-      locale: 'en',
-      overrideAccess: false,
-      select: { country: true, slug: true, updatedAt: true },
-      sort: 'createdAt',
-    }),
-    payload.find({
-      collection: 'locations',
-      depth: 0,
-      draft: false,
-      limit: 100,
-      locale: 'en',
-      overrideAccess: false,
-      select: { slug: true, updatedAt: true },
-      sort: 'createdAt',
-    }),
-  ])
+  )
+  const source = localizedResults.find(({ locale }) => locale === 'en')
+  if (!source) throw new Error('English sitemap source content is required')
 
-  const pageRecords = pageResult.docs.flatMap((page) => {
+  function availableLocales(
+    id: number,
+    collection: 'locations' | 'news' | 'pages',
+  ): readonly ContentLocale[] {
+    return localizedResults.flatMap((result) => {
+      const document = result[collection].docs.find((candidate) => candidate.id === id)
+      if (!document) return []
+      const record = document as unknown as Record<string, unknown>
+      const complete =
+        collection === 'pages'
+          ? Boolean(stringValue(record.lead)) &&
+            Array.isArray(record.layout) &&
+            record.layout.length > 0
+          : collection === 'news'
+            ? Boolean(stringValue(record.title) && stringValue(record.excerpt))
+            : Boolean(stringValue(record.title) && stringValue(record.description))
+      return complete ? [result.locale] : []
+    })
+  }
+
+  const pageRecords = source.pages.docs.flatMap((page) => {
     const record = page as unknown as Record<string, unknown>
     const id = recordId(record)
     const slug = stringValue(record.slug)
@@ -458,6 +478,7 @@ export async function getSitemapContent(): Promise<SitemapContent> {
           {
             id,
             parentId: typeof record.parent === 'number' ? record.parent : undefined,
+            locales: availableLocales(id, 'pages'),
             slug,
             updatedAt: updatedAtValue(record.updatedAt),
           },
@@ -475,19 +496,30 @@ export async function getSitemapContent(): Promise<SitemapContent> {
   }
 
   return {
-    locations: locationResult.docs.flatMap((location) => {
+    locations: source.locations.docs.flatMap((location) => {
       const record = location as unknown as Record<string, unknown>
+      const id = recordId(record)
       const slug = stringValue(record.slug)
-      return slug ? [{ slug, updatedAt: updatedAtValue(record.updatedAt) }] : []
+      return id !== undefined && slug
+        ? [
+            {
+              locales: availableLocales(id, 'locations'),
+              slug,
+              updatedAt: updatedAtValue(record.updatedAt),
+            },
+          ]
+        : []
     }),
-    news: newsResult.docs.flatMap((news) => {
+    news: source.news.docs.flatMap((news) => {
       const record = news as unknown as Record<string, unknown>
+      const id = recordId(record)
       const slug = stringValue(record.slug)
       const country = countryValue(record.country)
-      return slug
+      return id !== undefined && slug
         ? [
             {
               ...(country ? { countryCode: country.code } : {}),
+              locales: availableLocales(id, 'news'),
               slug,
               updatedAt: updatedAtValue(record.updatedAt),
             },
@@ -496,7 +528,9 @@ export async function getSitemapContent(): Promise<SitemapContent> {
     }),
     pages: pageRecords.flatMap((page) => {
       const pagePathValue = pagePath(page)
-      return pagePathValue ? [{ path: pagePathValue, updatedAt: page.updatedAt }] : []
+      return pagePathValue
+        ? [{ locales: page.locales, path: pagePathValue, updatedAt: page.updatedAt }]
+        : []
     }),
   }
 }
@@ -520,6 +554,7 @@ export async function getPublishedNews(
     collection: 'news',
     depth: 1,
     draft: false,
+    fallbackLocale: false,
     locale,
     limit,
     overrideAccess: false,
@@ -573,6 +608,7 @@ export async function getNewsBySlug(
     collection: 'news',
     depth: 1,
     draft: false,
+    fallbackLocale: false,
     locale,
     limit: 1,
     overrideAccess: false,
@@ -615,6 +651,7 @@ export async function getPreviewNewsById(
     collection: 'news',
     depth: 1,
     draft: true,
+    fallbackLocale: false,
     id,
     locale,
     overrideAccess: true,
@@ -667,6 +704,7 @@ export async function getPublishedLocations(
     collection: 'locations',
     depth: 1,
     draft: false,
+    fallbackLocale: false,
     locale,
     limit: 24,
     overrideAccess: false,
@@ -699,6 +737,7 @@ export async function getLocationBySlug(
     collection: 'locations',
     depth: 1,
     draft: false,
+    fallbackLocale: false,
     locale,
     limit: 1,
     overrideAccess: false,
@@ -737,6 +776,7 @@ async function findPageBySegment(
     collection: 'pages',
     depth: 2,
     draft,
+    fallbackLocale: false,
     locale,
     limit: 1,
     overrideAccess: draft,
@@ -794,6 +834,7 @@ async function getPageChildrenByParentSlug(
     collection: 'pages',
     depth: 0,
     draft: false,
+    fallbackLocale: false,
     locale,
     limit: 1,
     overrideAccess: false,
@@ -807,6 +848,7 @@ async function getPageChildrenByParentSlug(
     collection: 'pages',
     depth: 0,
     draft: false,
+    fallbackLocale: false,
     locale,
     limit: 12,
     overrideAccess: false,
@@ -815,7 +857,10 @@ async function getPageChildrenByParentSlug(
     where: { parent: { equals: parent.id } },
   })
 
-  return result.docs.map(mapManagedPageSummary)
+  return result.docs.flatMap((page) => {
+    const summary = mapManagedPageSummary(page)
+    return summary ? [summary] : []
+  })
 }
 
 export async function getPublishedPageChildren(

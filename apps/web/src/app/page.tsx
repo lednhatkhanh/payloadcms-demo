@@ -58,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const [homepage, settings] = await Promise.all([getHomepage(locale), getSeoSettings(locale)])
   return buildPageMetadata({
     description: homepage.heroBody,
-    fallbackImage: homepage.hero,
+    pageImage: homepage.hero,
     locale,
     path: '/',
     seo: homepage.seo,

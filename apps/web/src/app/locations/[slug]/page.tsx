@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return location
     ? buildPageMetadata({
         description: location.description,
-        fallbackImage: location.hero,
+        pageImage: location.hero,
         locale,
         path: `/locations/${slug}`,
         seo: location.seo,

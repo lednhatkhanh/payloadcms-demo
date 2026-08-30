@@ -83,17 +83,17 @@ function actionPath(
   locale: string,
   publish: boolean | undefined,
 ): `/${string}` {
-  const localeQuery = `locale=${encodeURIComponent(locale)}`
+  const localeQuery = `locale=${encodeURIComponent(locale)}&fallback-locale=false`
 
   if (id) {
     return publish
       ? `/${collectionSlug}/${id}?depth=0&${localeQuery}`
-      : `/${collectionSlug}/${id}?depth=0&${localeQuery}&draft=true&fallback-locale=null`
+      : `/${collectionSlug}/${id}?depth=0&${localeQuery}&draft=true`
   }
 
   return publish
     ? `/${collectionSlug}?depth=0&${localeQuery}`
-    : `/${collectionSlug}?depth=0&${localeQuery}&draft=true&fallback-locale=null`
+    : `/${collectionSlug}?depth=0&${localeQuery}&draft=true`
 }
 
 export function WorkflowActionButton() {

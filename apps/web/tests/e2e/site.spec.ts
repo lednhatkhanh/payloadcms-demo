@@ -45,10 +45,18 @@ test('the seeded CMS SEO data reaches public metadata and crawler routes', async
     page.request.get('/sitemap.xml'),
   ])
   expect(await robots.text()).toContain('Sitemap:')
-  expect(await sitemap.text()).toContain('/en/shipping/ocean-freight')
-  expect(await sitemap.text()).toContain('hreflang="ja"')
-  expect(await sitemap.text()).toContain('/ja/shipping/ocean-freight')
-  expect(await sitemap.text()).not.toContain('/jp/')
+  const sitemapText = await sitemap.text()
+  expect(sitemapText).toContain('/en/shipping/ocean-freight')
+  expect(sitemapText).toContain('hreflang="ja"')
+  expect(sitemapText).toContain('/ja/shipping/ocean-freight')
+  expect(sitemapText).not.toContain('/jp/')
+
+  const spainStory = sitemapText
+    .split('<url>')
+    .find((entry) => entry.includes('/en/news/es-local-editorial-brief?country=ES'))
+  expect(spainStory).toBeDefined()
+  expect(spainStory).toContain('hreflang="es"')
+  expect(spainStory).not.toContain('hreflang="ja"')
 })
 
 test('Japanese uses the canonical ja locale and human-readable labels', async ({ page }) => {
@@ -61,4 +69,13 @@ test('Japanese uses the canonical ja locale and human-readable labels', async ({
   await expect(page.getByRole('button', { name: /日本語/ })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Japan', exact: true })).toBeVisible()
   await expect(page.getByText('JP local Dispatch update', { exact: true })).toHaveCount(0)
+})
+
+test('localized content never falls back to another language', async ({ page }) => {
+  await page.goto('/ja/news/es-local-editorial-brief?country=ES')
+
+  await expect(
+    page.getByRole('heading', { name: 'That story is not in the edition.' }),
+  ).toBeVisible()
+  await expect(page.getByText('Spain local editorial brief', { exact: true })).toHaveCount(0)
 })

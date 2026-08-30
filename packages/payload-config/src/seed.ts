@@ -84,7 +84,6 @@ const homepageHero: SeedMedia = {
 
 const stories = [
   {
-    legacySlug: 'a-calmer-way-to-follow-what-matters',
     title: 'A clearer way to begin a shipment enquiry',
     slug: 'a-clearer-way-to-begin-a-shipment-enquiry',
     excerpt:
@@ -102,7 +101,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'designing-our-publishing-system-in-the-open',
     title: 'What a published editorial review can show',
     slug: 'what-a-published-editorial-review-can-show',
     excerpt:
@@ -120,7 +118,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'how-a-new-edition-arrives',
     title: 'A quieter arrival for the next Dispatch edition',
     slug: 'a-quieter-arrival-for-the-next-dispatch-edition',
     excerpt:
@@ -138,7 +135,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'making-publishing-ownership-visible',
     title: 'What changes when publishing has a clear owner',
     slug: 'what-changes-when-publishing-has-a-clear-owner',
     excerpt:
@@ -156,7 +152,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'people-behind-a-useful-first-question',
     title: 'The people behind a more useful first question',
     slug: 'the-people-behind-a-more-useful-first-question',
     excerpt:
@@ -174,7 +169,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'the-people-behind-the-first-edition',
     title: 'Choosing a service path for a demonstration brief',
     slug: 'choosing-a-service-path-for-a-demonstration-brief',
     excerpt:
@@ -192,7 +186,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'a-route-map-for-the-next-action',
     title: 'A route map for choosing the next useful action',
     slug: 'a-route-map-for-choosing-the-next-useful-action',
     excerpt:
@@ -210,7 +203,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'a-public-update-with-room-to-breathe',
     title: 'A public update with room to breathe',
     slug: 'a-public-update-with-room-to-breathe',
     excerpt:
@@ -228,7 +220,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'a-publishing-queue-with-clear-status',
     title: 'A publishing queue with clear status',
     slug: 'a-publishing-queue-with-clear-status',
     excerpt:
@@ -246,7 +237,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'the-workshop-behind-a-clearer-enquiry',
     title: 'The workshop behind a clearer enquiry',
     slug: 'the-workshop-behind-a-clearer-enquiry',
     excerpt:
@@ -264,7 +254,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'the-editorial-handoff-that-keeps-context-intact',
     title: 'The editorial handoff that keeps context intact',
     slug: 'the-editorial-handoff-that-keeps-context-intact',
     excerpt:
@@ -282,7 +271,6 @@ const stories = [
     ]),
   },
   {
-    legacySlug: 'a-small-framework-for-the-next-useful-choice',
     title: 'A small framework for the next useful choice',
     slug: 'a-small-framework-for-the-next-useful-choice',
     excerpt:
@@ -368,127 +356,7 @@ type PageSeed = {
 
 const payload = await getPayload({ config })
 
-async function repairLocalizedContent(): Promise<void> {
-  await Promise.all([
-    ...stories.map(async (story) => {
-      const existing = await payload.find({
-        collection: 'news',
-        depth: 0,
-        limit: 1,
-        locale: 'all',
-        overrideAccess: true,
-        where: {
-          or: [{ slug: { equals: story.slug } }, { slug: { equals: story.legacySlug } }],
-        },
-      })
-      const record = existing.docs[0]
-      if (!record) return
-      await payload.update({
-        collection: 'news',
-        data: { body: story.body, excerpt: story.excerpt, title: story.title },
-        draft: false,
-        id: record.id,
-        locale: 'en',
-        overrideAccess: true,
-      })
-    }),
-    ...locations.map(async (location) => {
-      const existing = await payload.find({
-        collection: 'locations',
-        depth: 0,
-        limit: 1,
-        locale: 'all',
-        overrideAccess: true,
-        where: { slug: { equals: location.slug } },
-      })
-      const record = existing.docs[0]
-      if (!record) return
-      await payload.update({
-        collection: 'locations',
-        data: { description: location.description, title: location.title },
-        draft: false,
-        id: record.id,
-        locale: 'en',
-        overrideAccess: true,
-      })
-    }),
-  ])
-
-  await payload.updateGlobal({
-    slug: 'homepage',
-    data: {
-      aboutBody:
-        'The homepage leads with essential options instead of turning the demo into a general page builder.',
-      aboutTitle: 'A small set of useful paths',
-      contactBody:
-        'The demo distinguishes a general message, a quote request, and a shipment enquiry without presenting real-time tracking.',
-      contactTitle: 'Point each question to the right form.',
-      eyebrow: 'A public-site demonstration',
-      heroBody:
-        'A focused demonstration of service paths, illustrative locations, editorial updates, and the right enquiry.',
-      heroTitle: 'Shipping, made clearer.',
-      newsletterBody: 'A compact footer entry for the demo’s newsletter flow.',
-      newsletterTitle: 'Editorial updates, when they are published.',
-      primaryCta: { href: '/#enquiry', label: 'Start an enquiry' },
-      secondaryCta: { href: '/news', label: 'Read The Dispatch' },
-    },
-    draft: false,
-    locale: 'en',
-    overrideAccess: true,
-  })
-
-  await payload.updateGlobal({
-    slug: 'homepage',
-    data: {
-      aboutBody:
-        'La página principal prioriza las opciones esenciales sin convertir la demostración en un creador de páginas general.',
-      aboutTitle: 'Un conjunto pequeño de rutas útiles',
-      contactBody:
-        'La demostración distingue un mensaje general, una solicitud de presupuesto y una consulta de envío sin presentar seguimiento en tiempo real.',
-      contactTitle: 'Dirige cada pregunta al formulario adecuado.',
-      eyebrow: 'Una demostración de sitio público',
-      heroBody:
-        'Una demostración enfocada en rutas de servicio, ubicaciones ilustrativas, actualizaciones editoriales y la consulta adecuada.',
-      heroTitle: 'Envíos, con mayor claridad.',
-      newsletterBody:
-        'Una entrada de pie de página compacta para el flujo de boletines de la demostración.',
-      newsletterTitle: 'Actualizaciones editoriales, cuando se publican.',
-      primaryCta: { href: '/#enquiry', label: 'Iniciar una consulta' },
-      secondaryCta: { href: '/news', label: 'Leer The Dispatch' },
-    },
-    draft: false,
-    locale: 'es',
-    overrideAccess: true,
-  })
-
-  await payload.updateGlobal({
-    slug: 'homepage',
-    data: {
-      aboutBody:
-        'このホームページでは、デモを汎用的なページビルダーにせず、必要な選択肢を優先しています。',
-      aboutTitle: '役立つ経路を厳選',
-      contactBody:
-        'このデモでは、一般的なメッセージ、見積もり依頼、配送に関するお問い合わせを区別し、リアルタイム追跡とは表示しません。',
-      contactTitle: '質問ごとに適切なフォームへ。',
-      eyebrow: '公開サイトのデモンストレーション',
-      heroBody:
-        'サービス経路、説明用の拠点、編集記事、適切なお問い合わせを示す、焦点を絞ったデモです。',
-      heroTitle: '配送を、もっとわかりやすく。',
-      newsletterBody: 'デモのニュースレターフロー用に用意した、簡潔なフッター項目です。',
-      newsletterTitle: '公開時に届く、編集アップデート。',
-      primaryCta: { href: '/#enquiry', label: 'お問い合わせを始める' },
-      secondaryCta: { href: '/news', label: 'The Dispatchを読む' },
-    },
-    draft: false,
-    locale: 'ja',
-    overrideAccess: true,
-  })
-}
-
-if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
-  await repairLocalizedContent()
-  await payload.destroy()
-} else {
+{
   type CountryCode = 'ES' | 'JP' | 'SG'
 
   type DemoCountry = {
@@ -687,16 +555,14 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
 
   const newsIds = await Promise.all(
     stories.slice(0, 3).map(async (story, index) => {
-      const { image, legacySlug, ...data } = story
+      const { image, ...data } = story
       const heroMedia = await getSeedMediaId(image, countryTeams[index]!.countryId)
       const existing = await payload.find({
         collection: 'news',
         depth: 0,
         limit: 1,
         overrideAccess: true,
-        where: {
-          or: [{ slug: { equals: data.slug } }, { slug: { equals: legacySlug } }],
-        },
+        where: { slug: { equals: data.slug } },
       })
 
       if (existing.docs[0]) {
@@ -1329,24 +1195,43 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
       _status: data.status,
     }
 
-    if (existing.docs[0]) {
-      const updated = await payload.update({
+    const pageId = existing.docs[0]
+      ? (
+          await payload.update({
+            collection: 'pages',
+            data: pageData,
+            draft,
+            id: existing.docs[0].id,
+            overrideAccess: true,
+          })
+        ).id
+      : (
+          await payload.create({
+            collection: 'pages',
+            data: pageData,
+            draft,
+            overrideAccess: true,
+          })
+        ).id
+
+    async function writeLocalizedPage(locale: 'es' | 'ja'): Promise<void> {
+      await payload.update({
         collection: 'pages',
-        data: pageData,
+        data: {
+          lead: data.lead,
+          layout: data.layout,
+          meta: { description: data.lead, title: data.title },
+        },
         draft,
-        id: existing.docs[0].id,
+        id: pageId,
+        locale,
         overrideAccess: true,
       })
-      return updated.id
     }
+    await writeLocalizedPage('es')
+    await writeLocalizedPage('ja')
 
-    const created = await payload.create({
-      collection: 'pages',
-      data: pageData,
-      draft,
-      overrideAccess: true,
-    })
-    return created.id
+    return pageId
   }
 
   const [companyImage, workingImage, standardsImage, routesImage] = await Promise.all([

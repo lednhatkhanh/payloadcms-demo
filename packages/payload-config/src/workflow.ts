@@ -64,8 +64,8 @@ function actionForStateChange(
   return undefined
 }
 
-function stringValue(value: unknown, fallback = ''): string {
-  return typeof value === 'string' ? value : fallback
+function stringValue(value: unknown): string {
+  return typeof value === 'string' ? value : ''
 }
 
 function documentId(value: unknown): number | undefined {
@@ -137,7 +137,7 @@ export function logEditorialActivity(collection: EditorialCollection): Collectio
         collection,
         documentId: id,
         ...(activity.scheduledFor ? { scheduledFor: activity.scheduledFor } : {}),
-        title: stringValue(current.title, 'Untitled content'),
+        title: stringValue(current.title),
         workflowState: originalWorkflowState(current.workflowState),
       },
       overrideAccess: true,

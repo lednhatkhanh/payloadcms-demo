@@ -1169,7 +1169,7 @@ export interface Homepage {
   createdAt?: string | null;
 }
 /**
- * Site-wide fallbacks used when a page has no SEO override. Canonical URLs are derived from the public route so they stay consistent.
+ * Site-wide SEO defaults. Canonical URLs are derived from the public route so they stay consistent.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "seo-settings".
@@ -1181,11 +1181,11 @@ export interface SeoSetting {
    */
   siteName: string;
   /**
-   * Fallback title for listing pages and records without an SEO title.
+   * Default title for listing pages and records without an SEO title.
    */
   defaultTitle: string;
   /**
-   * Fallback description for search results and social cards. Aim for 120–160 characters.
+   * Default description for search results and social cards. Aim for 120–160 characters.
    */
   defaultDescription: string;
   /**

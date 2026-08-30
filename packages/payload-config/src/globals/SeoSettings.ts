@@ -16,7 +16,7 @@ export const SeoSettings: GlobalConfig = {
   },
   admin: {
     description:
-      'Site-wide fallbacks used when a page has no SEO override. Canonical URLs are derived from the public route so they stay consistent.',
+      'Site-wide SEO defaults. Canonical URLs are derived from the public route so they stay consistent.',
     group: 'Settings',
   },
   fields: [
@@ -32,7 +32,7 @@ export const SeoSettings: GlobalConfig = {
       localized: true,
       required: true,
       maxLength: 60,
-      admin: { description: 'Fallback title for listing pages and records without an SEO title.' },
+      admin: { description: 'Default title for listing pages and records without an SEO title.' },
     },
     {
       name: 'defaultDescription',
@@ -42,7 +42,7 @@ export const SeoSettings: GlobalConfig = {
       maxLength: 160,
       admin: {
         description:
-          'Fallback description for search results and social cards. Aim for 120–160 characters.',
+          'Default description for search results and social cards. Aim for 120–160 characters.',
       },
     },
     {

@@ -4,10 +4,10 @@ Payload owns the editable search and sharing metadata; the public site turns it 
 
 ## Where to edit
 
-- **SEO settings** in Payload holds the site name, localized fallback title and description, fallback social image, optional X/Twitter account, optional Google Search Console token, and the indexing switch.
+- **SEO settings** in Payload holds the site name, localized default title and description, default social image, optional X/Twitter account, optional Google Search Console token, and the indexing switch.
 - **Homepage**, **News**, **Locations**, and **Pages** each have an **SEO** tab supplied by Payload’s SEO plugin. Set a specific title, description, and image when the page needs an override.
 
-Leave an item’s SEO fields blank to use the clear page copy and the site-wide fallback. Canonical URLs are intentionally not editable: the public route creates them, which prevents a CMS entry from pointing at the wrong path.
+Leave an item’s SEO fields blank to use its page copy and the site-wide SEO defaults. Canonical URLs are intentionally not editable: the public route creates them, which prevents a CMS entry from pointing at the wrong path.
 
 ## What is published
 

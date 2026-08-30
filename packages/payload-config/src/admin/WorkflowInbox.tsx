@@ -76,7 +76,10 @@ function isWorkflowState(value: unknown): value is WorkflowRequestState {
 }
 
 function requestTitle(value: unknown): string {
-  return typeof value === 'string' && value.length > 0 ? value : 'Untitled content'
+  if (typeof value !== 'string' || value.length === 0) {
+    throw new Error('Editorial content requires a title')
+  }
+  return value
 }
 
 function requestLocales(value: unknown): readonly string[] {
@@ -89,8 +92,8 @@ function requestUpdatedAt(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
 
-function stringValue(value: unknown, fallback = ''): string {
-  return typeof value === 'string' ? value : fallback
+function stringValue(value: unknown): string {
+  return typeof value === 'string' ? value : ''
 }
 
 function recordId(value: unknown): number | string | undefined {
@@ -168,6 +171,7 @@ async function requestsForState(
         collection,
         depth: 1,
         draft: true,
+        fallbackLocale: false,
         limit: 20,
         locale: 'en',
         overrideAccess: false,
@@ -217,7 +221,7 @@ async function coverageRecordsForLocale(
       collection,
       depth: 1,
       draft: true,
-      fallbackLocale: null,
+      fallbackLocale: false,
       limit: 24,
       locale,
       overrideAccess: false,
@@ -237,7 +241,7 @@ async function coverageRecordsForLocale(
     collection,
     depth: 0,
     draft: true,
-    fallbackLocale: null,
+    fallbackLocale: false,
     limit: 24,
     locale,
     overrideAccess: false,
@@ -271,20 +275,22 @@ async function editorialCoverage(
       if (id === undefined) continue
       const key = `${request.collection}-${id}`
       const existing = coverage.get(key)
-      const title = requestTitle(document.title)
+      const title =
+        typeof document.title === 'string' && document.title.length > 0 ? document.title : undefined
+      if (!existing && (request.locale !== 'en' || !title)) continue
       const next = existing ?? {
         collection: request.collection,
         id,
         locales: { en: false, es: false, ja: false },
-        title,
+        title: requestTitle(title),
         workflowState: workflowState(document.workflowState),
       }
       const country = countryName(document.country)
       const scheduledFor = optionalDate(document.scheduledFor)
       if (country) next.country = country
       if (scheduledFor) next.scheduledFor = scheduledFor
-      next.locales[request.locale] = title !== 'Untitled content'
-      if (request.locale === 'en' && title !== 'Untitled content') next.title = title
+      next.locales[request.locale] = title !== undefined
+      if (request.locale === 'en' && title) next.title = title
       coverage.set(key, next)
     }
   }
@@ -324,7 +330,7 @@ async function recentActivities(
     const documentId = recordId(document.documentId)
     if ((collection !== 'news' && collection !== 'pages') || documentId === undefined) return []
     const activity: EditorialActivityBuilder = {
-      action: stringValue(document.action, 'updated'),
+      action: stringValue(document.action),
       actor: actorForActivity(document.actor),
       collection,
       createdAt: stringValue(document.createdAt),

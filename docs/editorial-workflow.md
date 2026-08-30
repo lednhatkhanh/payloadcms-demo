@@ -13,7 +13,7 @@ The public site has three language routes:
 - `/ja` — Japanese
 - `/es` — Spanish
 
-Unprefixed public links redirect to the visitor's most recently selected language; a first visit defaults to English. Empty localized fields fall back to English until their translation is complete. English is the source locale, so it is not selectable in a translation request.
+Unprefixed public links redirect to the visitor's most recently selected language; a first visit defaults to English. Localized content appears only when that exact language version exists. English is the source locale, so it is not selectable in a translation request.
 
 Each country advertises the languages it supports:
 
