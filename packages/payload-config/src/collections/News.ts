@@ -7,6 +7,7 @@ import {
   publishedCountryNewsOrParticipant,
 } from '../access'
 import { countryField, enforceNewsCountryScope, newsScopeField } from '../country'
+import { newsPreviewUrl } from '../preview'
 import { editorialWorkflowFields, enforceEditorialWorkflow } from '../workflow'
 
 export const News: CollectionConfig = {
@@ -26,6 +27,23 @@ export const News: CollectionConfig = {
     defaultColumns: ['title', 'workflowState', '_status', 'updatedAt'],
     description:
       'Workflow: editor requests translation or review, translator submits work for review, reviewer approves or requests changes, publisher publishes.',
+    livePreview: {
+      breakpoints: [
+        { height: 844, label: 'Phone', name: 'phone', width: 390 },
+        { height: 900, label: 'Desktop', name: 'desktop', width: 1440 },
+      ],
+      openByDefault: true,
+      url: ({ data, locale }) => {
+        const id = data.id
+        return typeof id === 'number' || typeof id === 'string'
+          ? newsPreviewUrl(id, locale.code)
+          : null
+      },
+    },
+    preview: (data, { locale }) => {
+      const id = data.id
+      return typeof id === 'number' || typeof id === 'string' ? newsPreviewUrl(id, locale) : null
+    },
     useAsTitle: 'title',
   },
   defaultSort: '-publishedAt',

@@ -1003,10 +1003,26 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
     return created.id
   }
 
-  const localizedCountryTitle: Record<CountryCode, readonly [string, string]> = {
-    ES: ['Actualización local de España', 'Nota de operaciones locales'],
-    JP: ['日本の地域ニュース', '日本の港湾に関するお知らせ'],
-    SG: ['シンガポールの地域ニュース', 'シンガポールの港湾に関するお知らせ'],
+  type CountryNewsTranslation = {
+    readonly locale: Exclude<ContentLocale, 'en'>
+    readonly titles: readonly [string, string]
+  }
+
+  const localizedCountryNews: Record<CountryCode, readonly CountryNewsTranslation[]> = {
+    ES: [
+      { locale: 'es', titles: ['Actualización local de España', 'Nota de operaciones locales'] },
+    ],
+    JP: [{ locale: 'jp', titles: ['日本の地域ニュース', '日本の港湾に関するお知らせ'] }],
+    SG: [
+      {
+        locale: 'es',
+        titles: ['Actualización local de Singapur', 'Nota editorial local de Singapur'],
+      },
+      {
+        locale: 'jp',
+        titles: ['シンガポールの地域ニュース', 'シンガポールの港湾に関するお知らせ'],
+      },
+    ],
   }
 
   async function seedCountryNews(team: CountryTeam, teamIndex: number): Promise<void> {
@@ -1051,32 +1067,42 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         workflowState: 'approved',
       }),
     ])
-    const locale = team.code === 'ES' ? 'es' : 'jp'
-    await Promise.all([
-      payload.update({
+    const translations = localizedCountryNews[team.code]
+    const translationLocales = translations.map(({ locale }) => locale)
+
+    async function seedCountryNewsTranslations(index = 0): Promise<void> {
+      const translation = translations[index]
+      if (!translation) return
+
+      await payload.update({
         collection: 'news',
         data: {
-          body: lexicalBody([localizedCountryTitle[team.code][0]]),
-          excerpt: localizedCountryTitle[team.code][0],
-          title: localizedCountryTitle[team.code][0],
+          body: lexicalBody([translation.titles[0]]),
+          excerpt: translation.titles[0],
+          title: translation.titles[0],
         },
         draft: false,
         id: firstId,
-        locale,
+        locale: translation.locale,
         overrideAccess: true,
-      }),
-      payload.update({
+      })
+      await payload.update({
         collection: 'news',
         data: {
-          body: lexicalBody([localizedCountryTitle[team.code][1]]),
-          excerpt: localizedCountryTitle[team.code][1],
-          title: localizedCountryTitle[team.code][1],
+          body: lexicalBody([translation.titles[1]]),
+          excerpt: translation.titles[1],
+          title: translation.titles[1],
         },
         draft: false,
         id: secondId,
-        locale,
+        locale: translation.locale,
         overrideAccess: true,
-      }),
+      })
+      await seedCountryNewsTranslations(index + 1)
+    }
+
+    await Promise.all([
+      seedCountryNewsTranslations(),
       upsertCountryNews({
         body: lexicalBody([
           'A translation request is waiting for the assigned country translator.',
@@ -1089,7 +1115,7 @@ if (process.env.PAYLOAD_SEED_SCOPE === 'localized-content') {
         slug: `${team.code.toLowerCase()}-translation-request`,
         status: 'draft',
         title: `${team.code} translation request`,
-        translationLocales: [locale],
+        translationLocales,
         translationRequestedBy: team.editorId,
         workflowState: 'translation-requested',
       }),

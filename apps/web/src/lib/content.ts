@@ -151,7 +151,11 @@ export function newsHref(article: Pick<NewsSummary, 'country' | 'slug'>): string
     : `/news/${article.slug}`
 }
 
-async function countryIdForCode(code: string): Promise<number | undefined> {
+function supportsLocale(value: unknown, locale: ContentLocale): boolean {
+  return Array.isArray(value) && value.includes(locale)
+}
+
+async function countryIdForCode(code: string, locale: ContentLocale): Promise<number | undefined> {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'countries',
@@ -159,16 +163,14 @@ async function countryIdForCode(code: string): Promise<number | undefined> {
     draft: false,
     limit: 1,
     overrideAccess: false,
-    select: { code: true },
+    select: { code: true, supportedLocales: true },
     where: { code: { equals: code } },
   })
-  return result.docs[0]?.id
+  const country = result.docs[0]
+  return country && supportsLocale(country.supportedLocales, locale) ? country.id : undefined
 }
 
-export async function getCountryFilters(): Promise<readonly CountryFilter[]> {
-  'use cache'
-  cacheLife('hours')
-  cacheTag('countries')
+async function countryIdsForLocale(locale: ContentLocale): Promise<readonly number[]> {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'countries',
@@ -176,13 +178,31 @@ export async function getCountryFilters(): Promise<readonly CountryFilter[]> {
     draft: false,
     limit: 12,
     overrideAccess: false,
-    select: { code: true, name: true },
+    select: { supportedLocales: true },
+  })
+  return result.docs.flatMap((country) =>
+    supportsLocale(country.supportedLocales, locale) ? [country.id] : [],
+  )
+}
+
+export async function getCountryFilters(locale: ContentLocale): Promise<readonly CountryFilter[]> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('countries', `countries:${locale}`)
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'countries',
+    depth: 0,
+    draft: false,
+    limit: 12,
+    overrideAccess: false,
+    select: { code: true, name: true, supportedLocales: true },
     sort: 'name',
   })
   return result.docs.flatMap((country) => {
     const code = stringValue(country.code)
     const name = stringValue(country.name)
-    return code && name ? [{ code, name }] : []
+    return code && name && supportsLocale(country.supportedLocales, locale) ? [{ code, name }] : []
   })
 }
 
@@ -278,12 +298,16 @@ export async function getPublishedNews(
   locale: ContentLocale,
   countryCode?: string,
   limit = 12,
+  includeCountryNews = false,
 ): Promise<readonly NewsSummary[]> {
   'use cache'
   cacheLife('minutes')
   cacheTag('news', ...(countryCode ? [`country:${countryCode}`] : []))
   const payload = await getPayload({ config })
-  const countryId = countryCode ? await countryIdForCode(countryCode) : undefined
+  const [countryId, countryIds] = await Promise.all([
+    countryCode ? countryIdForCode(countryCode, locale) : Promise.resolve(undefined),
+    includeCountryNews && !countryCode ? countryIdsForLocale(locale) : Promise.resolve([]),
+  ])
   if (countryCode && countryId === undefined) return []
   const result = await payload.find({
     collection: 'news',
@@ -294,7 +318,7 @@ export async function getPublishedNews(
     overrideAccess: false,
     select: {
       category: true,
-      countryName: true,
+      country: true,
       excerpt: true,
       heroMedia: true,
       publishedAt: true,
@@ -302,16 +326,22 @@ export async function getPublishedNews(
       title: true,
     },
     sort: '-publishedAt',
-    ...(countryId === undefined
-      ? {}
-      : {
-          where: {
+    where:
+      countryId !== undefined
+        ? {
             or: [
               { scope: { equals: 'global' } },
               { and: [{ scope: { equals: 'country' } }, { country: { equals: countryId } }] },
             ],
-          },
-        }),
+          }
+        : includeCountryNews
+          ? {
+              or: [
+                { scope: { equals: 'global' } },
+                { and: [{ scope: { equals: 'country' } }, { country: { in: countryIds } }] },
+              ],
+            }
+          : { scope: { equals: 'global' } },
   })
 
   return result.docs.flatMap((doc) => {
@@ -329,7 +359,7 @@ export async function getNewsBySlug(
   cacheLife('minutes')
   cacheTag('news', `news:${slug}`, ...(countryCode ? [`country:${countryCode}`] : []))
   const payload = await getPayload({ config })
-  const countryId = countryCode ? await countryIdForCode(countryCode) : undefined
+  const countryId = countryCode ? await countryIdForCode(countryCode, locale) : undefined
   if (countryCode && countryId === undefined) return undefined
   const result = await payload.find({
     collection: 'news',
@@ -365,6 +395,55 @@ export async function getNewsBySlug(
   const body = record.body
   if (typeof body !== 'object' || body === null || !('root' in body)) return undefined
   return { ...summary, body: body as News['body'] }
+}
+
+export async function getPreviewNewsById(
+  id: number,
+  locale: ContentLocale,
+): Promise<NewsArticle | undefined> {
+  const payload = await getPayload({ config })
+  const doc = await payload.findByID({
+    collection: 'news',
+    depth: 1,
+    draft: true,
+    id,
+    locale,
+    overrideAccess: true,
+    select: {
+      body: true,
+      category: true,
+      country: true,
+      excerpt: true,
+      heroMedia: true,
+      publishedAt: true,
+      slug: true,
+      title: true,
+    },
+  })
+  const record = doc as unknown as Record<string, unknown>
+  const summary = mapSummary(record)
+  if (!summary) return undefined
+  const body = record.body
+  if (typeof body !== 'object' || body === null || !('root' in body)) return undefined
+  return { ...summary, body: body as News['body'] }
+}
+
+export async function getNewsPreviewPathById(
+  id: number,
+): Promise<{ readonly countryCode?: string; readonly slug: string } | undefined> {
+  const payload = await getPayload({ config })
+  const doc = await payload.findByID({
+    collection: 'news',
+    depth: 1,
+    draft: true,
+    id,
+    overrideAccess: true,
+    select: { country: true, slug: true },
+  })
+  const slug = stringValue(doc.slug)
+  if (!slug) return undefined
+  const country = countryValue(doc.country)
+  return { ...(country ? { countryCode: country.code } : {}), slug }
 }
 
 export async function getPublishedLocations(

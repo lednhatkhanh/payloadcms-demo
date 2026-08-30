@@ -115,12 +115,13 @@ export default function NewsPage({ searchParams }: PageProps) {
 }
 
 async function NewsListing({ searchParams }: PageProps) {
+  const locale = await getSiteLocale()
   const [{ category, country: requestedCountry }, countries] = await Promise.all([
     searchParams,
-    getCountryFilters(),
+    getCountryFilters(locale),
   ])
   const selectedCountry = countries.find((country) => country.code === requestedCountry)
-  const news = await getPublishedNews(await getSiteLocale(), selectedCountry?.code)
+  const news = await getPublishedNews(locale, selectedCountry?.code, 12, true)
   const selectedFilter = isNewsCategory(category) ? category : 'all'
   const filteredNews =
     selectedFilter === 'all' ? news : news.filter((article) => article.category === selectedFilter)

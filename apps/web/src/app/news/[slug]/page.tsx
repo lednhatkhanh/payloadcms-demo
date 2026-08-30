@@ -1,4 +1,6 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import { publicEnvironment } from '@repo/contracts/env'
+import { newsPreviewToken } from '@repo/payload-config/preview'
 import { ArticleBody, ArticleHeroMedia, ArticleProvenance } from '@repo/ui/card'
 import { ArrowRight, CalendarDays, Icon } from '@repo/ui/icon'
 import {
@@ -13,22 +15,47 @@ import {
 import { Link } from '@repo/ui/link'
 import { Text } from '@repo/ui/text'
 import type { Metadata } from 'next'
+import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
-import { getNewsBySlug } from '@/lib/content'
+import { LivePreviewRefresh } from '@/components/LivePreviewRefresh'
+import { getNewsBySlug, getPreviewNewsById, type NewsArticle } from '@/lib/content'
 import { getSiteLocale, localeTag } from '@/lib/locale'
 
 type PageProps = {
   readonly params: Promise<{ slug: string }>
-  readonly searchParams: Promise<{ readonly country?: string }>
+  readonly searchParams: Promise<{
+    readonly country?: string
+    readonly id?: string
+    readonly preview?: string
+  }>
+}
+
+type NewsLookup = { readonly article?: NewsArticle; readonly previewId?: number }
+
+function previewNewsId(searchParams: {
+  readonly id?: string
+  readonly preview?: string
+}): number | undefined {
+  if (searchParams.preview !== newsPreviewToken || !searchParams.id) return undefined
+  const id = Number(searchParams.id)
+  return Number.isSafeInteger(id) && id > 0 ? id : undefined
+}
+
+async function lookupNewsArticle({ params, searchParams }: PageProps): Promise<NewsLookup> {
+  const [{ slug }, query] = await Promise.all([params, searchParams])
+  const locale = await getSiteLocale()
+  const previewId = previewNewsId(query)
+  const article = previewId
+    ? await getPreviewNewsById(previewId, locale)
+    : await getNewsBySlug(slug, locale, query.country)
+  return article?.slug === slug ? { article, ...(previewId ? { previewId } : {}) } : {}
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
-  const { slug } = await params
-  const { country } = await searchParams
-  const article = await getNewsBySlug(slug, await getSiteLocale(), country)
+  const { article } = await lookupNewsArticle({ params, searchParams })
   return article
     ? { description: article.excerpt, title: article.title }
     : { title: 'Story not found' }
@@ -57,11 +84,9 @@ export default function NewsDetailPage({ params, searchParams }: PageProps) {
 }
 
 async function ArticleHero({ params, searchParams }: PageProps) {
-  const { slug } = await params
-  const { country } = await searchParams
-  const locale = await getSiteLocale()
-  const article = await getNewsBySlug(slug, locale, country)
+  const { article } = await lookupNewsArticle({ params, searchParams })
   if (!article) notFound()
+  const locale = await getSiteLocale()
   const published = new Intl.DateTimeFormat(localeTag(locale), { dateStyle: 'long' }).format(
     new Date(article.publishedAt),
   )
@@ -88,13 +113,16 @@ async function ArticleHero({ params, searchParams }: PageProps) {
 }
 
 async function ArticleDetails({ params, searchParams }: PageProps) {
-  const { slug } = await params
-  const { country } = await searchParams
-  const article = await getNewsBySlug(slug, await getSiteLocale(), country)
+  const { article, previewId } = await lookupNewsArticle({ params, searchParams })
   if (!article) notFound()
+  const preview = await draftMode()
+  const previewActive = preview.isEnabled || previewId !== undefined
 
   return (
     <>
+      {previewActive ? (
+        <LivePreviewRefresh sourceOrigin={new URL(publicEnvironment.cmsUrl).origin} />
+      ) : null}
       <Section space="compact">
         <Container>
           <ArticleLayout>

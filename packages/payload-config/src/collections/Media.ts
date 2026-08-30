@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { countryMember, publishedCountryContentOrMember } from '../access'
+import { countryMember, publicRead } from '../access'
 import { countryField, enforceCountryMembership } from '../country'
 import { mediaDirectory } from '../paths'
 
@@ -9,7 +9,7 @@ export const Media: CollectionConfig = {
   access: {
     create: countryMember,
     delete: countryMember,
-    read: publishedCountryContentOrMember,
+    read: publicRead,
     update: countryMember,
   },
   admin: {
