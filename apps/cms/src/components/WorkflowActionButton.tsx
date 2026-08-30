@@ -10,6 +10,7 @@ import {
   useFormFields,
   useLocale,
 } from '@payloadcms/ui'
+import { isFuture, parseISO } from 'date-fns'
 import { formatAdminURL } from 'payload/shared'
 
 import { useCallback, useState } from 'react'
@@ -60,9 +61,7 @@ function includesRole(roles: readonly string[], role: string): boolean {
 }
 
 function isFutureDate(value: unknown): boolean {
-  if (typeof value !== 'string') return false
-  const date = new Date(value)
-  return !Number.isNaN(date.valueOf()) && date.valueOf() > Date.now()
+  return typeof value === 'string' && isFuture(parseISO(value))
 }
 
 function isWorkflowActionKey(value: unknown): value is WorkflowAction['key'] {

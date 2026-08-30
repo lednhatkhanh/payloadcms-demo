@@ -1,3 +1,5 @@
+import { isValid, parseISO } from 'date-fns'
+import { sum } from 'es-toolkit'
 import type { TaskConfig } from 'payload'
 
 type ScheduledPublishingTask = {
@@ -9,8 +11,7 @@ type EditorialCollection = 'news' | 'pages'
 
 function scheduledForValue(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined
-  const date = new Date(value)
-  return Number.isNaN(date.valueOf()) ? undefined : value
+  return isValid(parseISO(value)) ? value : undefined
 }
 
 export const publishScheduledContent: TaskConfig<ScheduledPublishingTask> = {
@@ -58,7 +59,7 @@ export const publishScheduledContent: TaskConfig<ScheduledPublishingTask> = {
         return publicationResults.filter(Boolean).length
       }),
     )
-    const published = publishedByCollection.reduce((total, count) => total + count, 0)
+    const published = sum(publishedByCollection)
 
     return { output: { published } }
   },

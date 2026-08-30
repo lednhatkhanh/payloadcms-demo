@@ -19,6 +19,8 @@ catalog:
   '@types/react-dom': 19.2.3
   babel-plugin-react-compiler: 1.0.0
   class-variance-authority: 0.7.1
+  date-fns: 4.4.0
+  es-toolkit: 1.52.0
   graphql: 16.11.0
   ky: 2.1.0
   lucide-react: 1.37.0

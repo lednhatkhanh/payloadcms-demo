@@ -9,15 +9,12 @@ import {
 import { Icon, ArrowRight, CalendarDays } from '@repo/ui/icon'
 import { Cluster, Stack } from '@repo/ui/layout'
 import { Text } from '@repo/ui/text'
+import { format, parseISO } from 'date-fns'
 
 import { newsHref, type NewsSummary } from '@/lib/content'
 
-const dateFormatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' })
-
 export function NewsCard({ article }: { readonly article: NewsSummary }) {
-  const published = article.publishedAt
-    ? dateFormatter.format(new Date(article.publishedAt))
-    : 'Recently'
+  const published = article.publishedAt ? format(parseISO(article.publishedAt), 'PP') : 'Recently'
   return (
     <StoryCard href={newsHref(article)} label={`Read ${article.title}`}>
       <StoryCardMedia alt={article.hero.alt} src={article.hero.url} />

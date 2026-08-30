@@ -25,6 +25,7 @@
     "@repo/contracts": "workspace:*",
     "@repo/payload-config": "workspace:*",
     "@repo/ui": "workspace:*",
+    "date-fns": "catalog:",
     "graphql": "catalog:",
     "next": "catalog:",
     "payload": "catalog:",

@@ -1,5 +1,6 @@
 import { publicEnvironment } from '@repo/contracts/env'
 import { contentLocales, type ContentLocale } from '@repo/payload-config/locales'
+import { isValid, parseISO } from 'date-fns'
 import type { MetadataRoute } from 'next'
 
 import { getSeoSettings, getSitemapContent } from '@/lib/content'
@@ -23,8 +24,8 @@ function languageAlternates(
 
 function lastModified(value: string | undefined): Date | undefined {
   if (!value) return undefined
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? undefined : date
+  const date = parseISO(value)
+  return isValid(date) ? date : undefined
 }
 
 function entry(

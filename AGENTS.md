@@ -57,6 +57,9 @@ This is a Node.js 24, pnpm 11, TypeScript 7, React 19, Next.js 16 and Payload 3 
 ## TypeScript and quality
 
 - ESM and strict TypeScript only. No `any`, enums, namespaces, parameter properties or unchecked assertions.
+- Prefer named imports from `es-toolkit` when they make collection or object transformations shorter and clearer than custom code. Never import from `es-toolkit/compat`, and keep a direct native expression when it is already simpler.
+- Use `date-fns` for date parsing, validation, comparison, arithmetic and formatting. Native `Date` construction and ISO serialization are fine when no date utility logic is involved; `Intl` is fine when an explicit locale or time zone is the point.
+- Add `es-toolkit` or `date-fns` to the dependency list of each workspace package that imports it; do not rely on hoisted transitive dependencies.
 - Do not introduce or retain APIs marked `@deprecated` by installed type definitions or current
   documentation. Treat deprecation diagnostics as errors, migrate to the supported replacement and
   never hide them with casts or suppression comments.

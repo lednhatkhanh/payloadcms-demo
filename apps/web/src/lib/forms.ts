@@ -1,7 +1,6 @@
 import type { FormFieldErrors } from '@repo/contracts/forms'
+import { mapValues } from 'es-toolkit'
 
 export function mutableFieldErrors(errors: FormFieldErrors): Record<string, string[]> {
-  return Object.fromEntries(
-    Object.entries(errors).map(([field, messages]) => [field, [...messages]]),
-  )
+  return mapValues(errors, (messages) => [...messages])
 }

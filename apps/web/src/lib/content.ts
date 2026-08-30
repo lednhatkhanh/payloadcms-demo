@@ -5,6 +5,7 @@ import { mediaDirectory } from '@repo/payload-config/paths'
 import type { News, Page } from '@repo/payload-config/types'
 import { contentLocales, type ContentLocale } from '@repo/payload-config/locales'
 import { serverEnvironment } from '@repo/contracts/env'
+import { compact } from 'es-toolkit'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { cacheLife, cacheTag } from 'next/cache'
@@ -587,10 +588,7 @@ export async function getPublishedNews(
           : { scope: { equals: 'global' } },
   })
 
-  return result.docs.flatMap((doc) => {
-    const summary = mapSummary(doc as unknown as Record<string, unknown>)
-    return summary ? [summary] : []
-  })
+  return compact(result.docs.map((doc) => mapSummary(doc as unknown as Record<string, unknown>)))
 }
 
 export async function getNewsBySlug(
@@ -719,10 +717,9 @@ export async function getPublishedLocations(
     sort: 'title',
   })
 
-  return result.docs.flatMap((doc) => {
-    const location = mapLocationSummary(doc as unknown as Record<string, unknown>)
-    return location ? [location] : []
-  })
+  return compact(
+    result.docs.map((doc) => mapLocationSummary(doc as unknown as Record<string, unknown>)),
+  )
 }
 
 export async function getLocationBySlug(
@@ -857,10 +854,7 @@ async function getPageChildrenByParentSlug(
     where: { parent: { equals: parent.id } },
   })
 
-  return result.docs.flatMap((page) => {
-    const summary = mapManagedPageSummary(page)
-    return summary ? [summary] : []
-  })
+  return compact(result.docs.map(mapManagedPageSummary))
 }
 
 export async function getPublishedPageChildren(

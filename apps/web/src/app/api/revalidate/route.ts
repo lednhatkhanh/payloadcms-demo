@@ -5,6 +5,7 @@ import {
   isPublicCacheTag,
   type PublicCacheTag,
 } from '@repo/payload-config/revalidation'
+import { uniq } from 'es-toolkit'
 import { revalidateTag } from 'next/cache'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -23,7 +24,7 @@ function revalidationTags(value: unknown): readonly PublicCacheTag[] | undefined
     return undefined
   }
 
-  return [...new Set(value)]
+  return uniq(value)
 }
 
 export async function POST(request: Request) {

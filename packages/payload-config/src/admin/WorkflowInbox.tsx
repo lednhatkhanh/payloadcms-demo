@@ -1,5 +1,6 @@
 import { DefaultTemplate } from '@payloadcms/next/templates'
 import { SetStepNav } from '@payloadcms/ui'
+import { isValid, parseISO } from 'date-fns'
 import { redirect } from 'next/navigation'
 import type { AdminViewServerProps, Payload } from 'payload'
 
@@ -110,7 +111,7 @@ function workflowState(value: unknown): string {
 }
 
 function optionalDate(value: unknown): string | undefined {
-  return typeof value === 'string' && !Number.isNaN(new Date(value).valueOf()) ? value : undefined
+  return typeof value === 'string' && isValid(parseISO(value)) ? value : undefined
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -141,8 +142,8 @@ function requesterForState(
 }
 
 function formatRequestDate(value: string): string {
-  const date = new Date(value)
-  if (Number.isNaN(date.valueOf())) return '—'
+  const date = parseISO(value)
+  if (!isValid(date)) return '—'
 
   return new Intl.DateTimeFormat('en', {
     dateStyle: 'medium',

@@ -14,6 +14,8 @@ import {
 } from '@repo/ui/layout'
 import { Link } from '@repo/ui/link'
 import { Text } from '@repo/ui/text'
+import { format, parseISO } from 'date-fns'
+import { enUS, es, ja } from 'date-fns/locale'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
@@ -22,7 +24,7 @@ import { Suspense } from 'react'
 import { SiteFooter } from '@/components/SiteFooter'
 import { LivePreviewRefresh } from '@/components/LivePreviewRefresh'
 import { getNewsBySlug, getPreviewNewsById, getSeoSettings, type NewsArticle } from '@/lib/content'
-import { getSiteLocale, localeTag } from '@/lib/locale'
+import { getSiteLocale } from '@/lib/locale'
 import { buildPageMetadata } from '@/lib/seo'
 
 type PageProps = {
@@ -35,6 +37,8 @@ type PageProps = {
 }
 
 type NewsLookup = { readonly article?: NewsArticle; readonly previewId?: number }
+
+const dateLocales = { en: enUS, es, ja }
 
 function previewNewsId(searchParams: {
   readonly id?: string
@@ -102,9 +106,9 @@ async function ArticleHero({ params, searchParams }: PageProps) {
   const { article } = await lookupNewsArticle({ params, searchParams })
   if (!article) notFound()
   const locale = await getSiteLocale()
-  const published = new Intl.DateTimeFormat(localeTag(locale), { dateStyle: 'long' }).format(
-    new Date(article.publishedAt),
-  )
+  const published = format(parseISO(article.publishedAt), 'PPPP', {
+    locale: dateLocales[locale],
+  })
 
   return (
     <Stack gap="xl">

@@ -1,3 +1,4 @@
+import { isFuture, isValid, parseISO } from 'date-fns'
 import type { CollectionAfterChangeHook, CollectionBeforeChangeHook, Field } from 'payload'
 
 import { hasEditorialRole, isAdministrator } from './access'
@@ -47,8 +48,7 @@ function originalWorkflowState(value: unknown): WorkflowState {
 
 function scheduledForValue(value: unknown): string | undefined {
   if (typeof value !== 'string') return undefined
-  const date = new Date(value)
-  return Number.isNaN(date.valueOf()) ? undefined : value
+  return isValid(parseISO(value)) ? value : undefined
 }
 
 function actionForStateChange(
@@ -299,7 +299,7 @@ export const enforceEditorialWorkflow: CollectionBeforeChangeHook = ({
     if (nextScheduledFor && nextStatus === 'published') {
       throw new Error('Use the scheduled publication action instead of publishing immediately.')
     }
-    if (nextScheduledFor && new Date(nextScheduledFor).valueOf() <= Date.now()) {
+    if (nextScheduledFor && !isFuture(parseISO(nextScheduledFor))) {
       throw new Error('Choose a future date and time for scheduled publication.')
     }
   }
