@@ -34,12 +34,18 @@ import {
   Surface,
 } from '@repo/ui/layout'
 import { ButtonLink, Link } from '@repo/ui/link'
-import { Accent, Text } from '@repo/ui/text'
+import { Text } from '@repo/ui/text'
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
 import { ContactForm } from '@/components/PublicForms'
+import {
+  CompanyPagesSkeleton,
+  HomepageHeroSkeleton,
+  HomepageLocationsSkeleton,
+  HomepageNewsroomSkeleton,
+} from '@/components/LoadingSkeletons'
 import {
   getHomepage,
   getPublishedPageChildren,
@@ -100,7 +106,7 @@ export default function HomePage() {
     <>
       <Section id="about" space="hero">
         <Container>
-          <Suspense fallback={<HomepageHeroLoadingState />}>
+          <Suspense fallback={<HomepageHeroSkeleton />}>
             <HomepageHero />
           </Suspense>
         </Container>
@@ -159,7 +165,7 @@ export default function HomePage() {
                   shared public-site components.
                 </Text>
               </SectionIntro>
-              <Suspense fallback={<CompanyPagesLoadingState />}>
+              <Suspense fallback={<CompanyPagesSkeleton />}>
                 <HomepageCompanyPages />
               </Suspense>
               <Link href="/company" variant="inline">
@@ -188,7 +194,7 @@ export default function HomePage() {
                   do not represent offices, contacts, or operational coverage.
                 </Text>
               </SectionIntro>
-              <Suspense fallback={<LocationsLoadingState />}>
+              <Suspense fallback={<HomepageLocationsSkeleton />}>
                 <HomepageLocations />
               </Suspense>
             </Stack>
@@ -212,7 +218,7 @@ export default function HomePage() {
                 The Dispatch / Newsroom
               </Text>
             </DispatchHeader>
-            <Suspense fallback={<NewsroomLoadingState />}>
+            <Suspense fallback={<HomepageNewsroomSkeleton />}>
               <NewsroomStories />
             </Suspense>
             <Link href="/news" variant="inline">
@@ -329,10 +335,6 @@ async function HomepageLocations() {
   )
 }
 
-function LocationsLoadingState() {
-  return <Text color="muted">Loading published illustrative locations…</Text>
-}
-
 async function HomepageCompanyPages() {
   const pages = await getPublishedPageChildren('company', await getSiteLocale())
   if (pages.length === 0) {
@@ -346,10 +348,6 @@ async function HomepageCompanyPages() {
       ))}
     </NewsGrid>
   )
-}
-
-function CompanyPagesLoadingState() {
-  return <Text color="muted">Loading the Company pages…</Text>
 }
 
 function HomepageCompanyPageCard({ page }: { readonly page: ManagedPageSummary }) {
@@ -401,14 +399,6 @@ async function NewsroomStories() {
         />
       ))}
     </EditorialGrid>
-  )
-}
-
-function NewsroomLoadingState() {
-  return (
-    <Surface border="subtle" padding="lg" radius="lg" tone="soft">
-      <Text color="muted">Loading the latest stories…</Text>
-    </Surface>
   )
 }
 
@@ -492,23 +482,6 @@ async function HomepageHero() {
       ) : (
         <HeroPlaceholder />
       )}
-    </HomeHeroGrid>
-  )
-}
-
-function HomepageHeroLoadingState() {
-  return (
-    <HomeHeroGrid>
-      <HeroContent>
-        <Text as="h1" variant="hero">
-          Shipping, made <Accent>clearer.</Accent>
-        </Text>
-        <Text color="muted" variant="lead">
-          A focused demonstration of service paths, illustrative locations, editorial updates, and
-          the right enquiry.
-        </Text>
-      </HeroContent>
-      <HeroPlaceholder />
     </HomeHeroGrid>
   )
 }

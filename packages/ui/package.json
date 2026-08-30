@@ -14,6 +14,7 @@
     "./layout": "./src/layout.tsx",
     "./link": "./src/link.tsx",
     "./providers": "./src/providers.tsx",
+    "./skeleton": "./src/skeleton.tsx",
     "./payload-admin.css": "./src/payload-admin.css",
     "./styles.css": "./src/styles.css",
     "./text": "./src/text.tsx"

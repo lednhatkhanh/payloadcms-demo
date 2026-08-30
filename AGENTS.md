@@ -51,6 +51,7 @@ This is a Node.js 24, pnpm 11, TypeScript 7, React 19, Next.js 16 and Payload 3 
 - Payload imports are server-only. Never expose config, secrets, drafts or submission data to client bundles.
 - Public Local API reads must set `overrideAccess: false`, `draft: false`, bounded depth and selected fields.
 - Cache Components and Partial Prefetching are enabled only in the web app. Keep static UI outside Suspense and push request-time and URL-specific reads down.
+- Every visible Suspense boundary must use an accessible shared skeleton that closely matches the resolved layout and reserves its space. Keep skeletons beside the async content they represent, respect reduced motion, and never use generic loading text or a blank fallback for content users expect to see.
 - Do not add `dynamic`, `revalidate`, `fetchCache` or legacy PPR flags.
 - Use the supported Next.js React Compiler. Oxlint is lint-only; do not add a second compiler transform.
 

@@ -23,6 +23,7 @@ import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
 import { LivePreviewRefresh } from '@/components/LivePreviewRefresh'
+import { ArticleDetailsSkeleton, ArticleHeroSkeleton } from '@/components/LoadingSkeletons'
 import { getNewsBySlug, getPreviewNewsById, getSeoSettings, type NewsArticle } from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
 import { buildPageMetadata } from '@/lib/seo'
@@ -89,15 +90,20 @@ export default function NewsDetailPage({ params, searchParams }: PageProps) {
             <Text color="brand" testId="story-shell" variant="label">
               The Dispatch / Story
             </Text>
-            <Suspense fallback={<ArticleHeroLoadingState />}>
+            <Suspense fallback={<ArticleHeroSkeleton />}>
               <ArticleHero params={params} searchParams={searchParams} />
             </Suspense>
           </Stack>
         </Container>
       </Section>
-      <Suspense fallback={null}>
+      <Suspense fallback={<ArticleDetailsSkeleton />}>
         <ArticleDetails params={params} searchParams={searchParams} />
       </Suspense>
+      <ArticleNextStep />
+      <SiteFooter
+        body="A compact footer entry for the demo’s newsletter flow. Subscription content and submission handling are managed separately."
+        title="Editorial updates, when they are published."
+      />
     </article>
   )
 }
@@ -168,45 +174,36 @@ async function ArticleDetails({ params, searchParams }: PageProps) {
           </ArticleLayout>
         </Container>
       </Section>
-
-      <Surface border="subtle" tone="soft">
-        <Section space="compact">
-          <Container>
-            <LocationDetailGrid>
-              <Stack gap="md">
-                <Text color="brand" variant="label">
-                  Next step
-                </Text>
-                <Text as="h2" variant="h2">
-                  Move from context to the right public route.
-                </Text>
-              </Stack>
-              <Stack gap="lg">
-                <Text color="muted">
-                  The newsroom can frame a topic. The service and form routes then provide a clear
-                  place to continue the conversation.
-                </Text>
-                <Link href="/shipping" variant="inline">
-                  Explore shipping <Icon source={ArrowRight} size="sm" />
-                </Link>
-              </Stack>
-            </LocationDetailGrid>
-          </Container>
-        </Section>
-      </Surface>
-
-      <SiteFooter
-        body="A compact footer entry for the demo’s newsletter flow. Subscription content and submission handling are managed separately."
-        title="Editorial updates, when they are published."
-      />
     </>
   )
 }
 
-function ArticleHeroLoadingState() {
+function ArticleNextStep() {
   return (
-    <Text color="muted" variant="lead">
-      Loading the story…
-    </Text>
+    <Surface border="subtle" tone="soft">
+      <Section space="compact">
+        <Container>
+          <LocationDetailGrid>
+            <Stack gap="md">
+              <Text color="brand" variant="label">
+                Next step
+              </Text>
+              <Text as="h2" variant="h2">
+                Move from context to the right public route.
+              </Text>
+            </Stack>
+            <Stack gap="lg">
+              <Text color="muted">
+                The newsroom can frame a topic. The service and form routes then provide a clear
+                place to continue the conversation.
+              </Text>
+              <Link href="/shipping" variant="inline">
+                Explore shipping <Icon source={ArrowRight} size="sm" />
+              </Link>
+            </Stack>
+          </LocationDetailGrid>
+        </Container>
+      </Section>
+    </Surface>
   )
 }

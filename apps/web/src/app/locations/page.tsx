@@ -24,6 +24,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
+import { LocationListingSkeleton } from '@/components/LoadingSkeletons'
 import {
   getPublishedLocations,
   getSeoSettings,
@@ -87,7 +88,7 @@ export default function LocationsPage({ searchParams }: PageProps) {
 
       <Section space="compact">
         <Container>
-          <Suspense fallback={<LocationListingLoadingState />}>
+          <Suspense fallback={<LocationListingSkeleton />}>
             <LocationListing searchParams={searchParams} />
           </Suspense>
         </Container>
@@ -202,13 +203,5 @@ function LocationRecordCard({ location }: { readonly location: LocationSummary }
         </Stack>
       </LocationCardBody>
     </LocationCard>
-  )
-}
-
-function LocationListingLoadingState() {
-  return (
-    <Surface border="subtle" padding="lg" radius="lg" tone="soft">
-      <Text color="muted">Loading published illustrative records…</Text>
-    </Surface>
   )
 }

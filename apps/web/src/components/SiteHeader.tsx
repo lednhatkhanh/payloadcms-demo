@@ -6,6 +6,7 @@ import { ButtonLink, Link } from '@repo/ui/link'
 import { Suspense, useState } from 'react'
 
 import { LanguageSelector } from './LanguageSelector'
+import { LanguageSelectorSkeleton } from './LoadingSkeletons'
 
 export function SiteHeader() {
   const [isMenuOpen, setMenuOpen] = useState(false)
@@ -43,7 +44,7 @@ export function SiteHeader() {
             <Link href="/#about" onPress={closeMenu} variant="navigation">
               About
             </Link>
-            <Suspense fallback={null}>
+            <Suspense fallback={<LanguageSelectorSkeleton />}>
               <LanguageSelector />
             </Suspense>
             <ButtonLink href="/#enquiry" onPress={closeMenu} size="sm" variant="secondary">

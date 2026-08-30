@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { LivePreviewRefresh } from '@/components/LivePreviewRefresh'
+import { ManagedPageSkeleton } from '@/components/LoadingSkeletons'
 import { PageBlocks } from '@/components/PageBlocks'
 import { SiteFooter } from '@/components/SiteFooter'
 import { getPageByPath, getSeoSettings } from '@/lib/content'
@@ -46,7 +47,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
 
 export default function ManagedPage({ params, searchParams }: PageProps) {
   return (
-    <Suspense fallback={<ManagedPageLoadingState />}>
+    <Suspense fallback={<ManagedPageSkeleton />}>
       <ManagedPageContent params={params} searchParams={searchParams} />
     </Suspense>
   )
@@ -83,17 +84,5 @@ async function ManagedPageContent({ params, searchParams }: PageProps) {
         title="Editorial updates, when they are published."
       />
     </article>
-  )
-}
-
-function ManagedPageLoadingState() {
-  return (
-    <Section>
-      <Container size="content">
-        <Text color="muted" variant="lead">
-          Loading page…
-        </Text>
-      </Container>
-    </Section>
   )
 }

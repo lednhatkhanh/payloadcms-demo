@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
+import { LocationDetailSkeleton } from '@/components/LoadingSkeletons'
 import { getLocationBySlug, getSeoSettings, type LocationService } from '@/lib/content'
 import { getSiteLocale } from '@/lib/locale'
 import { buildPageMetadata } from '@/lib/seo'
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default function LocationDetailPage({ params }: PageProps) {
   return (
-    <Suspense fallback={<LocationDetailLoadingState />}>
+    <Suspense fallback={<LocationDetailSkeleton />}>
       <LocationDetail params={params} />
     </Suspense>
   )
@@ -148,17 +149,5 @@ async function LocationDetail({ params }: PageProps) {
         title="Editorial updates, when they are published."
       />
     </>
-  )
-}
-
-function LocationDetailLoadingState() {
-  return (
-    <Section space="hero">
-      <Container>
-        <Text color="muted" variant="lead">
-          Loading the illustrative location…
-        </Text>
-      </Container>
-    </Section>
   )
 }

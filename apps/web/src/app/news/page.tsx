@@ -19,6 +19,7 @@ import { Suspense } from 'react'
 
 import { NewsCard } from '@/components/NewsCard'
 import { SiteFooter } from '@/components/SiteFooter'
+import { NewsListingSkeleton } from '@/components/LoadingSkeletons'
 import {
   getCountryFilters,
   getPublishedNews,
@@ -88,7 +89,7 @@ export default function NewsPage({ searchParams }: PageProps) {
 
       <Section space="compact">
         <Container>
-          <Suspense fallback={<NewsListingLoadingState />}>
+          <Suspense fallback={<NewsListingSkeleton />}>
             <NewsListing searchParams={searchParams} />
           </Suspense>
         </Container>
@@ -242,13 +243,5 @@ function FeaturedStory({ article }: { readonly article: NewsSummary }) {
         </CardLinkAffordance>
       </Stack>
     </FeaturedStoryCard>
-  )
-}
-
-function NewsListingLoadingState() {
-  return (
-    <Surface border="subtle" padding="lg" radius="lg" tone="soft">
-      <Text color="muted">Loading published illustrative stories…</Text>
-    </Surface>
   )
 }

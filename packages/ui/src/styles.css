@@ -79,6 +79,8 @@
   --spacing-media-location-detail: clamp(18rem, 37vw, 32rem);
   --spacing-media-story: 10rem;
   --spacing-header: 5rem;
+  --spacing-skeleton-control: 7.5rem;
+  --spacing-skeleton-control-wide: 10rem;
 
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
@@ -139,6 +141,18 @@
   --shadow-card: 0 1rem 3rem color-mix(in oklch, var(--color-neutral-950) 8%, transparent);
   --shadow-card-hover: 0 1.4rem 3.5rem
     color-mix(in oklch, var(--color-neutral-950) 12%, transparent);
+
+  --animate-skeleton: skeleton-sheen 1.8s ease-in-out infinite;
+}
+
+@keyframes skeleton-sheen {
+  from {
+    background-position-x: 200%;
+  }
+
+  to {
+    background-position-x: -200%;
+  }
 }
 
 :root {
@@ -207,6 +221,18 @@
 }
 
 @layer components {
+  .skeleton-surface {
+    background-image: linear-gradient(
+      105deg,
+      var(--color-neutral-200) 30%,
+      var(--color-brand-100) 48%,
+      var(--color-neutral-200) 66%
+    );
+    background-position-x: 200%;
+    background-size: 250% 100%;
+    animation: var(--animate-skeleton);
+  }
+
   .site-container {
     max-width: var(--container-site);
   }
