@@ -1,4 +1,4 @@
-This is the version I would use now: **Payload-first, Directus as a fully considered comparison candidate, and a solo demo that validates Payload before asking the wider team to invest in a full PoC. The final architecture contains one selected CMS, never a primary/fallback pair.**
+This is the version I would use now: **Payload-first, Directus as a fully considered comparison candidate, and a solo demo that validates Payload before the planned team PoC. The final architecture contains one selected CMS, never a primary/fallback pair.**
 
 # ONE New CMS Platform Proposal
 
@@ -12,13 +12,19 @@ This is the version I would use now: **Payload-first, Directus as a fully consid
 **Comparison candidate:** Directus
 **Hosting:** Fully self-hosted on ONE-managed GCP
 **Migration model:** Gradual route- and content-group cutover while Next.js serves both Payload and Drupal during a controlled coexistence period
-**Immediate next step:** Solo Payload demo → broader team PoC only if the demo passes
+**Planned validation sequence:** Solo Payload demo → broader team PoC only if the demo passes
 
 ---
 
 # 1. Executive Summary
 
-ONE should move toward a fully self-hosted headless CMS architecture built on:
+ONE should replace 26 country Drupal instances plus one global instance with one governed, self-hosted content platform on GCP. The change is justified by three management outcomes:
+
+1. retire repeated platform, release, and support work across 27 CMS stacks;
+2. give editors a faster, safer publishing experience with live preview, workflow, and shared content;
+3. make governed AI available to writers, translators, editors, developers, and content operations through one reusable platform.
+
+The target architecture is built on:
 
 ```text
 GKE
@@ -26,10 +32,11 @@ Cloud SQL PostgreSQL
 Google Cloud Storage
 Cloudflare
 Next.js
-Vertex AI
 Elasticsearch
 Cloud Logging / OpenTelemetry
 ```
+
+Vertex AI is not a phase-one dependency. It remains a possible later extension only if a specific model, regional, or governance requirement is not met by the selected CMS and its supported providers.
 
 Payload CMS is the recommended platform.
 
@@ -54,15 +61,20 @@ However, Payload aligns better with the architecture ONE wants to own long-term:
 - Official MCP integration.
 - Official AI-agent Skills.
 - Enterprise Publishing Workflows with approvals, access control, alerts, notifications, and extensibility.
-- Enterprise AI for translation, image generation, writing assistance, and RAG/auto-embedding.
+- Enterprise AI portfolio for translation, image generation, writing assistance, granular access, and RAG/auto-embedding.
 - Enterprise SSO through SAML or OAuth 2.0 identity providers.
 - Enterprise static A/B variant delivery designed for Next.js.
-- Easy integration with ONE-controlled Vertex AI.
+- Official MCP integration for permission-scoped AI and developer workflows.
+- A possible later Vertex AI extension for a confirmed gap—not a prerequisite for AI value.
 - Strong observability because the CMS runtime is our own application.
 - Strong fit for strict ONE design-system governance.
 - Straightforward custom Drupal migration pipeline.
 
-ONE expects to procure the Enterprise plan, so Payload Enterprise AI is a **current target capability and entitlement baseline**, not a future phase or a custom feature we expect to build first. ONE has not yet contacted Payload for the enterprise demonstration, so exact adapters, limits, licensing, supported versions, and contract terms still require vendor confirmation. The separate Enterprise Visual Editor remains a distinct roadmap item and is not a launch dependency; Live Preview remains the current preview baseline.
+ONE expects to procure the Enterprise plan, so three product areas are part of the **current target product**, not future side projects: Publishing Workflows, static headless A/B testing, and Enterprise AI. Payload documents packaged multi-step approvals, access control, alerts, notifications, and inline feedback; CMS-managed variants that Next.js can deliver statically; and AI translation, image generation, writing assistance, granular access controls, and RAG. These capabilities should be demonstrated before equivalent custom work is estimated. The official MCP plugin also gives developers and approved AI tools scoped access to content operations. ONE has not yet contacted Payload for the enterprise demonstration, so exact release availability, adapters, limits, licensing, supported versions, and contract terms still require confirmation. The separate Enterprise Visual Editor remains a distinct roadmap item and is not a launch dependency; Live Preview remains the current preview baseline.
+
+Directus provides an equally serious AI benchmark: its Studio Assistant supports content and schema work, AI Translations supports glossaries and style guides, and its MCP server serves editors, developers, and external AI clients. AI is therefore a strong reason to modernize the shared content platform, not a side experiment or a reason to wait for Vertex.
+
+Directus v12 also provides native draft/publish states and content versions. Full packaged approval workflows and scheduled releases are described by Directus as subsequent work, while custom approval stages can be composed with statuses, policies, and Flows. Directus has published a practical A/B pattern with PostHog, but the experiment model, feature-flag integration, frontend delivery, and analytics remain a custom integration rather than an equivalent first-party static A/B feature.
 
 The key recommendation is:
 
@@ -135,7 +147,7 @@ The CMS should support:
 - Local API as a bonus.
 - MCP.
 - AI-agent development workflows.
-- Vertex AI.
+- Ability to add a different model provider later if a confirmed requirement demands it.
 - LaunchDarkly.
 - Elasticsearch.
 - OpenTelemetry.
@@ -164,16 +176,16 @@ Independent translation workflow
 Multi-site / multi-tenant
 Media management
 Audit trail
+Enterprise AI assistance for writers, translators, editors, and developers
 ```
 
 Future/optional:
 
 ```text
-agent-assisted content operations
-ONE-specific Vertex AI extensions
+ONE-specific model or policy extensions
 ```
 
-Payload Enterprise AI translation, writing assistance, image generation, and RAG/auto-embedding are current target-plan capabilities. Their exact contract scope and behavior still require the vendor demonstration; they are not future product assumptions.
+Payload Enterprise AI translation, writing assistance, image generation, granular access controls, and RAG/auto-embedding belong to the current target portfolio. The official MCP plugin extends governed AI workflows to developers and external tools. Exact release and contract availability still require the vendor demonstration; AI itself is not a future product assumption.
 
 ---
 
@@ -233,20 +245,17 @@ This prevents content created by humans or AI from looking inconsistent with the
          Next.js Website                         CMS
               GKE                               GKE
                 │                                │
-                │                  ┌─────────────┼──────────────┐
-                │                  │             │              │
-                │                  ▼             ▼              ▼
-                │             Cloud SQL         GCS          Pub/Sub
+                │                  ┌─────────────┼──────────────┬─────────────────┐
+                │                  │             │              │                 │
+                │                  ▼             ▼              ▼                 ▼
+                │             Cloud SQL         GCS          Pub/Sub      Enterprise AI + MCP
                 │             PostgreSQL
                 │                                                │
                 └────────────────────────────────────────────────┤
                                                                  │
-                             ┌───────────────────────────────────┼──────────────┐
-                             ▼                                   ▼              ▼
-                       Elasticsearch                         Vertex AI       Integrations
-                                                            Gemini
-                                                               │
-                                                          Model Armor
+                             ┌───────────────────────────────────┴──────────────┐
+                             ▼                                                  ▼
+                       Elasticsearch                                      Integrations
 
 
 Observability:
@@ -264,10 +273,10 @@ The architecture is intentionally vendor-neutral. Payload and Directus are compa
 Use these editable GCP-style diagrams in decision material:
 
 - [Current platform context](./diagrams/current-platform-context.drawio) — simplified from the supplied Unicorn architecture and focused only on the GCP/Acquia CMS delivery boundary. Next.js connects directly to Drupal for legacy content and iframe routes. The Apigee API portal belongs to a separate CRM integration, and Drupal has no dependency on the unrelated external API, so neither appears in this CMS diagram.
-- [Vendor-neutral target CMS on GCP](./diagrams/target-cms-gcp.drawio) — one generic CMS component, Cloud SQL PostgreSQL, GCS, jobs, identity, and observability. Payload Enterprise AI is part of the selected Enterprise capability now; a ONE-controlled Vertex AI gateway is an optional extension path where enterprise adapters or governance do not meet requirements.
+- [Vendor-neutral target CMS on GCP](./diagrams/target-cms-gcp.drawio) — one generic CMS component, Cloud SQL PostgreSQL, GCS, jobs, identity, observability, Enterprise AI, and MCP. A separate model provider appears only as a small future option for a documented gap.
 - [Drupal coexistence and migration](./diagrams/drupal-coexistence-migration.drawio) — Next.js temporarily resolves routes across both CMSs, including explicitly tracked Drupal iframe routes. Simple pages cut over route by route; high-change collections can use one-way deltas and reconciliation; each accepted wave removes its Drupal read path and sync connection.
 
-The written plan above is the source of truth for diagram refreshes. The rendered assets now show Enterprise AI as current scope, optional Vertex extension, direct Next.js-to-Drupal delivery, dual-source migration routing, tracked iframe routes, and per-wave Drupal connection retirement.
+The written plan above is the source of truth for diagram refreshes. The rendered assets show Enterprise AI and MCP as current scope, the 27 site scopes and seven languages, direct Next.js-to-Drupal delivery, dual-source migration routing, tracked iframe routes, and per-wave Drupal connection retirement.
 
 Payload and Directus logos belong on comparison/evidence visuals only. Architecture diagrams use the generic CMS icon so the target design remains valid whichever single platform is selected.
 
@@ -325,35 +334,35 @@ But Payload still maps more naturally to how ONE wants to engineer this platform
 
 # 8. Core Comparison
 
-| Capability              | Payload                                     | Directus                   | Preferred   |
-| ----------------------- | ------------------------------------------- | -------------------------- | ----------- |
-| Fully self-hosted       | Excellent                                   | Excellent                  | Tie         |
-| PostgreSQL              | Excellent                                   | Excellent                  | Tie         |
-| GCS                     | Excellent                                   | Excellent                  | Tie         |
-| GKE                     | Excellent                                   | Excellent                  | Tie         |
-| TypeScript              | Excellent                                   | Excellent                  | Tie         |
-| Admin framework         | **React**                                   | Vue                        | **Payload** |
-| Next.js                 | **Exceptional**                             | Excellent                  | **Payload** |
-| Other frontends         | Good via APIs                               | **Excellent**              | Directus    |
-| Local API               | **Yes**                                     | No equivalent              | **Payload** |
-| REST                    | Yes                                         | Excellent                  | Tie         |
-| GraphQL                 | Yes                                         | Excellent                  | Tie         |
-| Code-first schemas      | **Excellent**                               | Improving                  | **Payload** |
-| Environment Sync        | Good                                        | **Excellent**              | Directus    |
-| Editorial UX            | **Excellent with Enterprise**               | **Excellent**              | Tie         |
-| Collaborative editing   | Limited                                     | **Strong**                 | Directus    |
-| Publishing workflow     | **Enterprise feature + extensible code**    | **Permissions + Flows**    | Tie         |
-| AI out of box           | **Enterprise AI suite**                     | **Native AI Assistant**    | Tie         |
-| A/B variant testing     | **Enterprise feature for Next.js delivery** | Custom/integration pattern | **Payload** |
-| Enterprise SSO          | SAML / OAuth 2.0                            | Enterprise SSO             | Tie         |
-| Vertex AI customization | **Excellent**                               | Good                       | Payload     |
-| Design-system sharing   | **Excellent**                               | Good                       | Payload     |
-| Forms                   | **Official plugin**                         | Custom pattern             | **Payload** |
-| SEO                     | **Official plugin**                         | Custom                     | Payload     |
-| Multi-tenant            | **Official plugin**                         | Custom pattern             | Payload     |
-| Observability           | **Excellent**                               | Good                       | Payload     |
-| License freedom         | **MIT core**                                | Commercial/MSCL model      | **Payload** |
-| Existing ONE experience | New                                         | **Existing**               | Directus    |
+| Capability               | Payload                                      | Directus                                 | Preferred   |
+| ------------------------ | -------------------------------------------- | ---------------------------------------- | ----------- |
+| Fully self-hosted        | Excellent                                    | Excellent                                | Tie         |
+| PostgreSQL               | Excellent                                    | Excellent                                | Tie         |
+| GCS                      | Excellent                                    | Excellent                                | Tie         |
+| GKE                      | Excellent                                    | Excellent                                | Tie         |
+| TypeScript               | Excellent                                    | Excellent                                | Tie         |
+| Admin framework          | **React**                                    | Vue                                      | **Payload** |
+| Next.js                  | **Exceptional**                              | Excellent                                | **Payload** |
+| Other frontends          | Good via APIs                                | **Excellent**                            | Directus    |
+| Local API                | **Yes**                                      | No equivalent                            | **Payload** |
+| REST                     | Yes                                          | Excellent                                | Tie         |
+| GraphQL                  | Yes                                          | Excellent                                | Tie         |
+| Code-first schemas       | **Excellent**                                | Improving                                | **Payload** |
+| Environment Sync         | Good                                         | **Excellent**                            | Directus    |
+| Editorial UX             | **Excellent with Enterprise**                | **Excellent**                            | Tie         |
+| Collaborative editing    | Limited                                      | **Strong**                               | Directus    |
+| Publishing workflow      | **Packaged multi-step approvals + feedback** | Native drafts/versions; custom approvals | **Payload** |
+| AI productivity          | **Translation, image, writing, RAG + MCP**   | **Assistant, translation + MCP**         | Tie         |
+| A/B variant testing      | **CMS-managed static Next.js variants**      | Custom model + feature flag/analytics    | **Payload** |
+| Enterprise SSO           | SAML / OAuth 2.0                             | Enterprise SSO                           | Tie         |
+| Optional model extension | **Excellent**                                | Good                                     | Payload     |
+| Design-system sharing    | **Excellent**                                | Good                                     | Payload     |
+| Forms                    | **Official plugin**                          | Custom pattern                           | **Payload** |
+| SEO                      | **Official plugin**                          | Custom                                   | Payload     |
+| Multi-tenant             | **Official plugin**                          | Custom pattern                           | Payload     |
+| Observability            | **Excellent**                                | Good                                     | Payload     |
+| License freedom          | **MIT core**                                 | Commercial/MSCL model                    | **Payload** |
+| Existing ONE experience  | New                                          | **Existing**                             | Directus    |
 
 ---
 
@@ -367,7 +376,7 @@ The real risk is:
 
 > “What happens when ONE needs Feature X and the vendor never designed it?”
 
-Payload Enterprise now changes the build-versus-buy boundary. Publishing workflows, SSO, A/B variant testing, AI auto-embedding/RAG, and an AI suite for translation, image generation, and writing assistance are advertised enterprise capabilities. Because ONE already expects to procure Enterprise, they should be evaluated as product capabilities first—not automatically budgeted as custom builds.
+Payload Enterprise changes the build-versus-buy boundary. Multi-step publishing approvals with feedback and notifications, CMS-managed static A/B variants, SSO, AI auto-embedding/RAG, translation, image generation, and writing assistance are part of the advertised Enterprise portfolio. The official MCP plugin adds scoped content operations for approved AI clients. Because ONE expects to procure Enterprise, these capabilities should be evaluated first—not automatically budgeted as custom builds.
 
 Where ONE-specific policy remains, Payload can extend the packaged workflow with:
 
@@ -389,9 +398,9 @@ Payload's official AI Agent Skill reflects this same architecture and covers col
 
 The PoC and commercial process must therefore separate three categories:
 
-1. **Enterprise product capability** — validate the vendor-delivered workflow, AI, SSO, A/B, audit, and support features.
-2. **ONE configuration** — roles, country/locale policy, approval stages, notifications, prompts, and analytics integration.
-3. **ONE custom extension** — only gaps such as exact Vertex gateway integration, specialized UI, migration controls, or downstream business rules.
+1. **Enterprise product capability** — validate the vendor-delivered multi-step workflow, static variant delivery, AI, SSO, audit, and support features.
+2. **ONE configuration** — roles, country/locale policy, approval stages, notifications, experiment metrics and stop rules, prompts, and analytics integration.
+3. **ONE custom extension** — only confirmed gaps such as a specialized model boundary, UI, migration control, or downstream business rule.
 
 The separate Enterprise Visual Editor is still explicitly marked **Coming Soon**. Payload Live Preview can be used now, but the Visual Editor must not be treated as a committed production dependency until delivery and contract scope are confirmed.
 
@@ -408,12 +417,18 @@ Directus is not a weak comparison.
 Directus v12 currently offers:
 
 - redesigned Studio;
-- native editorial workflows;
-- AI translations;
-- native MCP improvements;
+- native draft/publish states and content versions;
+- an in-Studio AI Assistant for content, files, schemas, and Flows;
+- AI translations with glossaries and style guides;
+- an MCP server for editor and developer workflows;
 - strong database APIs;
 - strong permissions;
 - collaborative editing.
+
+These are strong editorial foundations, but the comparison must stay precise:
+
+- [Directus's May 2026 product update](https://directus.com/resources/v12-built-for-the-whole-team) describes scheduled releases and packaged approval workflows as work following the native draft/publish foundation. Custom approval stages can still use status fields, policies, and Flows today.
+- [Directus's official PostHog workshop](https://directus.com/tv/enter-the-workshop/setting-up-ab-testing-posthog) demonstrates a credible A/B implementation pattern. It requires a modeled experiment collection, a feature-flag/analytics service, frontend integration, and Flows; it is not the same packaged baseline as Payload's advertised static headless variants.
 
 And Directus v12.3 introduced proper Git-oriented Environment Sync:
 
@@ -685,12 +700,12 @@ Automated Tests
 Example:
 
 ```text
-Vietnam Writer
-→ create/edit Vietnam drafts
+Korea Writer
+→ create/edit Korea drafts
 → cannot publish
 
-Vietnam Publisher
-→ publish approved Vietnam content
+Korea Publisher
+→ publish approved Korea content
 
 Global Admin
 → everything
@@ -734,22 +749,26 @@ It should be validated during the broader PoC.
 
 # 19. Localization
 
-Required initial locales could be:
+The supported language set is:
 
 ```text
 English
-Vietnamese
+Chinese
 Japanese
+Korean
+Spanish
+Portuguese
+French
 ```
 
-But the production design should support a larger global set.
+These seven languages are independent of the 27 site scopes: 26 country sites plus one global site. A country controls ownership and access; a language controls which localized version is being edited or published. The global site may publish all seven languages, while an individual country site may publish only the languages it needs.
 
-Do not treat localization as merely:
+Technical locale codes may appear in APIs and configuration, but management-facing material should use full language names. Do not reduce localization to a few fields such as:
 
 ```text
-title.en
-title.vi
-title.ja
+title.english
+title.japanese
+title.korean
 ```
 
 ONE needs translation state.
@@ -790,10 +809,10 @@ Example:
 English
 Published
 
-Vietnamese
+Japanese
 Approved
 
-Japanese
+Korean
 Machine Translated
 ```
 
@@ -802,61 +821,51 @@ English changes.
 System marks:
 
 ```text
-Vietnamese → OUTDATED
-Japanese   → OUTDATED
+Japanese → OUTDATED
+Korean   → OUTDATED
 ```
 
 This is more useful than relying entirely on generic localized-field behavior.
 
 ---
 
-# 21. Enterprise AI Is Current Scope
+# 21. Enterprise AI Is a Core Reason to Modernize
 
-Because ONE plans to procure Payload Enterprise, AI translation, image generation, writing assistance, and RAG/auto-embedding are part of the current target platform scope. They are not deferred roadmap ideas and should not be estimated as custom UI before Payload demonstrates the Enterprise product.
+AI should be treated as a shared productivity capability for the whole content lifecycle—not as a separate future program:
 
-The remaining uncertainty is validation, not whether AI belongs in the plan: ONE has not yet contacted Payload for the enterprise demonstration or confirmed the contract. The PoC and procurement process must verify permissions, tenant isolation, audit, model choice, regionality, data handling, cost controls, and human approval.
+- **Writers and translators** can draft, rewrite, translate, and create imagery faster while remaining inside review workflows.
+- **Editors and content operations** can apply consistent brand prompts, glossaries, structured-content checks, and permission boundaries.
+- **Developers** can use MCP to inspect schemas, work with approved content operations, and automate repetitive integration tasks.
+- **Customers and employees** can benefit later from permission-aware RAG and semantic discovery over trusted content.
 
-Use the Enterprise capability first:
+Payload's Enterprise AI portfolio includes translation, image generation, a writing assistant, granular permission/access control, and RAG/auto-embedding. Its official MCP plugin can allow or deny specific find, create, update, and delete capabilities by collection and can expose approved prompts, tools, and resources. This is a strong fit for ONE's code-first operating model.
+
+Directus is the strongest AI benchmark in the comparison. Its built-in Assistant works inside Studio, AI Translations supports multi-language output with glossaries and style guides, and its MCP server supports concrete editor and developer workflows while using existing Directus permissions and audit trails.
+
+ONE has not yet completed the vendor demonstrations or confirmed the contracts. The PoC and procurement process must therefore verify exact release availability, permissions, tenant isolation, audit, model choice, regionality, data handling, cost controls, and human approval. This is due diligence on delivery—not a reason to defer AI from the platform decision.
+
+Start with the selected platform's Enterprise AI and MCP capabilities:
 
 ```text
-Payload Enterprise AI
+Enterprise AI + MCP
    │
-   ├── translation
-   ├── writing assistance
+   ├── writing and translation assistance
    ├── image generation
-   └── RAG / auto-embedding
+   ├── governed content operations
+   ├── RAG / semantic retrieval
+   └── human review and approval
 ```
 
-Add a ONE-controlled Vertex path only where the Enterprise product does not meet a specific requirement:
-
-```text
-Payload
-   │
-   ▼
-ONE AI Gateway
-   │
-   ├── Auth
-   ├── Permissions
-   ├── Prompt Registry
-   ├── Audit
-   ├── Model Armor
-   └── Structured Output Validation
-   │
-   ▼
-Vertex AI
-   │
-   ▼
-Gemini
-```
+Consider a separate ONE-controlled model path only if the Enterprise product leaves a documented requirement unmet. Vertex AI is one possible later option, not part of the phase-one value proposition.
 
 Workflow:
 
 ```text
-English
+English source
    ↓
 AI Translate
    ↓
-Vietnamese Draft
+Japanese Draft
 status = machine_translated
    ↓
 Human Review
@@ -864,7 +873,7 @@ Human Review
 Published
 ```
 
-Enterprise AI is the baseline capability. Vertex AI is an optional extension for ONE-specific IAM, models, regionality, prompt governance, telemetry, or safety controls—not a prerequisite for saying the platform has AI today.
+Enterprise AI and MCP are the baseline capabilities. A separate model provider remains an optional extension for a specific IAM, model, regionality, prompt-governance, telemetry, or safety requirement.
 
 ---
 
@@ -974,8 +983,8 @@ Possible ONE model:
 
 ```text
 Global
-Vietnam
 Japan
+Korea
 Europe
 Campaign Site A
 Campaign Site B
@@ -1195,15 +1204,15 @@ Elasticsearch      RAG Pipeline
                       └── embedding
                               │
                               ▼
-                         Vertex AI
+                    Optional model provider
 ```
 
 Possible extension stores:
 
 ```text
 Elasticsearch
-Vertex AI Search
-Vertex AI Vector Search
+managed semantic-search service
+managed vector-search service
 pgvector
 ```
 
@@ -1355,7 +1364,7 @@ Payload request
      ├── GCS
      ├── Pub/Sub
      ├── Elasticsearch
-     └── Vertex
+     └── Enterprise AI / MCP events
 ```
 
 A support request:
@@ -1492,6 +1501,8 @@ This dual-source frontend is temporary but intentional. Route ownership is expli
 ---
 
 # 40. Use the Lightest Safe Migration Method
+
+The delivery window is fixed. Prioritize the highest-value routes early, keep every wave small enough to validate, and remove each Drupal dependency as soon as its replacement is accepted.
 
 Not every content group needs continuous synchronization.
 
@@ -1871,7 +1882,7 @@ GKE
 Cloud SQL
 GCS
 Cloudflare
-Vertex
+Enterprise AI provider usage
 Elasticsearch
 ```
 
@@ -1909,14 +1920,15 @@ existing team knowledge
 more turnkey collaboration
 ```
 
-Therefore finance should eventually compare:
+Therefore finance should compare the full approved planning horizon:
 
 ```text
-3-year TCO
-5-year TCO
+current operating cost
+transition overlap and migration cost
+target operating cost and exit risk
 ```
 
-after enterprise quotes are obtained.
+Use the remaining delivery window and the operating horizon approved for the business case rather than a generic multi-year template. Complete the model after enterprise quotes are obtained.
 
 ---
 
@@ -1952,16 +1964,17 @@ Get them contractually.
 
 Important status distinctions:
 
-- [Publishing Workflows](https://payloadcms.com/enterprise/publishing-workflows) describes multi-step approvals, access control, alerts, notifications, and extensibility.
+- [Publishing Workflows](https://payloadcms.com/enterprise/publishing-workflows) describes defined multi-step approvals, field-level access control, alerts, notifications, inline feedback, and extensibility. This is a packaged Enterprise baseline, not merely a suggestion that ONE build a workflow in hooks.
 - [Single Sign-On](https://payloadcms.com/enterprise/single-sign-on-sso) describes SAML/OAuth 2.0 integration with providers including Google, Azure, and Okta.
-- [Headless A/B Variant Testing](https://payloadcms.com/enterprise/headless-ab-variant-testing) describes variant delivery with Next.js; the performance outcomes on the page are vendor claims, not ONE forecasts.
+- [Headless A/B Variant Testing](https://payloadcms.com/enterprise/headless-ab-variant-testing) describes CMS-managed variants, static delivery with Next.js, edge delivery, and pluggable analytics. This is directly relevant to ONE's headless architecture; the performance outcomes on the page remain vendor claims, not ONE forecasts.
 - [Enterprise AI Framework](https://payloadcms.com/enterprise/ai-framework) describes RAG, automatic embeddings, vector indexes in the database, and configurable chunking.
-- [Enterprise AI](https://payloadcms.com/enterprise/enterprise-ai) provides the current planning baseline for AI translation, AI image generation, an AI writing assistant, and granular permission/access control. These are Enterprise capabilities to configure and validate—not custom-only features and not a future phase.
+- [Enterprise AI](https://payloadcms.com/enterprise/enterprise-ai) defines the portfolio for AI translation, AI image generation, an AI writing assistant, and granular permission/access control. Confirm exact release and contract availability in the vendor demonstration rather than budgeting equivalent custom UI by default.
+- [Payload MCP](https://payloadcms.com/docs/plugins/mcp) provides permission-scoped collection/global operations plus custom prompts, tools, resources, and event hooks for approved AI clients.
 - [Visual Editor](https://payloadcms.com/enterprise/visual-editor) is explicitly marked **Coming Soon**. Payload Live Preview exists today, but this separate Enterprise feature is roadmap evidence only.
 
 Decision implication:
 
-> Payload still fits our code-first extension model, but Enterprise AI is already in the target scope and may materially reduce the amount of AI UI we need to build. Contact Payload for the demonstration, validate the included behavior, and estimate custom engineering only for confirmed gaps or optional Vertex integration.
+> Payload fits our code-first extension model while packaged publishing workflows, static headless A/B testing, Enterprise AI, and MCP can materially reduce the product and integration work ONE needs to build. Contact Payload for the demonstration, validate the included behavior, and estimate custom engineering only for confirmed gaps.
 
 The [Payload case-study index](https://payloadcms.com/case-studies) provides useful adoption signals. Two especially relevant examples are:
 
@@ -1980,7 +1993,7 @@ Relevant customer examples:
 - [Ripley Entertainment](https://directus.com/resources/ripley-entertainment) describes consolidating a WordPress multisite estate for more than 100 attractions in 10 countries, with multilingual content and granular roles. The reported conversion and engagement improvements are vendor claims.
 - [Fortuna Entertainment Group](https://directus.com/resources/fortuna-entertainment-group) describes one CMS serving web and mobile across five countries and three brands. The reported 70% faster content creation/deployment is vendor-published.
 
-These references strengthen Directus as a serious candidate. They do not create a Directus fallback architecture or remove the need to validate ONE-specific tenancy, GCP, workflow, forms, Vertex AI, and migration requirements.
+These references strengthen Directus as a serious candidate. They do not create a Directus fallback architecture or remove the need to validate ONE-specific site isolation, GCP operations, workflow, forms, Enterprise AI, MCP, and migration requirements.
 
 ---
 
@@ -2143,60 +2156,31 @@ from happening again.
 
 ---
 
-# 59. Initial Weighted Evaluation
+# 59. Qualitative Vendor Recommendation
 
-This weighting intentionally reflects ONE's priorities.
+Both Payload and Directus meet the enterprise CMS baseline. The recommendation should therefore rest on the operating consequences that matter to ONE, not on arbitrary weights or decimal scores.
 
-Scores are out of 5.
-
-| Criterion                        | Weight | Payload | Directus |
-| -------------------------------- | -----: | ------: | -------: |
-| Self-hosting / ownership         |    12% | **5.0** |      5.0 |
-| Code-first customization         |    13% | **5.0** |      4.1 |
-| React / engineering alignment    |     9% | **5.0** |      3.8 |
-| Design governance                |     9% | **5.0** |      4.3 |
-| Cost / licensing / exit risk     |     8% | **4.9** |      3.7 |
-| GCP integration                  |     8% | **5.0** |      5.0 |
-| Git / deployment model           |     7% | **4.8** |      4.8 |
-| Editorial capabilities           |     7% |     4.3 |  **4.8** |
-| Localization / translation       |     5% |     4.4 |  **4.7** |
-| Security / authorization / audit |     5% |     4.9 |      4.9 |
-| Forms / SEO                      |     4% | **4.9** |      4.1 |
-| AI / MCP / agents                |     4% |     4.9 |      4.9 |
-| Drupal migration                 |     4% | **4.9** |      4.8 |
-| Enterprise/support               |     3% |     4.5 |  **4.7** |
-| Existing ONE familiarity         |     2% |     3.0 |  **5.0** |
-
-### Approximate weighted result
-
-```text
-Payload   ≈ 4.83 / 5
-Directus  ≈ 4.50 / 5
-```
+| Decision lens               | Payload                                                                                                             | Directus                                                                                      | Implication for ONE                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Content operations          | Enterprise publishing workflows, static A/B testing, AI, MCP, activity logs, revisions, and official headless forms | Mature Studio, Flows, AI Assistant, AI Translations, MCP, activity logs, and content versions | Both are credible; Payload better matches the planned headless publishing and forms model |
+| Engineering alignment       | React, TypeScript, and Next.js across configuration, Admin extensions, frontend integration, and custom logic       | Strong APIs and Node/TypeScript extensions; Studio extensions use Vue                         | Payload keeps more of the platform inside ONE's established engineering model             |
+| Platform ownership          | MIT-licensed core, GCP self-hosting, PostgreSQL, GCS, and replaceable components                                    | Self-hosting and database neutrality; commercial usage rights require contract clarity        | Payload provides the clearer long-term control and exit model                             |
+| Environment promotion       | Code-first migrations and standard delivery controls                                                                | Packaged Environment Sync                                                                     | Directus leads here; Payload must prove the required promotion workflow                   |
+| Migration and future change | Typed hooks and code-first extensibility align with the planned Drupal adapters and gradual route cutover           | Flexible APIs and automation can also support migration                                       | Payload reduces stack switching in the ONE-specific work that remains after selection     |
 
 ---
 
-# 60. Why Payload Wins This Score
+# 60. Why Payload Is Recommended
 
-Payload does not win because it has more CMS features.
+Payload is not recommended because it has more features. Directus remains a strong enterprise candidate and leads in packaged Environment Sync.
 
-Directus currently beats Payload in several areas.
+Payload is recommended because three advantages reinforce one another:
 
-Payload wins because ONE places unusually high importance on:
+1. **Better content operations** — packaged publishing workflows, static A/B testing, Enterprise AI, MCP, and an official headless Form Builder.
+2. **One engineering model** — React, TypeScript, and Next.js align the CMS, Admin extensions, design system, tests, migration logic, and day-to-day development.
+3. **Long-term control** — GCP self-hosting, PostgreSQL, GCS, and an MIT-licensed core keep data and architecture under ONE's control.
 
-```text
-Code customization
-React
-TypeScript
-Design-system governance
-Self-hosting
-MIT licensing
-GCP ownership
-Observability
-Git
-```
-
-Those are precisely Payload's strongest areas.
+Directus is credible; Payload is the better long-term fit for how ONE wants to publish, build, and operate.
 
 ---
 
@@ -2489,8 +2473,8 @@ ONE Content Quality
 ✓ Alt Text
 
 English      Published
-Vietnamese   Outdated
 Japanese     Draft
+Korean       Outdated
 ```
 
 This validates:
@@ -2531,12 +2515,16 @@ Write at least one automated authorization test.
 
 # 73. Demo Localization
 
-Locales:
+For management-facing material, show the supported production languages by name:
 
 ```text
-en
-vi
-ja
+English
+Chinese
+Japanese
+Korean
+Spanish
+Portuguese
+French
 ```
 
 Show:
@@ -2545,11 +2533,11 @@ Show:
 English
 Published
 
-Vietnamese
-Review
-
 Japanese
 Draft
+
+Korean
+Review
 ```
 
 Update English.
@@ -2557,7 +2545,7 @@ Update English.
 Mark:
 
 ```text
-Vietnamese
+Japanese
 Outdated
 ```
 
@@ -2574,7 +2562,7 @@ A local proof remains optional and only useful if time remains.
 Button:
 
 ```text
-[Translate → Vietnamese]
+[Translate → Japanese]
 ```
 
 can initially even use a mocked response.
@@ -2584,9 +2572,7 @@ If using real AI:
 ```text
 Payload
  ↓
-simple local AI endpoint
- ↓
-Vertex Gemini
+approved AI provider
 ```
 
 Do not build:
@@ -2600,7 +2586,7 @@ full SEO AI
 
 yet.
 
-This solo-demo exclusion is not a product-gap claim. The separate enterprise evaluation should demonstrate the included AI translation, writing assistant, image generation, and RAG/embedding capabilities against ONE roles, locales, audit, and optional Vertex-extension requirements.
+This solo-demo exclusion is not a product-gap claim. The separate enterprise evaluation should demonstrate translation, writing, image generation, RAG/embedding, MCP, permissions, and human approval against ONE roles, languages, and site scopes.
 
 ---
 
@@ -2636,8 +2622,8 @@ Sites:
 
 ```text
 Global
-Vietnam
 Japan
+Korea
 ```
 
 Associate content with tenant/site.
@@ -2645,8 +2631,8 @@ Associate content with tenant/site.
 At minimum demonstrate:
 
 ```text
-Vietnam content
 Japan content
+Korea content
 ```
 
 being separated.
@@ -3016,7 +3002,7 @@ Explicitly exclude:
 
 Those belong in the team PoC or implementation phase.
 
-The solo demo uses the repository implementation and does not require an Enterprise license. Procurement due diligence must separately demonstrate the advertised Enterprise workflow, AI, SSO, A/B testing, audit/support, and Visual Editor roadmap before the team estimates production custom work.
+The solo demo uses the repository implementation and does not require an Enterprise license. Procurement due diligence must separately demonstrate the advertised Enterprise multi-step workflow, static headless A/B testing, AI, SSO, audit/support, and Visual Editor roadmap before the team estimates production custom work.
 
 ---
 
@@ -3147,8 +3133,7 @@ Google SSO
 Cloud Logging/Trace
 actual Elasticsearch
 Cloudflare purge
-Payload Enterprise AI demonstration
-optional Vertex AI extension proof
+Payload Enterprise AI + MCP demonstration
 real Drupal staging
 performance testing
 security testing
@@ -3171,9 +3156,9 @@ enterprise support validation
                Website              CMS
                  GKE                GKE
                   │                   │
-                  │       ┌───────────┼──────────┐
-                  ▼       ▼           ▼          ▼
-             Cloud SQL    GCS      Pub/Sub    Vertex
+                  │       ┌───────────┼──────────┬─────────────────┐
+                  ▼       ▼           ▼          ▼                 ▼
+             Cloud SQL    GCS      Pub/Sub   Enterprise AI       MCP
                                        │
                               ┌────────┴──────────┐
                               ▼                   ▼
@@ -3223,35 +3208,15 @@ Payload 4 is upside.
 
 ---
 
-# 95. Final Weighted Evaluation
+# 95. Final Comparative Rationale
 
-| Criterion                        | Weight | Payload | Directus |
-| -------------------------------- | -----: | ------: | -------: |
-| Self-hosting / ownership         |    12% | **5.0** |      5.0 |
-| Code-first customization         |    13% | **5.0** |      4.1 |
-| React / engineering alignment    |     9% | **5.0** |      3.8 |
-| Design governance                |     9% | **5.0** |      4.3 |
-| Cost / licensing / exit risk     |     8% | **4.9** |      3.7 |
-| GCP integration                  |     8% | **5.0** |      5.0 |
-| Git / deployment model           |     7% | **4.8** |      4.8 |
-| Editorial capabilities           |     7% |     4.3 |  **4.8** |
-| Localization / translation       |     5% |     4.4 |  **4.7** |
-| Security / authorization / audit |     5% |     4.9 |      4.9 |
-| Forms / SEO                      |     4% | **4.9** |      4.1 |
-| AI / MCP / agents                |     4% |     4.9 |      4.9 |
-| Drupal migration                 |     4% | **4.9** |      4.8 |
-| Enterprise / support             |     3% |     4.5 |  **4.7** |
-| Existing ONE familiarity         |     2% |     3.0 |  **5.0** |
+The repository evidence and vendor research support the same qualitative conclusion:
 
-Approximate result:
+- **Both products are enterprise-capable.** Directus remains the stronger benchmark for packaged Environment Sync and Studio automation.
+- **Payload better matches the target operating model.** Its Enterprise content capabilities sit inside the React, TypeScript, Next.js, and GCP model ONE already operates.
+- **Payload preserves more long-term control.** The MIT-licensed core, self-hosted data, and replaceable infrastructure provide a clearer ownership and exit path.
 
-```text
-Payload
-≈ 4.83 / 5
-
-Directus
-≈ 4.50 / 5
-```
+The recommendation is based on this combined fit, not a numerical ranking.
 
 ---
 
@@ -3295,7 +3260,7 @@ Production implementation
 
 ### Finance
 
-> Payload keeps the core platform self-hosted and MIT licensed, reuses ONE's existing GCP/Cloudflare/Elasticsearch/Vertex infrastructure, and limits mandatory vendor dependency.
+> Payload keeps the core platform self-hosted and MIT licensed, reuses ONE's existing GCP, Cloudflare, and Elasticsearch capabilities, and limits mandatory vendor dependency.
 
 ### Migration
 
@@ -3303,15 +3268,15 @@ Production implementation
 
 ### Long-Term
 
-> The architecture uses Payload Enterprise AI now while keeping a ONE-controlled Vertex path optional. Database, storage, search, caching, observability, frontend routing, and external AI extensions remain replaceable, reducing the chance that the next CMS becomes another difficult-to-exit infrastructure dependency.
+> The architecture uses Payload Enterprise AI and MCP as shared productivity capabilities now. Database, storage, search, caching, observability, frontend routing, and any future model extension remain replaceable, reducing the chance that the next CMS becomes another difficult-to-exit infrastructure dependency.
 
 ---
 
 # Final Recommendation
 
-> **Select Payload CMS as the preferred CMS platform and immediately build a focused solo demo to validate the highest-risk assumptions.**
+> **Select Payload CMS as the preferred CMS platform and use the planned PoC to confirm implementation readiness.**
 
-> **If that demo proves self-hosting, React customization, strict design governance, Drupal coexistence and selective migration, translation workflows, observability and upgradeability, proceed to a broader team PoC rather than spending time implementing a competing Directus PoC.**
+> **If that demo proves self-hosting, React customization, strict design governance, Drupal coexistence and selective migration, translation workflows, observability and upgradeability, the planned broader team PoC will validate the remaining acceptance areas rather than duplicate the work with a competing Directus PoC.**
 
 > **If Payload exposes a fundamental blocker, reopen the single-platform decision using the documented Directus evidence. Do not deploy or present Directus as a fallback runtime.**
 

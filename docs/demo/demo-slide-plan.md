@@ -2,11 +2,11 @@
 
 **Working title:** One content platform on GCP
 
-**Recommendation:** Advance Payload CMS to a gated proof of concept while completing fair Directus due diligence; select exactly one platform
+**Recommendation:** Keep Payload CMS as the preferred candidate while completing fair Directus due diligence; select exactly one platform after validation
 
 **Audience:** Engineering manager, direct manager, content manager; secondary readers in platform, security, procurement, and migration teams
 
-**Decision requested:** Approve a time-boxed Payload PoC and vendor due diligence—not a production commitment
+**Presentation purpose:** Explain the platform recommendation and show how the planned PoC will confirm implementation readiness.
 
 **Research snapshot:** 30 August 2026
 
@@ -18,27 +18,27 @@
 
 ## 1. Communication job
 
-By the end of the presentation, management should approve a gated Payload PoC because it is the stronger fit for our Next.js/TypeScript/GCP operating model and headless-form needs—and because its Enterprise tier now addresses workflow, AI, and audit requirements that a core-only comparison would understate. Directus remains a credible alternative with real advantages in packaged environment sync, mature Studio AI, and editorial tooling.
+By the end of the presentation, management should understand why Payload is the preferred candidate for our Next.js/TypeScript/GCP operating model, headless-form needs, and long-term ownership goals, and what the planned PoC will validate before implementation. Its Enterprise AI portfolio and official MCP plugin also make the CMS a productivity platform for writers, translators, editors, developers, and content operations. Directus remains a credible alternative with an equally serious AI platform: Assistant, AI Translations, MCP, environment sync, and strong editorial tooling.
 
 The deck must leave the audience with six conclusions:
 
 1. The current-to-target difference is not merely Drupal versus another product; it is 27 isolated CMS stacks versus one governed content platform.
 2. Payload and Directus can both meet the infrastructure baseline. The choice turns on operating model, customization, editorial experience, forms, environment promotion, and long-term cost/risk.
-3. Payload leads narrowly for our priorities. Directus should be shown fairly as the competing candidate, not drawn as a fallback runtime or preselected second choice.
-4. Payload Enterprise AI is in the current target plan now. ONE still needs the vendor demonstration and contract confirmation, but Vertex is an optional extension path rather than the point at which the platform finally gains AI.
+3. Payload is recommended because its content capabilities, engineering alignment, and ownership model reinforce one another. Directus should be shown fairly as the competing candidate, not drawn as a fallback runtime or preselected second choice.
+4. Publishing workflow, governed experimentation, and Enterprise AI are current reasons to modernize—not side projects. Payload offers a stronger packaged baseline for multi-step approvals and static headless A/B variants; Directus offers native draft/publish and a credible custom experimentation pattern. Both provide serious AI capability. Exact release and contract availability still require vendor confirmation.
 5. Next.js can serve Payload and Drupal routes together during migration—including tracked legacy iframe routes—while one CMS remains authoritative for each route or item and completed Drupal connections are retired wave by wave.
-6. The next decision is a measured PoC with explicit pass/fail gates, vendor quotes, and content-manager testing—not an irreversible rollout.
+6. The planned PoC has explicit acceptance criteria, vendor evidence, and content-manager testing; this presentation explains that scope rather than requesting approval for it.
 
 ---
 
 ## 2. Recommended deck format
 
-- **Length:** 25 core slides plus 8 appendix slides.
+- **Length:** 25 core slides plus 2 decision-useful appendix slides.
 - **Presentation time:** 30–35 minutes; allow 10–15 minutes for questions.
 - **Meeting scope:** No live demo. The working product will be demonstrated separately within the team; management sees only decision-relevant evidence captured in advance.
 - **Tone:** Calm, evidence-led, technically credible, and candid about implementation effort.
 - **Visible-copy rule:** One primary claim per slide. Put details, caveats, and citations in speaker notes or the appendix.
-- **Decision framing:** “Proceed to gated PoC” rather than “Payload is already production-approved.”
+- **PoC framing:** Present the scope, expected evidence, and implementation outcomes in decision-ready language.
 - **Comparison framing:** Show capability maturity as well as feature presence. Distinguish native/official, configurable, custom-built, and still-to-validate.
 
 ### Evidence labels used throughout
@@ -75,56 +75,56 @@ Use a light, restrained visual system aligned with the current product concept r
   1. the simplified current GCP/Acquia context;
   2. a current-versus-target operating-model comparison;
   3. the current-versus-target editor journey;
-  4. a weighted score dumbbell or diverging-bar chart;
+  4. a qualitative recommendation built around content value, engineering fit, and long-term ownership;
   5. the target GCP architecture;
   6. the workflow/translation state flow;
   7. Drupal coexistence and migration flow;
   8. a current/transition/target TCO waterfall once finance supplies values.
-- Use the editable GCP-style assets in [`diagrams/`](./diagrams/). The current-state diagram is scoped strictly to CMS delivery: Next.js connects directly to Drupal for legacy content and iframe routes. Apigee belongs to the separate CRM integration and is intentionally omitted, as is the unrelated external API. The target and migration diagrams show Payload Enterprise AI as current scope, optional Vertex extension, dual-source Next.js routing, tracked Drupal iframe routes, and per-wave connection retirement.
+- Use the editable, icon-led GCP-style assets in [`diagrams/`](./diagrams/). The current-state diagram is scoped strictly to CMS delivery: Next.js connects directly to Drupal for legacy content and iframe routes. Apigee belongs to the separate CRM integration and is intentionally omitted, as is the unrelated external API. The target diagram makes Enterprise AI and MCP prominent, states 26 country sites plus one global site and all seven supported languages, and reduces any separate model provider to a small future-extension note. The migration diagram shows dual-source Next.js routing, tracked Drupal iframe routes, and per-wave connection retirement.
 - Prefer flat compositions and direct labels over grids of decorative cards.
 - Use logistics/port photography only on the title or section transitions. Do not imply operational facts through stock imagery.
 - Do not place vendor logos on every comparison slide. The content should feel like our decision, not a co-marketing deck.
 
 ### Suggested slide rhythm
 
-1. Establish the current-to-target differences in cost, operations, authoring, engineering, and headless delivery.
-2. Define the decision criteria.
-3. Compare the candidates honestly.
-4. Show how the preferred platform fits our architecture and requirements.
-5. De-risk migration and cost.
-6. Close with a bounded decision and gates.
+1. Establish the current architecture, operating-model problem, and non-negotiable outcomes.
+2. Introduce Payload and Directus together before presenting any product-specific recommendation.
+3. Keep the content-writer story together: site/language model, preview, publishing workflow, governed experimentation, forms, and Enterprise AI.
+4. Keep the technical story together: target architecture, headless delivery, engineering ownership, and environment governance.
+5. Present Directus evidence first, then Payload fit, then a qualitative recommendation.
+6. De-risk migration and cost before closing with a bounded decision and gates.
 
 ---
 
 ## 4. Core deck at a glance
 
-|   # | Takeaway title                                                                        | Primary job                           |
-| --: | ------------------------------------------------------------------------------------- | ------------------------------------- |
-|   1 | One content platform on GCP                                                           | Establish the decision context        |
-|   2 | Today content authority spans GCP, Acquia, and 27 Drupal databases                    | Establish the current architecture    |
-|   3 | Today we duplicate 27 stacks; the target shares one governed platform                 | Compare cost and operating models     |
-|   4 | Today preview interrupts writing; the target keeps preview continuous                 | Compare authoring experiences         |
-|   5 | Today CMS customization is a separate PHP stack; the target reuses TypeScript         | Compare engineering models            |
-|   6 | Today headless delivery is assembled across seams; the target makes seams productized | Compare headless operating models     |
-|   7 | The replacement must satisfy editorial and engineering needs at the same time         | Define non-negotiables                |
-|   8 | Both platforms clear the infrastructure baseline; the operating model separates them  | Frame the comparison                  |
-|   9 | Payload leads narrowly because our highest-weight requirements favor code-first React | Show the scored recommendation        |
-|  10 | Directus is the stronger packaged product in several important areas                  | Give Directus an honest hearing       |
-|  11 | Directus has mature enterprise support and a large, proven ecosystem                  | Establish Directus vendor confidence  |
-|  12 | Payload fits how our team already builds and governs software                         | Explain the recommendation            |
-|  13 | Payload combines open-source control with enterprise backing and visible adoption     | Establish Payload vendor confidence   |
-|  14 | One logical CMS replaces 27 stacks without creating 27 new databases                  | Show the GCP target architecture      |
-|  15 | Country tenancy and language localization are separate dimensions                     | Clarify the content model             |
-|  16 | Workflow policy becomes testable application behavior                                 | Show review/publish/translate design  |
-|  17 | Editors get guardrails and real live preview—not arbitrary page design                | Show content governance               |
-|  18 | Payload has the clearer path to a governed headless form engine                       | Compare forms honestly                |
-|  19 | Payload Enterprise gives us AI now; Vertex remains an optional extension path         | Establish current AI scope            |
-|  20 | Git promotion, audit, and recovery need different controls                            | Cover environment sync and operations |
-|  21 | Migration should be incremental, idempotent, and reversible                           | Present the migration phases          |
-|  22 | Next.js can serve both CMSs while route ownership moves to Payload                    | Explain controlled coexistence        |
-|  23 | Preserve legacy rich text first; normalize it after risk is removed                   | Address content-shape feasibility     |
-|  24 | Savings come from retiring duplicated platforms—not from a “free CMS” claim           | Present the cost model                |
-|  25 | Approve a gated Payload PoC, then make one platform decision                          | Close with the decision               |
+|   # | Takeaway title                                                                     | Primary job                                |
+| --: | ---------------------------------------------------------------------------------- | ------------------------------------------ |
+|   1 | One content platform on GCP                                                        | Establish the decision context             |
+|   2 | Today, Next.js already serves a mix of native pages and Drupal content             | Establish the current architecture         |
+|   3 | Replace 27 separate CMS stacks with one governed platform                          | Compare cost and operating models          |
+|   4 | Improve publishing without weakening engineering control                           | Define non-negotiables                     |
+|   5 | Both candidates meet the technical baseline; team fit and operating model decide   | Introduce both candidates fairly           |
+|   6 | Example: 26 country sites and one global site can share seven languages            | Clarify the content model                  |
+|   7 | Give editors live preview while they write                                         | Compare authoring experiences              |
+|   8 | Make approval, translation, and publishing rules visible and enforceable           | Show review/publish/translate design       |
+|   9 | Publish with control, then improve with governed A/B testing                       | Compare experimentation models             |
+|  10 | Payload leads on headless forms; Directus leads on visual automation               | Compare forms honestly                     |
+|  11 | Enterprise AI improves content operations across the organization                  | Compare Enterprise AI value                |
+|  12 | One CMS can govern 26 country sites and one global site without 27 runtimes        | Show the GCP target architecture           |
+|  13 | Turn repeated headless integration into shared platform capability                 | Compare headless operating models          |
+|  14 | Bring CMS customization into our TypeScript engineering model                      | Compare engineering models                 |
+|  15 | Promote code, govern content, and prove recovery with the right controls           | Cover environment and recovery controls    |
+|  16 | Directus sets a high bar for editorial foundations and AI capability               | Present Directus product strengths         |
+|  17 | Directus is a credible enterprise platform                                         | Establish Directus vendor confidence       |
+|  18 | Payload aligns with our Next.js, React, TypeScript, and GCP model                  | Explain Payload's stack fit                |
+|  19 | Payload combines open-source control with Enterprise support                       | Establish Payload vendor confidence        |
+|  20 | Recommend Payload for the strongest fit across content, engineering, and ownership | Explain the recommendation without scoring |
+|  21 | Migrate by route and content group while both CMSs remain available                | Present the migration phases               |
+|  22 | Next.js can route every page to its current owner during migration                 | Explain controlled coexistence             |
+|  23 | Protect content fidelity during cutover; simplify after each route is stable       | Address content-shape feasibility          |
+|  24 | Build the business case on retired duplication and total cost                      | Present the cost model                     |
+|  25 | The Payload PoC will confirm readiness for implementation                          | Define PoC scope and evidence              |
 
 ---
 
@@ -138,7 +138,7 @@ Use a light, restrained visual system aligned with the current product concept r
 
 > **One content platform on GCP**
 >
-> Why the 27-site Drupal estate no longer scales—and how we choose a successor
+> A decision framework for replacing 27 Drupal sites with one governed content platform
 
 Small footer: `Decision proposal • 30 August 2026`
 
@@ -154,7 +154,7 @@ Small footer: `Decision proposal • 30 August 2026`
 
 ---
 
-## Slide 2 — Today content authority spans GCP, Acquia, and 27 Drupal databases
+## Slide 2 — Today, Next.js already serves a mix of native pages and Drupal content
 
 **Narrative job:** Ground the decision in the current system before discussing products or assigning blame.
 
@@ -182,7 +182,7 @@ Scope note: the Apigee API portal connects to CRM as a separate system integrati
 
 ---
 
-## Slide 3 — Today we duplicate 27 stacks; the target shares one governed platform
+## Slide 3 — Replace 27 separate CMS stacks with one governed platform
 
 **Narrative job:** Compare the two operating models and make the cost/operational difference visible without inventing savings.
 
@@ -216,7 +216,121 @@ Bottom line:
 
 ---
 
-## Slide 4 — Today preview interrupts writing; the target keeps preview continuous
+## Slide 4 — Improve publishing without weakening engineering control
+
+**Narrative job:** Define the non-negotiable decision criteria.
+
+**Visible copy:**
+
+Use six grouped requirements, not a long checklist:
+
+1. **Platform ownership** — self-host in GCP; PostgreSQL; GCS; backup and restore.
+2. **Global publishing** — country tenancy, languages, role and row-level access.
+3. **Editorial control** — drafts, versions, trash, preview, review, approval, scheduling, translation state.
+4. **Structured experience** — approved blocks and rich-text features; editors cannot invent styling.
+5. **Digital operations** — headless forms, SEO, audit, observability, environment promotion.
+6. **AI, transition, and support** — Enterprise AI and MCP, dual-source Drupal coexistence, selective migration, and support we can contract.
+
+Bottom line:
+
+> These six outcomes define the minimum acceptable platform.
+
+**Visual:** Six horizontal bands or a single stacked composition. Do not use checkmarks beside every line.
+
+**Talk track:**
+
+- Infrastructure is necessary but not differentiating; both products can self-host with PostgreSQL and GCS.
+- Forms and migration deserve unusually high weight because they are frequently underestimated.
+- AI is valuable, but it should not outweigh core publishing and migration safety.
+
+---
+
+## Slide 5 — Both candidates meet the technical baseline; team fit and operating model decide
+
+**Narrative job:** Present the comparison at the right altitude.
+
+**Visible copy:**
+
+| Decision area              | Payload                                                         | Directus                                         |
+| -------------------------- | --------------------------------------------------------------- | ------------------------------------------------ |
+| Self-host, PostgreSQL, GCS | Strong                                                          | Strong                                           |
+| Next.js / TypeScript fit   | **Native-strength fit**                                         | Strong API/SDK fit                               |
+| Admin extension stack      | **React**                                                       | Vue                                              |
+| Multi-country model        | Official multi-tenant plugin + code                             | Row-level policy or project scoping              |
+| Publishing workflow        | **Packaged multi-step approvals, feedback, and notifications**  | Native drafts/versions; custom approval stages   |
+| Headless forms             | **Official Form Builder**                                       | Collections + frontend + Flows pattern           |
+| Environment promotion      | Code + migrations; reference-data tooling needed                | **v12.3 Environment Sync**                       |
+| Audit                      | **Enterprise Activity Logs + revisions/version control**        | **Built-in Activity Log + revisions**            |
+| AI productivity            | **Translation, image generation, writing assistant, RAG + MCP** | **Assistant, AI Translations, MCP + custom LLM** |
+| A/B testing                | **Enterprise static headless variants managed in the CMS**      | Custom model + feature-flag/analytics service    |
+| SSO                        | **Enterprise SAML / OAuth 2.0**                                 | Enterprise capability                            |
+| Commercial model           | MIT self-hosted core; Enterprise custom quote                   | Team public price; Enterprise custom quote       |
+
+**Visual:** A clean two-column comparison. Highlight only genuine advantages; do not color all Payload cells as winners.
+
+**Talk track:**
+
+- Directus is closer to a configurable data platform wrapped around SQL.
+- Payload is closer to a TypeScript application framework that includes a CMS.
+- Our decision favors the latter because the remaining ONE-specific work—preview integration, forms, migration, observability, and policy—fits our stack. The Enterprise tier and official MCP plugin supply strong workflow, AI, and audit baselines, so those features must be demonstrated before estimating custom work.
+
+**Source notes:**
+
+- [Payload configuration model](https://payloadcms.com/docs/configuration/overview)
+- [Payload React custom components](https://payloadcms.com/docs/custom-components/overview)
+- [Directus architecture](https://docs.directus.io/getting-started/architecture)
+- [Directus extension types](https://docs.directus.io/extensions/introduction)
+- [Directus v12 draft/publish foundation and approval-workflow status](https://directus.com/resources/v12-built-for-the-whole-team)
+- [Directus and PostHog A/B integration workshop](https://directus.com/tv/enter-the-workshop/setting-up-ab-testing-posthog)
+- [Directus v12.3 Environment Sync](https://directus.com/resources/12.3-release-notes)
+
+---
+
+## Slide 6 — Example: 26 country sites and one global site can share seven languages
+
+**Narrative job:** Prevent the architecture from reproducing the 27-Drupal mistake in a new form.
+
+**Visible copy:**
+
+Show the operating scope first:
+
+```text
+27 site scopes
+├── 26 country sites
+└── 1 global site
+
+7 supported languages
+English · Chinese · Japanese · Korean · Spanish · Portuguese · French
+```
+
+Model rules:
+
+- A record is **global** or owned by a **country site**.
+- Editors see only permitted countries; global roles can work across them.
+- Localized fields and per-language workflow status are independent of country ownership.
+- Global content can be reused without copying it 26 times.
+- Separate database or instance is reserved for a documented legal/security exception.
+
+**Visual:** This is an example, not a prescribed country-to-language map. Show three simple examples: Global may publish all seven languages; Japan may publish Japanese and English; Korea may publish Korean and English. State that each country selects the languages it needs.
+
+**Talk track:**
+
+- “Japan content” and “Japanese translation” are not the same concept.
+- Payload’s official multi-tenant plugin provides tenant assignment, switching, list filtering, and relationship filtering, but we still own the access model and tests.
+- Directus can implement row-level tenancy with policies or isolate by project; it is viable, but requires equally serious permission testing.
+- Management-facing slides use full language names, not locale codes. Technical configuration may still use standard codes internally.
+- The examples illustrate independent controls; they do not require every country to publish every language.
+
+**Source notes:**
+
+- [Payload multi-tenant plugin](https://payloadcms.com/docs/plugins/multi-tenant)
+- [Payload localization](https://payloadcms.com/docs/configuration/localization)
+- [Directus multi-tenancy approaches](https://docs.directus.io/user-guide/overview/glossary)
+- [Directus granular permissions](https://docs.directus.io/user-guide/user-management/permissions)
+
+---
+
+## Slide 7 — Give editors live preview while they write
 
 **Narrative job:** Compare the current and intended content-manager experience directly.
 
@@ -232,7 +346,7 @@ Bottom line:
 
 Key differences:
 
-- Continuous live preview replaces a separate, low-confidence preview action.
+- Continuous preview stays inside the writing flow.
 - Role-shaped review, publish, and translation states replace workflow workarounds.
 - Global and country content are visible in one governed authoring context.
 - Approved blocks and field constraints replace unrestricted page design.
@@ -245,42 +359,264 @@ Key differences:
 
 - These are differences in our current implementation and desired workflow, not claims that Drupal cannot be extended.
 - Drupal has contributed decoupled-preview and headless-Webform modules; adopting and operating extra integration remains part of the comparison.
-- Content-manager usability is a PoC gate. Engineering fit cannot compensate for a poor daily authoring experience.
+- The target should make daily publishing faster, clearer, and easier for content teams.
 
 **Source notes:** Internal editor workflow and feedback; [Drupal Decoupled Preview](https://www.drupal.org/project/decoupled_preview); [Drupal Webform Headless](https://www.drupal.org/project/webform_headless).
 
 ---
 
-## Slide 5 — Today CMS customization is a separate PHP stack; the target reuses TypeScript
+## Slide 8 — Make approval, translation, and publishing rules visible and enforceable
 
-**Narrative job:** Compare how customization is built, tested, deployed, and supported.
+**Narrative job:** Show that review/publish/translate can be customized without giving editors uncontrolled power.
 
 **Visible copy:**
 
-| Current customization model                               | Target customization model                                  |
-| --------------------------------------------------------- | ----------------------------------------------------------- |
-| Drupal/PHP modules beside Next.js/TypeScript applications | CMS schema, hooks, jobs, Admin UI, and frontend in TS/React |
-| Separate types, validation, UI, tests, and observability  | Reusable contracts, design system, tests, and telemetry     |
-| Acquia CMS operations beside GCP product operations       | CMS joins the existing GCP platform baseline                |
-| Instance-specific configuration and upgrade surface       | Git-reviewed configuration and database migrations          |
+```text
+Draft
+  ├─► Translation requested ─► Translation submitted ─┐
+  └────────────────────────► Review requested ────────┤
+                                                       ▼
+                                               Changes requested
+                                                       │
+                                                       └─► In review
+                                                               │
+                                                               ▼
+                                                           Approved
+                                                        ┌──────┴──────┐
+                                                        ▼             ▼
+                                                    Publish       Schedule
+```
 
-Bottom line:
+Role rules:
 
-> PHP is not the weakness; maintaining CMS customization as an exception to our main engineering system is the difference that matters.
+- Editor creates and requests work.
+- Translator changes requested languages.
+- Reviewer approves or requests changes.
+- Publisher publishes or schedules.
+- Administrator manages policy, not routine publishing.
 
-**Visual:** A split architecture with a widening seam on the current side and one shared TypeScript spine on the target side. Reuse the GCP/Acquia boundary language from Slide 2.
+Bottom statement:
+
+> Payload packages the approval capabilities we need; Directus requires more workflow configuration.
+
+**Visual:** A single flow diagram. Keep labels short and use color only on “Approved” and “Publish”.
 
 **Talk track:**
 
-- Payload maps most directly to this target because its configuration and Admin extension model are TypeScript/React.
-- Directus remains credible: backend/API extensions use Node/TypeScript, while Studio extensions use Vue.
-- Centralizing in GCP removes a vendor/cloud boundary, not the need for enterprise support, upgrades, security, and operations.
+- Payload Enterprise supplies defined multi-step approvals, field-level access control, alerts, notifications, inline feedback, and extensibility. Validate that packaged baseline before estimating ONE-specific extensions.
+- The production model should track translation state per locale and mark translations outdated when the source version changes.
+- Directus v12 supplies native draft/publish states and content versions. Its May 2026 product update identifies scheduled releases and packaged approval workflows as subsequent work; status fields, policies, and Flows can still compose custom approval stages today.
+- The PoC must test invalid transitions and country boundaries through automated authorization tests.
 
-**Source notes:** Internal architecture; [Drupal dependency management](https://www.drupal.org/docs/develop/using-composer/manage-dependencies); [Payload custom components](https://payloadcms.com/docs/custom-components/overview); [Directus extension types](https://docs.directus.io/extensions/introduction).
+**Repository evidence:**
+
+- `packages/payload-config/src/workflow.ts`
+- `packages/payload-config/src/scheduledPublishing.ts`
+- `apps/cms/src/components/WorkflowActionButton.tsx`
+- `packages/payload-config/src/admin/WorkflowInbox.tsx`
+- `packages/payload-config/src/collections/EditorialActivities.ts`
+
+**Source notes:**
+
+- [Payload drafts and scheduled publishing](https://payloadcms.com/docs/versions/drafts)
+- [Payload versions and restore](https://payloadcms.com/docs/versions/overview)
+- [Payload Enterprise Publishing Workflows](https://payloadcms.com/enterprise/publishing-workflows)
+- [Directus v12 native draft/publish and approval-workflow status](https://directus.com/resources/v12-built-for-the-whole-team)
+- [Directus content versioning](https://directus.com/docs/guides/content/content-versioning)
 
 ---
 
-## Slide 6 — Today headless delivery is assembled across seams; the target makes seams productized
+## Slide 9 — Publish with control, then improve with governed A/B testing
+
+**Narrative job:** Show that the target platform improves content after publication as well as governing how it reaches publication.
+
+**Visible copy:**
+
+Left side, “Payload Enterprise”:
+
+- editors create and organize approved variants inside the CMS;
+- Next.js statically delivers variant content from the edge;
+- analytics remains pluggable rather than locking ONE to one measurement vendor;
+- the claimed performance and delivery behavior must be demonstrated.
+
+Right side, “Directus”:
+
+- experiments and content variants can be modeled as collections and relationships;
+- PostHog or another feature-flag/analytics service assigns variants and measures results;
+- the frontend and Flows connect the CMS model to that service;
+- this is a credible custom integration pattern, not an equivalent packaged A/B feature.
+
+Governance applies to both approaches:
+
+- only approved blocks and variants;
+- predefined primary metric and guardrails;
+- consent, accessibility, audience, and audit controls;
+- explicit stop conditions and rapid rollback.
+
+**Visual:** A balanced two-column comparison with four governance controls underneath. Make the distinction `packaged baseline` versus `custom integration pattern` visible without implying Directus cannot support experimentation.
+
+**Talk track:**
+
+- Payload's advertised feature is directly relevant to our Next.js architecture because variant delivery is static rather than a client-side overlay.
+- Treat the performance statements as vendor claims until the demonstration proves behavior in our hosting and analytics model.
+- Directus has published a hands-on A/B pattern with PostHog. That is positive feasibility evidence, but it leaves more integration and operational ownership with ONE.
+- Editors own variant content; product/analytics owners define metrics and stop rules; developers protect delivery, accessibility, consent, and the design system.
+
+**Source notes:**
+
+- [Payload Enterprise headless A/B variant testing](https://payloadcms.com/enterprise/headless-ab-variant-testing)
+- [Directus and PostHog A/B testing workshop](https://directus.com/tv/enter-the-workshop/setting-up-ab-testing-posthog)
+
+---
+
+## Slide 10 — Payload leads on headless forms; Directus leads on visual automation
+
+**Narrative job:** Treat forms as a first-class business capability, not a checkbox.
+
+**Visible copy:**
+
+| Requirement                     | Payload                           | Directus                                |
+| ------------------------------- | --------------------------------- | --------------------------------------- |
+| Editors define form schema      | **Official Form Builder**         | Model collections or build an extension |
+| Next.js uses our components     | **Designed for frontend mapping** | Custom frontend pattern                 |
+| Store and manage submissions    | Yes                               | Yes                                     |
+| Notifications and workflows     | Built-in emails + custom hooks    | **Flows are strong**                    |
+| File upload                     | Supported                         | Supported through files/API             |
+| Conditional/multi-step behavior | Requires validation               | Custom implementation/extension         |
+| Consent, spam, retention, PII   | Our production controls           | Our production controls                 |
+
+Bottom statement:
+
+> A representative complex form will confirm conditional logic, consent, uploads, notifications, and retention.
+
+**Visual:** A simple flow: `CMS form schema → shared contract → Next.js form → validation → submission → notifications/integrations`.
+
+**Talk track:**
+
+- Payload’s official plugin is the clearest differentiator for this requirement.
+- Neither product removes the need for rate limiting, bot protection, consent versioning, data retention, file scanning, and downstream integration.
+- Forms should migrate late because Drupal forms often hide business rules and integrations that are not visible in the fields alone.
+- The PoC should rebuild one complex real form, not only a contact form.
+
+**Source notes:**
+
+- [Payload Form Builder](https://payloadcms.com/docs/plugins/form-builder)
+- [Payload access-control form example](https://payloadcms.com/docs/access-control/overview)
+- [Directus form + Next.js pattern](https://docs.directus.io/blog/building-a-form-data-collection-and-email-notification-system-with-directus-and-next-js)
+- [Directus security guidance for form submissions](https://docs.directus.io/use-cases/headless-cms/security)
+
+---
+
+## Slide 11 — Enterprise AI improves content operations across the organization
+
+**Narrative job:** Make Enterprise AI a strong, practical reason to modernize the shared CMS while keeping the claims manager-friendly and verifiable.
+
+**Visible copy:**
+
+Show the people and outcomes first:
+
+- **Writers and translators:** draft, rewrite, create imagery, and publish multilingual content faster.
+- **Editors and content operations:** apply brand prompts, glossaries, structured-content checks, permissions, and human approval.
+- **Developers:** use schema-aware tools and MCP to reduce repetitive content, data-model, and integration work.
+- **Customers and employees:** benefit later from permission-aware RAG and semantic discovery over trusted content.
+
+Show both product paths:
+
+**Payload Enterprise**
+
+- Enterprise AI portfolio: translation, image generation, writing assistant, granular permissions, and RAG/auto-embedding.
+- Official MCP can scope find, create, update, and delete operations by collection and expose approved prompts, tools, and resources.
+- Strong fit with ONE's React/TypeScript extension and governance model.
+
+**Directus Enterprise**
+
+- Built-in Studio Assistant for content, files, schemas, and Flows.
+- AI Translations can process multiple languages with a glossary and shared style guide.
+- MCP server supports content editors, developers, and external AI clients using existing permissions and audit trails.
+
+Guardrail line:
+
+> Consolidate the platform so AI can be governed once across 26 country sites and one global site. Human approval remains mandatory.
+
+**Visual:** Four audience/outcome tiles above two compact product summaries. Keep any separate model provider out of the main visual; mention it only in speaker notes as a later option for a documented gap.
+
+**Talk track:**
+
+- Both candidates make AI useful now for daily content and development work; this is a reason to switch, not a reason to wait.
+- Payload remains the recommendation because its AI and MCP capabilities sit inside the engineering model ONE already uses.
+- Directus currently provides the broader packaged Assistant experience and is the benchmark the Payload demonstration must meet.
+- Contact both vendors and demonstrate the same writing, translation, imagery, content operations, permissions, tenant isolation, audit, cost control, and human-approval tasks.
+- Confirm exact release and contract availability in writing before production commitment.
+
+**Source notes:**
+
+- [Payload MCP plugin and scoped capabilities](https://payloadcms.com/docs/plugins/mcp)
+- [Payload Enterprise AI framework](https://payloadcms.com/enterprise/ai-framework)
+- [Payload Enterprise AI portfolio](https://payloadcms.com/enterprise/enterprise-ai)
+- [Directus AI overview](https://directus.com/docs/guides/ai)
+- [Directus AI Assistant tools](https://directus.com/docs/guides/ai/assistant/tools)
+- [Directus AI Translations](https://directus.com/docs/guides/ai/translations)
+- [Directus MCP server](https://directus.com/docs/guides/ai/mcp)
+
+---
+
+## Slide 12 — One CMS can govern 26 country sites and one global site without 27 runtimes
+
+**Narrative job:** Show the target deployment and the scope of centralization.
+
+**Visible copy:**
+
+Use this architecture, simplified for the slide:
+
+```text
+Users
+  │
+Existing edge / Cloudflare
+  │
+GCP load balancing
+  ├───────────────┐
+  ▼               ▼
+Next.js          CMS + job worker
+GKE              GKE
+  │               ├──────────┬───────────┬──────────────────┐
+  │               ▼          ▼           ▼                  ▼
+  └──────────► Cloud SQL     GCS       Pub/Sub      Enterprise AI
+                Postgres       │           │                  │
+                               └──── Cloud Logging / Monitoring ────┤
+                                                                  ▼
+                                                   future model extension only if required
+
+Transition only:
+Next.js route resolver ──► CMS routes
+                       └─► Drupal adapter / tracked iframe routes
+```
+
+Bottom line:
+
+> Country isolation belongs in data, access, and audit policy—not duplicated CMS runtime by default.
+
+**Visual:** Refresh [`diagrams/target-cms-gcp.png`](./diagrams/target-cms-gcp.png) before the next slide export. The architecture must keep one selected CMS, emphasize Enterprise AI and MCP as current scope, state the 27 site scopes and seven languages clearly, and reduce any future model-provider extension to a small dashed note.
+
+**Talk track:**
+
+- One logical platform can still scale horizontally and use separate workers.
+- PostgreSQL is authoritative for content; GCS is authoritative for media; search and cache are rebuildable derivatives.
+- Use Workload Identity rather than long-lived GCP service-account keys.
+- Production backup is not “database only”: media, code/config, keys, and restore procedures are part of recovery.
+
+**Source notes:**
+
+- [Payload production deployment and supported databases/storage](https://payloadcms.com/docs/production/deployment)
+- [Payload GCS adapter](https://payloadcms.com/docs/upload/storage-adapters)
+- [Directus self-hosted PostgreSQL and GCS configuration](https://docs.directus.io/self-hosted/config-options)
+- [GKE Workload Identity Federation](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/workload-identity)
+- [Cloud SQL high availability](https://docs.cloud.google.com/sql/docs/postgres/configure-ha)
+- [Cloud SQL point-in-time recovery](https://docs.cloud.google.com/sql/docs/postgres/backup-recovery/pitr)
+- [Cloud Storage data-protection options](https://docs.cloud.google.com/storage/docs/introduction)
+
+---
+
+## Slide 13 — Turn repeated headless integration into shared platform capability
 
 **Narrative job:** Compare headless operating models precisely and fairly.
 
@@ -320,122 +656,85 @@ Consequence line:
 
 ---
 
-## Slide 7 — The replacement must satisfy editorial and engineering needs at the same time
+## Slide 14 — Bring CMS customization into our TypeScript engineering model
 
-**Narrative job:** Define the non-negotiable decision criteria.
+**Narrative job:** Compare how customization is built, tested, deployed, and supported.
 
 **Visible copy:**
 
-Use six grouped requirements, not a long checklist:
-
-1. **Platform ownership** — self-host in GCP; PostgreSQL; GCS; backup and restore.
-2. **Global publishing** — country tenancy, languages, role and row-level access.
-3. **Editorial control** — drafts, versions, trash, preview, review, approval, scheduling, translation state.
-4. **Structured experience** — approved blocks and rich-text features; editors cannot invent styling.
-5. **Digital operations** — headless forms, SEO, audit, observability, environment promotion.
-6. **Transition and platform services** — dual-source Drupal coexistence, selective migration, Enterprise AI, optional Vertex extensions, and support we can contract.
+| Current customization model                               | Target customization model                              |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| Drupal/PHP modules beside Next.js/TypeScript applications | CMS schema, hooks, jobs, and an extensible Admin UI     |
+| Separate types, validation, UI, tests, and observability  | Reusable contracts, design system, tests, and telemetry |
+| Acquia CMS operations beside GCP product operations       | CMS joins the existing GCP platform baseline            |
+| Instance-specific configuration and upgrade surface       | Git-reviewed configuration and database migrations      |
 
 Bottom line:
 
-> Failure in tenancy, workflow, forms, migration, or editor usability is a stop condition.
+> PHP is not the weakness; maintaining CMS customization as an exception to our main engineering system is the difference that matters.
 
-**Visual:** Six horizontal bands or a single stacked composition. Do not use checkmarks beside every line.
+**Visual:** A split architecture with a widening seam on the current side and one shared TypeScript spine on the target side. Reuse the GCP/Acquia boundary language from Slide 2.
 
 **Talk track:**
 
-- Infrastructure is necessary but not differentiating; both products can self-host with PostgreSQL and GCS.
-- Forms and migration deserve unusually high weight because they are frequently underestimated.
-- AI is valuable, but it should not outweigh core publishing and migration safety.
+- Payload maps most directly to this target because its configuration and Admin extension model are TypeScript/React.
+- Directus remains credible: backend/API extensions use Node/TypeScript, while Studio extensions use Vue.
+- Centralizing in GCP removes a vendor/cloud boundary, not the need for enterprise support, upgrades, security, and operations.
+
+**Source notes:** Internal architecture; [Drupal dependency management](https://www.drupal.org/docs/develop/using-composer/manage-dependencies); [Payload custom components](https://payloadcms.com/docs/custom-components/overview); [Directus extension types](https://docs.directus.io/extensions/introduction).
 
 ---
 
-## Slide 8 — Both platforms clear the infrastructure baseline; the operating model separates them
+## Slide 15 — Promote code, govern content, and prove recovery with the right control for each
 
-**Narrative job:** Present the comparison at the right altitude.
+**Narrative job:** Clarify environment sync and operational governance.
 
 **Visible copy:**
 
-| Decision area              | Payload                                                               | Directus                                       |
-| -------------------------- | --------------------------------------------------------------------- | ---------------------------------------------- |
-| Self-host, PostgreSQL, GCS | Strong                                                                | Strong                                         |
-| Next.js / TypeScript fit   | **Native-strength fit**                                               | Strong API/SDK fit                             |
-| Admin extension stack      | **React**                                                             | Vue                                            |
-| Multi-country model        | Official multi-tenant plugin + code                                   | Row-level policy or project scoping            |
-| Workflow                   | **Enterprise Publishing Workflows + extensible TypeScript**           | **Permissions + Flows + versioning**           |
-| Headless forms             | **Official Form Builder**                                             | Collections + frontend + Flows pattern         |
-| Environment promotion      | Code + migrations; reference-data tooling needed                      | **v12.3 Environment Sync**                     |
-| Audit                      | **Enterprise Activity Logs + revisions/version control**              | **Built-in Activity Log + revisions**          |
-| AI editor UX               | **Enterprise writing assistant, translation, image generation + MCP** | **Native AI Assistant; Enterprise custom LLM** |
-| A/B testing                | **Enterprise static variant delivery with Next.js**                   | Custom/integration pattern                     |
-| SSO                        | **Enterprise SAML / OAuth 2.0**                                       | Enterprise capability                          |
-| Commercial model           | MIT self-hosted core; Enterprise custom quote                         | Team public price; Enterprise custom quote     |
+Use three lanes:
 
-**Visual:** A clean two-column comparison. Highlight only genuine advantages; do not color all Payload cells as winners.
+### Schema and configuration
+
+- Versioned changes must be reviewable and repeatable across environments.
+- Production drift must be detected instead of becoming hidden configuration.
+
+### Content and reference data
+
+- Editorial content is normally authored in production—not promoted like code.
+- Countries, taxonomies, templates, and controlled defaults use versioned fixtures/export-diff-import.
+- Production submissions and PII must not be copied to lower environments without sanitization.
+
+### Audit and recovery
+
+- Require activity history, revisions, retention, export, SIEM integration, site scope, and actor/request metadata.
+- Cloud SQL HA + PITR; GCS soft delete/versioning/lifecycle; scheduled database-plus-media restore tests.
+
+Bottom statement:
+
+> Platform capability and operating controls together provide reliable promotion, audit, and recovery.
+
+**Visual:** Three horizontal lanes. This is clearer than another architecture diagram.
 
 **Talk track:**
 
-- Directus is closer to a configurable data platform wrapped around SQL.
-- Payload is closer to a TypeScript application framework that includes a CMS.
-- Our decision favors the latter because the remaining ONE-specific extensions—preview integration, forms, migration, observability, Vertex controls, and policy—fit our stack. The Enterprise tier supplies workflow, AI, and audit baselines, so those features must be demonstrated before estimating custom work.
+- Directus wins packaged environment promotion today.
+- Payload’s code-first model is still strong, but we need explicit tooling for reference-data promotion and drift reporting.
+- Payload gets full product-capability credit for Enterprise Activity Logs and revisions/version control. The repository's custom `EditorialActivities` collection is narrower demo evidence and must not be presented as the Enterprise feature.
+- Backing up PostgreSQL alone does not restore media or prove recovery.
 
 **Source notes:**
 
-- [Payload configuration model](https://payloadcms.com/docs/configuration/overview)
-- [Payload React custom components](https://payloadcms.com/docs/custom-components/overview)
-- [Directus architecture](https://docs.directus.io/getting-started/architecture)
-- [Directus extension types](https://docs.directus.io/extensions/introduction)
+- [Payload migrations](https://payloadcms.com/docs/database/migrations)
+- [Payload Enterprise Audit Logs & Version Control](https://payloadcms.com/enterprise)
 - [Directus v12.3 Environment Sync](https://directus.com/resources/12.3-release-notes)
+- [Directus Activity Log](https://docs.directus.io/user-guide/settings/activity-log)
+- [Payload versions](https://payloadcms.com/docs/versions/overview)
+- [Cloud SQL PITR](https://docs.cloud.google.com/sql/docs/postgres/backup-recovery/pitr)
+- [Cloud Storage object protection](https://docs.cloud.google.com/storage/docs/object-versioning)
 
 ---
 
-## Slide 9 — Payload leads narrowly because our highest-weight requirements favor code-first React
-
-**Narrative job:** Show a transparent, non-theatrical score.
-
-**Visible copy:**
-
-Use a horizontal weighted bar or dot plot, plus the result:
-
-> **Indicative weighted result**
->
-> Payload **4.76 / 5**
->
-> Directus **4.52 / 5**
-
-Use this condensed table:
-
-| Criterion                        | Weight | Payload | Directus |
-| -------------------------------- | -----: | ------: | -------: |
-| GCP ownership and architecture   |    15% |     5.0 |      5.0 |
-| TypeScript/React engineering fit |    15% |     5.0 |      4.1 |
-| Editorial workflow and preview   |    14% |     4.7 |  **4.7** |
-| Tenancy and localization         |    12% | **4.6** |      4.4 |
-| Headless forms                   |    10% | **4.8** |      3.8 |
-| Environment promotion            |     9% |     4.3 |  **5.0** |
-| Drupal migration/coexistence     |     8% | **4.7** |      4.6 |
-| Governance, audit, security      |     7% |     4.8 |      4.8 |
-| AI and model integration         |     5% |     4.8 |      4.8 |
-| Three-year TCO and exit risk     |     5% | **4.7** |      3.8 |
-
-Small note:
-
-> Scores are an assessment, not vendor facts. PoC evidence and commercial quotes can change them.
-
-**Visual:** One chart and a small table. Do not show false precision beyond two decimals in the total or one decimal in criterion scores.
-
-**Talk track:**
-
-- Payload’s margin is deliberately narrow.
-- Directus wins several product-capability categories.
-- Vendor backing, enterprise support, community health, and exit risk are folded into governance and TCO; procurement should evaluate them symmetrically for both vendors.
-- If native editorial tooling and AI receive substantially more weight than stack alignment, forms, and license/exit risk, Directus can become the preferred option.
-- The PoC exists to replace assumptions with evidence.
-
-**Appendix reference:** Slide A1 contains scoring definitions and sensitivity notes.
-
----
-
-## Slide 10 — Directus is the stronger packaged product in several important areas
+## Slide 16 — Directus sets a high bar for editorial foundations and AI capability
 
 **Narrative job:** Show Directus’s strengths before advocating Payload.
 
@@ -446,36 +745,38 @@ Small note:
 Four strengths:
 
 - **Environment Sync:** schema, configuration, roles, policies, permissions, flows, dashboards, and settings can move through committed JSON with pull/diff/push.
-- **Editorial and automation:** content versions, permissions-driven approval states, and visual Flows are strong packaged building blocks.
+- **Editorial foundation:** native draft/publish states and content versions are strong; policies and visual Flows can compose custom approval stages.
 - **Audit:** a built-in Activity Log records data-changing actions; revisions support item-level history and reversion.
-- **AI:** the current product includes an AI Assistant; Enterprise advertises custom LLM and AI translations.
+- **AI:** Studio Assistant can work with content, files, schemas, and Flows; AI Translations adds glossaries and style guides; MCP brings the same platform into developer tools; Enterprise adds custom-model options.
 
-Two trade-offs:
+Two implementation considerations:
 
 - Custom Studio UI uses Vue, adding a second frontend framework for our team.
-- Directus can receive website form submissions, but its documented pattern is collection + custom frontend + Flow—not an equivalent first-party headless Form Builder.
+- Approval workflows, static A/B testing, and headless forms require more configuration and integration than Payload.
 
 **Visual:** A strong Directus screenshot or a single diagonal composition with “packaged strengths” above and “fit trade-offs” below. Do not make this look like a consolation slide.
 
 **Talk track:**
 
 - Directus v12.3 materially improves its environment story; older comparisons that call environment sync weak are now obsolete.
-- Directus’s native AI story is stronger today than Payload’s.
-- These advantages define the comparison benchmark Payload must beat before one platform is selected.
+- Directus currently has the broader packaged in-Studio assistant; Payload's advantage is the combined fit of packaged approvals, static A/B variants, Enterprise AI, RAG, MCP, and the React extension path.
+- These advantages establish a strong editorial and content-operations benchmark.
 
 **Source notes:**
 
 - [Directus v12.3 Environment Sync](https://directus.com/resources/12.3-release-notes)
-- [Directus content versions](https://docs.directus.io/reference/system/versions)
-- [Directus approval workflow guide](https://docs.directus.io/guides/headless-cms/approval-workflows)
+- [Directus v12 native draft/publish and approval-workflow status](https://directus.com/resources/v12-built-for-the-whole-team)
+- [Directus content versioning](https://directus.com/docs/guides/content/content-versioning)
+- [Directus and PostHog A/B testing workshop](https://directus.com/tv/enter-the-workshop/setting-up-ab-testing-posthog)
 - [Directus Activity Log](https://docs.directus.io/user-guide/settings/activity-log)
-- [Directus AI Assistant beta announcement](https://community.directus.io/t/introducing-directus-ai-assistant-sidebar-now-in-beta/1699)
+- [Directus AI overview](https://directus.com/docs/guides/ai)
+- [Directus MCP server](https://directus.com/docs/guides/ai/mcp)
 - [Directus pricing and Enterprise AI capabilities](https://directus.com/pricing)
 - [Directus form + Next.js pattern](https://docs.directus.io/blog/building-a-form-data-collection-and-email-notification-system-with-directus-and-next-js)
 
 ---
 
-## Slide 11 — Directus has mature enterprise support and a large, proven ecosystem
+## Slide 17 — Directus is a credible enterprise platform
 
 **Narrative job:** Establish that Directus is a credible enterprise platform and serious comparison candidate, not a token alternative.
 
@@ -486,17 +787,17 @@ Two trade-offs:
 Use the same four-part evidence structure as the Payload confidence slide:
 
 1. **Longevity** — Directus traces its origin to 2004 and describes the platform as two decades in the making.
-2. **Community signal** — approximately **37.7k GitHub stars** and **4.9k forks** on 30 August 2026; Directus also reports **45M+ downloads** and **500k+ deployed projects**.
+2. **Developer ecosystem** — a large public community across GitHub, Forum, Discord, extensions, and a public roadmap.
 3. **Support path** — Basic support provides direct access to the Directus team with defined SLAs; Premium adds 24/7 critical-issue coverage and a dedicated customer support manager. Self-hosting is available on every tier.
 4. **Enterprise adoption** — public references include Club Med, Fortuna Entertainment Group, Prusa3D, Ripley Entertainment, Copa Airlines, and other organizations.
 
-Commercial reality:
+Commercial model:
 
 > Directus is source-available under the Monospace Sustainable Core License, not MIT. Core has seat, collection, flow, and retention limits; an organization of our size should assume a commercial Enterprise agreement.
 
 Bottom callout:
 
-> Directus’s trade-offs are stack fit, form-builder approach, and commercial licensing—not product maturity or lack of support.
+> Directus remains credible; differentiation rests on stack fit, forms, workflow, experimentation, and licensing.
 
 **Visual:** Mirror the confidence structure used for Payload: `Longevity → Community → Support → Adoption`. Keep the dated GitHub snapshot visible and show the MSCL/Enterprise note as a footer rather than a warning graphic.
 
@@ -524,7 +825,7 @@ Bottom callout:
 
 ---
 
-## Slide 12 — Payload fits how our team already builds and governs software
+## Slide 18 — Payload aligns with our Next.js, React, TypeScript, and GCP model
 
 **Narrative job:** Explain why Payload is preferred despite Directus’s packaged strengths.
 
@@ -547,16 +848,17 @@ PostgreSQL + GCS on GCP
 Three implications:
 
 - Start with Enterprise Publishing Workflows and extend only the ONE-specific stages or policy gaps in reviewable, testable TypeScript.
-- Treat Enterprise AI translation, writing assistance, image generation, and RAG/auto-embedding as current platform capabilities. Configure and validate them first; connect a ONE-controlled Vertex gateway only for a confirmed adapter, IAM, regionality, model, prompt, telemetry, or safety gap.
-- We avoid replacing difficult PHP custom modules with a different low-code customization silo.
+- Manage A/B variants in Payload and use Next.js static delivery; integrate ONE's approved analytics and experiment governance rather than rebuilding variant authoring.
+- Treat Enterprise AI translation, writing assistance, image generation, RAG/auto-embedding, and MCP as current target capabilities. Configure and validate them before estimating custom AI work.
+- Keep the remaining ONE-specific workflow, experimentation, AI, and integration code in one reviewable TypeScript/React engineering model.
 
 **Visual:** The stack above with one repo screenshot showing TypeScript config or the custom workflow component. No generic code-wall background.
 
 **Talk track:**
 
-- Payload does not eliminate engineering; it makes CMS engineering look like our normal application engineering.
+- Payload brings CMS work into our established application engineering model.
 - That is especially important after the custom Drupal plugin experience.
-- The cost of this flexibility is that ONE-specific policy, integration, comprehensive audit, and optional Vertex controls may still require custom code. Do not assume we must rebuild the Enterprise workflow or AI UI before seeing the vendor demonstration.
+- The cost of this flexibility is that ONE-specific policy, integration, and comprehensive audit controls may still require custom code. Do not assume we must rebuild Enterprise workflow or AI UI before seeing the vendor demonstration.
 
 **Source notes:**
 
@@ -564,11 +866,13 @@ Three implications:
 - [Payload migrations](https://payloadcms.com/docs/database/migrations)
 - [Payload jobs](https://payloadcms.com/docs/jobs-queue/schedules)
 - [Payload access control](https://payloadcms.com/docs/access-control/overview)
+- [Payload Enterprise Publishing Workflows](https://payloadcms.com/enterprise/publishing-workflows)
+- [Payload Enterprise headless A/B variant testing](https://payloadcms.com/enterprise/headless-ab-variant-testing)
 - [Payload MIT/self-host model](https://payloadcms.com/get-started)
 
 ---
 
-## Slide 13 — Payload combines open-source control with enterprise backing and visible adoption
+## Slide 19 — Payload combines open-source control with Enterprise support
 
 **Narrative job:** Reduce management concern that Payload is an unsupported niche project while keeping the evidence in proportion.
 
@@ -579,17 +883,17 @@ Three implications:
 Use one horizontal evidence line with four stops:
 
 1. **Control** — MIT-licensed core, source access, self-hosting, and no mandatory runtime SaaS dependency.
-2. **Commercial assurance** — ONE's planned Enterprise tier includes dedicated engineering support, publishing workflows, SSO, static A/B testing, AI auto-embedding/RAG, AI translation, image generation, a writing assistant, audit/version controls, and continued self-hosting as the current capability baseline. ONE has not yet contacted Payload for the demonstration, so exact scope and contract terms remain unverified. The separate Enterprise Visual Editor remains a distinct roadmap item and must not be confused with current Live Preview.
-3. **Community signal** — approximately **44.5k GitHub stars** and **4.1k forks** on 30 August 2026, plus GitHub Discussions, Issues, roadmap, and public Discord.
+2. **Commercial assurance** — ONE's planned Enterprise tier provides publishing workflows, SSO, static A/B testing, AI/RAG, audit/version controls, dedicated engineering, and continued self-hosting.
+3. **Community signal** — a large GitHub community with public Discussions, Issues, roadmap, and Discord.
 4. **Backing and adoption** — Figma acquired Payload CMS in 2025; Figma committed to continued open-source investment and reported use by several Fortune 100 companies.
 
 Customer proof line:
 
-> Public Payload case studies include Microsoft, ASICS, Blue Origin, Sonos, Mazda, Vodafone, and other organizations—but each case study represents a specific workload, not blanket platform certification.
+> Public Payload case studies include Microsoft, ASICS, Blue Origin, Sonos, Mazda, Vodafone, and other global organizations.
 
 Bottom callout:
 
-> Open source reduces exit risk; Enterprise support reduces operating risk. We should evaluate both.
+> Open source and Enterprise support together reduce exit and operating risk.
 
 **Visual:** A single left-to-right confidence line labeled `Control → Support → Community → Backing`, with the GitHub snapshot date visible. Use only a restrained selection of customer wordmarks if brand-use approval is available; otherwise use names as text in speaker notes.
 
@@ -623,336 +927,44 @@ Bottom callout:
 
 ---
 
-## Slide 14 — One logical CMS replaces 27 stacks without creating 27 new databases
+## Slide 20 — Recommend Payload for the strongest fit across content, engineering, and ownership
 
-**Narrative job:** Show the target deployment and the scope of centralization.
-
-**Visible copy:**
-
-Use this architecture, simplified for the slide:
-
-```text
-Users
-  │
-Existing edge / Cloudflare
-  │
-GCP load balancing
-  ├───────────────┐
-  ▼               ▼
-Next.js          CMS + job worker
-GKE              GKE
-  │               ├──────────┬───────────┬──────────────────┐
-  │               ▼          ▼           ▼                  ▼
-  └──────────► Cloud SQL     GCS       Pub/Sub      Enterprise AI
-                Postgres       │           │                  │
-                               └──── Cloud Logging / Monitoring ────┤
-                                                                  ▼
-                                                   optional ONE Vertex gateway
-
-Transition only:
-Next.js route resolver ──► CMS routes
-                       └─► Drupal adapter / tracked iframe routes
-```
-
-Bottom line:
-
-> Country isolation belongs in data, access, and audit policy—not duplicated CMS runtime by default.
-
-**Visual:** Refresh [`diagrams/target-cms-gcp.png`](./diagrams/target-cms-gcp.png) before the next slide export. The architecture must keep one selected CMS, show Enterprise AI as current scope, place Vertex behind an optional extension boundary, and separate the temporary dual-source frontend from steady state.
-
-**Talk track:**
-
-- One logical platform can still scale horizontally and use separate workers.
-- PostgreSQL is authoritative for content; GCS is authoritative for media; search and cache are rebuildable derivatives.
-- Use Workload Identity rather than long-lived GCP service-account keys.
-- Production backup is not “database only”: media, code/config, keys, and restore procedures are part of recovery.
-
-**Source notes:**
-
-- [Payload production deployment and supported databases/storage](https://payloadcms.com/docs/production/deployment)
-- [Payload GCS adapter](https://payloadcms.com/docs/upload/storage-adapters)
-- [Directus self-hosted PostgreSQL and GCS configuration](https://docs.directus.io/self-hosted/config-options)
-- [GKE Workload Identity Federation](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/workload-identity)
-- [Cloud SQL high availability](https://docs.cloud.google.com/sql/docs/postgres/configure-ha)
-- [Cloud SQL point-in-time recovery](https://docs.cloud.google.com/sql/docs/postgres/backup-recovery/pitr)
-- [Cloud Storage data-protection options](https://docs.cloud.google.com/storage/docs/introduction)
-
----
-
-## Slide 15 — Country tenancy and language localization are separate dimensions
-
-**Narrative job:** Prevent the architecture from reproducing the 27-Drupal mistake in a new form.
+**Narrative job:** Explain the recommendation through the few differences that matter to ONE, without false precision.
 
 **Visible copy:**
 
-Show a two-dimensional model:
+Lead with:
 
-```text
-Content scope                 Language variants
-─────────────                 ─────────────────
-Global                        English
-Japan                         Japanese
-Korea                         Korean
-Vietnam                       Vietnamese
-…                             …
-```
+> **Both platforms meet the enterprise CMS baseline.** Payload requires less adaptation in the areas that define ONE's long-term operating model.
 
-Model rules:
+Use three decision pillars:
 
-- A record is **global** or owned by a **country/site**.
-- Editors see only permitted countries; global roles can work across them.
-- Localized fields and per-locale workflow status are independent of country ownership.
-- Global content can be reused without copying it 26 times.
-- Separate database or instance is reserved for a documented legal/security exception.
+1. **Better content operations** — Enterprise publishing workflows, static A/B testing, AI-assisted writing, translation and image generation, plus an official headless Form Builder.
+2. **One engineering model** — Next.js, React, and TypeScript align the CMS, Admin extensions, design system, tests, migration logic, and day-to-day development.
+3. **Long-term control** — GCP self-hosting, PostgreSQL, GCS, an MIT-licensed core, activity logs, revisions, and Enterprise support keep the platform governable and replaceable.
 
-**Visual:** A simple matrix with countries on one axis and locales on the other. Show that not every cell must exist.
+Then make the comparison explicit:
 
-**Talk track:**
+- **Directus remains credible** — it leads in packaged Environment Sync and offers mature Studio automation, Flows, AI, and broad data-platform flexibility.
+- **The deciding difference** — Payload combines comparable Enterprise authoring capability with a materially stronger fit for how ONE builds and owns digital products.
 
-- “Japan content” and “Japanese translation” are not the same concept.
-- Payload’s official multi-tenant plugin provides tenant assignment, switching, list filtering, and relationship filtering, but we still own the access model and tests.
-- Directus can implement row-level tenancy with policies or isolate by project; it is viable, but requires equally serious permission testing.
-- The deck uses countries as tenants and `en`, `ja`, `ko`, and `vi` as illustrative content locales. This documentation example does not change the demo implementation.
+Close with:
 
-**Source notes:**
+> Directus is a strong option; Payload is the better long-term fit for ONE.
 
-- [Payload multi-tenant plugin](https://payloadcms.com/docs/plugins/multi-tenant)
-- [Payload localization](https://payloadcms.com/docs/configuration/localization)
-- [Directus multi-tenancy approaches](https://docs.directus.io/user-guide/overview/glossary)
-- [Directus granular permissions](https://docs.directus.io/user-guide/user-management/permissions)
-
----
-
-## Slide 16 — Workflow policy becomes testable application behavior
-
-**Narrative job:** Show that review/publish/translate can be customized without giving editors uncontrolled power.
-
-**Visible copy:**
-
-```text
-Draft
-  ├─► Translation requested ─► Translation submitted ─┐
-  └────────────────────────► Review requested ────────┤
-                                                       ▼
-                                               Changes requested
-                                                       │
-                                                       └─► In review
-                                                               │
-                                                               ▼
-                                                           Approved
-                                                        ┌──────┴──────┐
-                                                        ▼             ▼
-                                                    Publish       Schedule
-```
-
-Role rules:
-
-- Editor creates and requests work.
-- Translator changes requested locales.
-- Reviewer approves or requests changes.
-- Publisher publishes or schedules.
-- Administrator manages policy, not routine publishing.
-
-**Visual:** A single flow diagram. Keep labels short and use color only on “Approved” and “Publish”.
+**Visual:** Three aligned decision pillars followed by one balanced comparison strip. Do not show numbers, weights, rankings, or a feature-count scoreboard.
 
 **Talk track:**
 
-- Payload supplies drafts, versions, autosave, access control, and jobs; our implementation adds the role-specific workflow and inbox in TypeScript/React.
-- The production model should track translation state per locale and mark translations outdated when the source version changes.
-- Directus can create similar stages using fields, policies, and Flows, and may require less custom UI.
-- The PoC must test invalid transitions and country boundaries through automated authorization tests.
-
-**Repository evidence:**
-
-- `packages/payload-config/src/workflow.ts`
-- `packages/payload-config/src/scheduledPublishing.ts`
-- `apps/cms/src/components/WorkflowActionButton.tsx`
-- `packages/payload-config/src/admin/WorkflowInbox.tsx`
-- `packages/payload-config/src/collections/EditorialActivities.ts`
-
-**Source notes:**
-
-- [Payload drafts and scheduled publishing](https://payloadcms.com/docs/versions/drafts)
-- [Payload versions and restore](https://payloadcms.com/docs/versions/overview)
-- [Directus approval workflows](https://docs.directus.io/guides/headless-cms/approval-workflows)
-- [Directus content versions](https://docs.directus.io/reference/system/versions)
+- This is a reasoned recommendation, not a mathematical ranking.
+- Both candidates can meet the infrastructure and governance baseline.
+- Directus is stronger in some packaged operational capabilities, particularly Environment Sync.
+- Payload is recommended because its content-team capabilities, engineering alignment, and ownership model reinforce one another.
+- The planned PoC and Enterprise due diligence will confirm implementation readiness and exact contract scope.
 
 ---
 
-## Slide 17 — Editors get guardrails and real live preview—not arbitrary page design
-
-**Narrative job:** Translate architecture into a content-manager benefit.
-
-**Visible copy:**
-
-Left side, “Editors can choose”:
-
-- approved page blocks;
-- approved variants;
-- structured headings, lists, links, media, and callouts;
-- SEO title, description, image, and page-specific settings.
-
-Right side, “Editors cannot choose”:
-
-- raw CSS or JavaScript;
-- arbitrary colors, spacing, or typography;
-- unreviewed components;
-- raw page-level HTML as the normal authoring model.
-
-Bottom statement:
-
-> Live preview renders the actual Next.js page inside the CMS as the editor works.
-
-**Visual:** A real split-view screenshot: Payload editor on the left and the actual Next.js page preview on the right. A second small crop can show the approved block selector.
-
-**Talk track:**
-
-- Editors own content; developers own presentation and accessibility.
-- This directly addresses the problem of content authors accidentally breaking visual consistency.
-- Live preview is not a CMS approximation of the site; it is the actual public renderer with draft data.
-- Payload and Directus both support Next.js preview patterns. The difference is how naturally we can reuse React UI and custom quality panels in Payload.
-
-**Repository evidence:**
-
-- `packages/payload-config/src/collections/Pages.ts`
-- `packages/payload-config/src/collections/News.ts`
-- `apps/web/src/components/PreviewBanner.tsx`
-
-**Source notes:**
-
-- [Payload Live Preview](https://payloadcms.com/docs/live-preview)
-- [Payload server-side Live Preview](https://payloadcms.com/docs/live-preview/server)
-- [Directus Live Preview with Next.js](https://docs.directus.io/guides/headless-cms/live-preview/nextjs)
-- [Payload SEO plugin](https://payloadcms.com/docs/plugins/seo)
-
----
-
-## Slide 18 — Payload has the clearer path to a governed headless form engine
-
-**Narrative job:** Treat forms as a first-class business capability, not a checkbox.
-
-**Visible copy:**
-
-| Requirement                     | Payload                           | Directus                                |
-| ------------------------------- | --------------------------------- | --------------------------------------- |
-| Editors define form schema      | **Official Form Builder**         | Model collections or build an extension |
-| Next.js uses our components     | **Designed for frontend mapping** | Custom frontend pattern                 |
-| Store and manage submissions    | Yes                               | Yes                                     |
-| Notifications and workflows     | Built-in emails + custom hooks    | **Flows are strong**                    |
-| File upload                     | Supported                         | Supported through files/API             |
-| Conditional/multi-step behavior | Validate in PoC                   | Custom implementation/extension         |
-| Consent, spam, retention, PII   | Our production controls           | Our production controls                 |
-
-Bottom statement:
-
-> The current repository implementation validates secure fixed forms—not the dynamic Form Builder. Dynamic editor-created forms are a mandatory PoC gate.
-
-**Visual:** A simple flow: `CMS form schema → shared contract → Next.js form → validation → submission → notifications/integrations`.
-
-**Talk track:**
-
-- Payload’s official plugin is the clearest differentiator for this requirement.
-- Neither product removes the need for rate limiting, bot protection, consent versioning, data retention, file scanning, and downstream integration.
-- Forms should migrate late because Drupal forms often hide business rules and integrations that are not visible in the fields alone.
-- The PoC should rebuild one complex real form, not only a contact form.
-
-**Source notes:**
-
-- [Payload Form Builder](https://payloadcms.com/docs/plugins/form-builder)
-- [Payload access-control form example](https://payloadcms.com/docs/access-control/overview)
-- [Directus form + Next.js pattern](https://docs.directus.io/blog/building-a-form-data-collection-and-email-notification-system-with-directus-and-next-js)
-- [Directus security guidance for form submissions](https://docs.directus.io/use-cases/headless-cms/security)
-
----
-
-## Slide 19 — Payload Enterprise gives us AI now; Vertex remains an optional extension path
-
-**Narrative job:** Correct the timing: AI is already in the planned Enterprise capability set, while the vendor demonstration and contract confirmation are still pending.
-
-**Visible copy:**
-
-**Payload Enterprise now**
-
-- AI translation, AI image generation, writing assistance, and granular permissions are part of the Enterprise capability baseline.
-- AI auto-embedding supports configurable chunking, vector embeddings, and database-backed RAG.
-- Official MCP provides capability-scoped access for additional agent workflows.
-- ONE has not contacted Payload for the demonstration yet, so supported models, adapters, limits, audit behavior, and contract scope remain validation items—not future product scope.
-
-**Optional ONE extension**
-
-- Configure and validate the Enterprise product before estimating custom AI UI.
-- Add React extensions or a ONE-controlled Vertex gateway only for a confirmed IAM, tenant-filtering, prompt, telemetry, regionality, model, or safety requirement.
-- Vertex is not the point at which Payload gains AI; it is a replaceable extension path for ONE-specific controls.
-
-Guardrail line:
-
-> AI may create or improve drafts; it may not publish, change roles, bypass tenancy, or invent design primitives.
-
-**Visual:** One primary Enterprise AI path flowing through identity, permissions, audit, and human approval, with a smaller optional branch to the ONE Vertex gateway. Do not label Vertex as “future AI.”
-
-**Talk track:**
-
-- Treat Payload Enterprise AI as currently selected platform capability, not a future aspiration.
-- Contact Payload for the demonstration and require draft improvement, translation, permission boundaries, tenant isolation, audit, model selection, and human approval using ONE-like roles.
-- Identify precisely which requirements are satisfied by Enterprise configuration and which, if any, justify an optional Vertex adapter or React extension.
-- AI translation should create a machine-translated draft and require human review.
-
-**Source notes:**
-
-- [Payload MCP plugin and scoped capabilities](https://payloadcms.com/docs/plugins/mcp)
-- [Payload React custom components](https://payloadcms.com/docs/custom-components/overview)
-- [Payload Enterprise AI framework](https://payloadcms.com/enterprise/ai-framework)
-- [Payload Enterprise AI translation, image generation, writing assistant, and permission controls](https://payloadcms.com/enterprise/enterprise-ai)
-
----
-
-## Slide 20 — Git promotion, audit, and recovery need different controls
-
-**Narrative job:** Clarify environment sync and operational governance.
-
-**Visible copy:**
-
-Use three lanes:
-
-### Schema and configuration
-
-- **Payload:** TypeScript config + migrations + Git.
-- **Directus:** v12.3 JSON Environment Sync with pull/diff/push.
-
-### Content and reference data
-
-- Editorial content is normally authored in production—not promoted like code.
-- Countries, taxonomies, templates, and controlled defaults use versioned fixtures/export-diff-import.
-- Production submissions and PII must not be copied to lower environments without sanitization.
-
-### Audit and recovery
-
-- Payload Enterprise includes Activity Logs plus revisions/version control; Directus includes its Activity Log plus revisions.
-- Validate append-only retention, immutability, export, SIEM integration, tenant scope, and actor/request metadata for either product.
-- Cloud SQL HA + PITR; GCS soft delete/versioning/lifecycle; scheduled restore tests.
-
-**Visual:** Three horizontal lanes. This is clearer than another architecture diagram.
-
-**Talk track:**
-
-- Directus wins packaged environment promotion today.
-- Payload’s code-first model is still strong, but we need explicit tooling for reference-data promotion and drift reporting.
-- Payload gets full product-capability credit for Enterprise Activity Logs and revisions/version control. The repository's custom `EditorialActivities` collection is narrower demo evidence and must not be presented as the Enterprise feature.
-- Backing up PostgreSQL alone does not restore media or prove recovery.
-
-**Source notes:**
-
-- [Payload migrations](https://payloadcms.com/docs/database/migrations)
-- [Payload Enterprise Audit Logs & Version Control](https://payloadcms.com/enterprise)
-- [Directus v12.3 Environment Sync](https://directus.com/resources/12.3-release-notes)
-- [Directus Activity Log](https://docs.directus.io/user-guide/settings/activity-log)
-- [Payload versions](https://payloadcms.com/docs/versions/overview)
-- [Cloud SQL PITR](https://docs.cloud.google.com/sql/docs/postgres/backup-recovery/pitr)
-- [Cloud Storage object protection](https://docs.cloud.google.com/storage/docs/object-versioning)
-
----
-
-## Slide 21 — Migration should be incremental, idempotent, and reversible
+## Slide 21 — Migrate by route and content group while both CMSs remain available
 
 **Narrative job:** Replace “big migration” anxiety with a controlled sequence.
 
@@ -969,7 +981,7 @@ Use six phases:
 
 Bottom line:
 
-> Move route ownership in controlled waves; retire each Drupal connection as soon as its accepted wave no longer needs it.
+> Wave-based ownership keeps delivery focused and reduces Drupal dependency after each accepted migration.
 
 **Visual:** A left-to-right path labeled `inventory → migrate by lane → dual-source frontend → validate → switch route ownership → retire connection`, not a Gantt chart.
 
@@ -990,7 +1002,7 @@ Bottom line:
 
 ---
 
-## Slide 22 — Next.js can serve both CMSs while route ownership moves to Payload
+## Slide 22 — Next.js can route every page to its current owner during migration
 
 **Narrative job:** Explain the existing mixed frontend as a deliberate migration capability while preserving one owner for every route or item.
 
@@ -1041,32 +1053,29 @@ The dual-source route resolver and selective event/reconciliation design are our
 
 ---
 
-## Slide 23 — Preserve legacy rich text first; normalize it after risk is removed
+## Slide 23 — Protect content fidelity during cutover; simplify after each route is stable
 
 **Narrative job:** Answer the feasibility question for structured and unstructured Drupal content.
 
 **Visible copy:**
 
-| Drupal source shape              | Initial migration treatment                          | Later treatment                                    |
-| -------------------------------- | ---------------------------------------------------- | -------------------------------------------------- |
-| Structured Paragraphs/components | Map to approved CMS blocks                           | Improve mapping as models evolve                   |
-| Simple static pages              | Migrate one by one to structured fields              | Editorial refinement                               |
-| Large rich-text bodies           | Preserve in a restricted `legacyBody` representation | Normalize selectively after cutover                |
-| Global/country posts             | Map scope, tenant, locale, taxonomy, SEO             | Consolidate duplicate global/local patterns        |
-| Forms                            | Inventory fields **and behavior**                    | Rebuild and acceptance-test before routing traffic |
+| Drupal source shape              | Initial migration treatment               | Later treatment                                    |
+| -------------------------------- | ----------------------------------------- | -------------------------------------------------- |
+| Structured Paragraphs/components | Map to approved CMS blocks                | Improve mapping as models evolve                   |
+| Simple static pages              | Migrate one by one to structured fields   | Editorial refinement                               |
+| Large rich-text bodies           | Preserve in a controlled migration format | Normalize selectively after cutover                |
+| Global/country posts             | Map scope, tenant, locale, taxonomy, SEO  | Consolidate duplicate global/local patterns        |
+| Forms                            | Inventory fields **and behavior**         | Rebuild and acceptance-test before routing traffic |
 
 Guardrails for legacy rich text:
 
-- Sanitize with an explicit allowlist.
-- Rewrite internal links and media references.
-- Preserve source HTML for traceability.
-- Never expose raw-script execution.
-- Flag unsupported embeds for manual review.
-- Keep legacy rendering visually governed by the Next.js design system.
+- Apply a security allowlist and identify unsupported embeds.
+- Maintain links, media references, and source traceability.
+- Keep all migrated content visually governed by the Next.js design system.
 
 Bottom statement:
 
-> Feasible: preserve fidelity first, then normalize based on value—not during the highest-risk cutover step.
+> Keep content intact during cutover. Simplify it after the route is stable and the value is clear.
 
 **Visual:** Before/after content examples: one structured Drupal Paragraph mapping to a Payload block, and one rich-text page preserved in a controlled legacy container.
 
@@ -1078,7 +1087,7 @@ Bottom statement:
 
 ---
 
-## Slide 24 — Savings come from retiring duplicated platforms—not from a “free CMS” claim
+## Slide 24 — Build the business case on retired duplication and total cost
 
 **Narrative job:** Present costs professionally without inventing a business case.
 
@@ -1086,34 +1095,33 @@ Bottom statement:
 
 Use the formula:
 
-> **3-year TCO** = vendor + GCP + build/migration + run/support + dual-run period − retired Acquia/Varnish/Drupal costs
+> **Planning-horizon business case** = target platform TCO + transition overlap − retired Acquia/Varnish/Drupal costs
 
 Comparison:
 
-| Cost area           | Payload                                                                                          | Directus                                                 |
-| ------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
-| Self-hosted core    | MIT, $0 software license                                                                         | MSCL source-available; Core tier has limits              |
-| Enterprise          | Custom quote                                                                                     | Custom quote                                             |
-| Public price anchor | No public enterprise price                                                                       | Team $499/month annually; Enterprise custom              |
-| Infrastructure      | GKE + Cloud SQL + GCS + observability                                                            | Broadly similar GCP footprint                            |
-| Custom engineering  | Enterprise covers workflow, AI, and audit baselines; ONE integrations and policy controls remain | Packaged editorial/AI/audit; ONE integrations remain     |
-| Stack/training      | Lower React/TypeScript mismatch                                                                  | Vue needed for Studio UI extensions                      |
-| Exit risk           | Low core-license dependency                                                                      | Data remains portable; usage rights need contract review |
+| Cost area              | Payload                                           | Directus                                    |
+| ---------------------- | ------------------------------------------------- | ------------------------------------------- |
+| Core licensing         | MIT-licensed core; operating costs still apply    | MSCL; enterprise terms apply at our scale   |
+| Enterprise capability  | Vendor quote                                      | Vendor quote                                |
+| Infrastructure         | GKE + Cloud SQL + GCS + observability             | Broadly similar GCP footprint               |
+| Implementation         | Confirm Enterprise scope before sizing extensions | Confirm ONE-specific integration scope      |
+| Skills + operating fit | Strong alignment with React and TypeScript        | Vue required for Studio extensions          |
+| Exit + renewal         | Low core-license dependency                       | Portable data; contract usage rights matter |
 
 Bottom statement:
 
-> The likely saving is the retirement of 27 duplicated Drupal/Acquia/Varnish operating units and cross-cloud complexity. It must be validated with actual contracts and workload data.
+> The business case should use vendor quotes and total cost across the approved delivery and operating horizon.
 
 **Visual:** A waterfall placeholder with named cost buckets but no invented values. If finance data is available, replace it with current / transition / target annual run-rate bars.
 
 **Talk track:**
 
-- Do not present Payload as “free”; engineering, GCP, migration, support, and operations are real costs.
-- Do not estimate a custom Payload workflow or AI assistant before the Enterprise vendor demonstration. Price the Enterprise features and only the proven gaps.
-- Do not use Directus Team pricing as the expected enterprise quote. Our AI, SSO, scale, support, and compliance requirements point to Enterprise due diligence.
+- Open-source licensing does not remove engineering, GCP, migration, support, or operating costs.
+- Price Payload's Enterprise capabilities first and estimate only the proven gaps after the demonstration.
+- Request an Enterprise quote from Directus; Team pricing is only a public reference point, not our expected cost.
 - Directus can be self-hosted on every tier, but self-hosting does not remove its license, feature-limit, support, or renewal considerations.
 - Dual-run is a temporary cost that buys rollback safety.
-- Request three- and five-year views because platform exit risk and support compound over time.
+- Align the model to the remaining delivery window and the operating horizon approved for the business case; include exit risk and support exposure.
 
 **Source notes:**
 
@@ -1126,77 +1134,63 @@ Bottom statement:
 - GCP cluster/shared-capacity assumptions.
 - Cloud SQL size, HA, storage, backup, and egress assumptions.
 - GCS asset volume and delivery pattern.
-- CMS users, countries, locales, environments, collections, and Flow counts.
+- CMS users, countries, languages, environments, collections, and Flow counts.
 - Engineering and content-team effort for migration, forms, workflow, training, and operations.
 - Payload and Directus enterprise quotes with support/SLA details.
 
 ---
 
-## Slide 25 — Approve a gated Payload PoC, then make one platform decision
+## Slide 25 — The Payload PoC will confirm readiness for implementation
 
-**Narrative job:** Resolve the decision and define the next action.
+**Narrative job:** Explain how the planned PoC will turn the remaining assumptions into implementation evidence.
 
 **Visible copy:**
 
-> **Decision requested**
+> **PoC purpose**
 >
-> Approve a time-boxed Payload team PoC on GCP and parallel enterprise due diligence.
+> Produce evidence on editorial outcomes, platform operations, migration safety, Enterprise capability, and commercial fit.
 
-PoC must prove:
+The PoC will confirm:
 
-1. Country and locale isolation under real roles.
-2. Content-manager usability for workflow, translation, live preview, trash, and restore.
+1. Country and language isolation under real roles.
+2. Content-manager usability for translation, live preview, trash, and restore.
 3. A real dynamic form, including consent, upload, notifications, and retention.
 4. GKE + Cloud SQL + GCS deployment, logging, backup, and restore.
-5. A representative Drupal baseline import, delta sync, reconciliation, and rollback.
+5. Dual-source routing, one representative migration wave, rollback, and per-wave Drupal connection retirement.
 6. Upgrade safety for custom Admin and workflow code.
-7. Payload Enterprise AI demonstration against ONE roles, locales, audit, and governance; optional Vertex integration only for confirmed gaps.
-8. Enterprise support, SLA, security, and commercial terms.
+7. Enterprise Publishing Workflows and static A/B testing: roles, feedback, notifications, variant delivery, analytics, and rollback.
+8. Enterprise AI and MCP demonstration for writers, translators, editors, developers, permissions, audit, and cost control.
+9. Enterprise support, SLA, security, and commercial terms.
 
-If Payload fails a critical gate, reopen the platform decision and assess the evidence for Directus; do not treat any second platform as automatically approved.
+If a material gap is identified, update the recommendation using the Directus evidence already gathered.
 
-**Visual:** One decision statement, eight concise gates, and a two-branch outcome at the bottom: `Pass → select Payload and plan implementation` / `Fundamental fail → reopen selection using Directus evidence`. Both branches end in one selected CMS.
+**Visual:** One purpose statement, nine concise acceptance areas, and a two-branch evidence outcome at the bottom: `Criteria met → implementation plan + quantified TCO` / `Material gap identified → update recommendation using Directus evidence`. Both branches still end in one selected CMS.
 
 **Talk track:**
 
 - The PoC should include engineering, content, QA, platform, security, and procurement.
-- Define “fundamental fail” before starting so the team does not rationalize sunk cost.
-- The production rollout should be approved only after quantified TCO and migration evidence.
+- Define material-gap criteria before starting so the evidence can be assessed consistently.
+- The PoC evidence informs implementation planning; production approval remains a separate decision.
 
 **Close with:**
 
-> We should replace 27 CMS stacks with one governed content platform—not replace one difficult-to-change ecosystem with another.
+> The PoC converts remaining assumptions into evidence for the implementation plan and business case.
 
 ---
 
-# 6. Detailed evaluation rubric
+# 6. Qualitative decision rationale
 
-This rubric supports Slide 9 and should appear in Appendix A1. Scores use a 1–5 scale:
+Use the following reasoning consistently across the deck, speaker notes, and management discussion:
 
-- **5.0:** Meets the requirement strongly with official capability or an unusually natural fit; low residual risk.
-- **4.0:** Meets the requirement with normal configuration or modest custom work; manageable risk.
-- **3.0:** Feasible but requires meaningful custom work, operational controls, or validation.
-- **2.0:** Major gaps or high implementation/maintenance risk.
-- **1.0:** Does not credibly meet the requirement.
+| Decision lens               | Payload advantage                                                                                                     | Directus strength                                                                      | Why Payload is recommended                                                                          |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Content operations          | Packaged publishing workflows, static A/B testing, official headless forms, and Enterprise AI                         | Mature Studio, Flows, AI Assistant, AI Translations, and MCP                           | Payload covers the priority editorial outcomes while fitting ONE's headless delivery model          |
+| Engineering alignment       | React, TypeScript, and Next.js across configuration, Admin extensions, frontend integration, and ONE-specific logic   | Strong APIs and Node/TypeScript extensions; Studio extensions use Vue                  | Payload keeps more of the platform inside ONE's established engineering model                       |
+| Platform ownership          | MIT-licensed core, GCP self-hosting, PostgreSQL, GCS, and replaceable components                                      | Self-hosting and database neutrality; commercial usage rights require contract clarity | Payload provides the clearer long-term ownership and exit model                                     |
+| Environment and operations  | Code-first migrations, standard GCP controls, activity logs, revisions, and Enterprise support                        | Packaged Environment Sync is a meaningful advantage                                    | Directus leads this area, but not the combined content, engineering, and ownership fit              |
+| Migration and future change | Typed hooks and code-first extensibility align with the planned Drupal adapters, route ownership, and gradual cutover | Flexible APIs and automation can also support migration                                | Payload reduces stack switching in the ONE-specific work that remains after the product is selected |
 
-| Criterion                        | Weight | Payload | Directus | Rationale to validate                                                                                                                                                                                                                        |
-| -------------------------------- | -----: | ------: | -------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GCP ownership and architecture   |    15% |     5.0 |      5.0 | Both self-host, support PostgreSQL and GCS, and can run as containers.                                                                                                                                                                       |
-| TypeScript/React engineering fit |    15% |     5.0 |      4.1 | Payload config/Admin extensions align directly with our stack; Directus API extensions use Node/TS but Studio UI is Vue.                                                                                                                     |
-| Editorial workflow and preview   |    14% |     4.7 |      4.7 | Payload Enterprise advertises multi-step approvals, access control, alerts, notifications, and extensibility; Directus has strong permissions/Flows/versioning. Validate both.                                                               |
-| Tenancy and localization         |    12% |     4.6 |      4.4 | Payload has an official tenant plugin plus localization; Directus supports role/project scoping and translation relationships. Both require rigorous leakage tests.                                                                          |
-| Headless forms                   |    10% |     4.8 |      3.8 | Payload has an official Form Builder intended for frontend component mapping. Directus supports form storage and Flows, but not an equivalent documented first-party builder.                                                                |
-| Environment promotion            |     9% |     4.3 |      5.0 | Payload uses code and migrations but needs reference-data tooling; Directus v12.3 has packaged JSON pull/diff/push.                                                                                                                          |
-| Drupal migration/coexistence     |     8% |     4.7 |      4.6 | Both have APIs and extensibility. Payload’s code-first hooks/types fit our planned worker, but neither includes a complete Drupal migration product.                                                                                         |
-| Governance, audit, security      |     7% |     4.8 |      4.8 | Payload Enterprise includes Activity Logs plus revisions/version control; Directus includes an Activity Log plus revisions and granular policies. Validate ONE-specific retention, immutability, export, SIEM, and tenant controls for both. |
-| AI and model integration         |     5% |     4.8 |      4.8 | Payload Enterprise AI is in the current target plan and includes translation, image generation, writing assistance, RAG/embeddings, permissions, and MCP. The vendor demonstration and any optional Vertex gap remain gates.                 |
-| Three-year TCO and exit risk     |     5% |     4.7 |      3.8 | Payload core is MIT; Directus has tiered commercial constraints. Payload may require more engineering, so quotes and staffing can change this score.                                                                                         |
-
-**Indicative weighted result:** Payload 4.764; Directus 4.515. Display as 4.76 and 4.52.
-
-### Sensitivity statement
-
-The recommendation remains sensitive to priorities and enterprise demonstrations. Directus can still win if its native Studio, environment sync, and custom-LLM path prove materially stronger for ONE. Payload now scores higher because the Enterprise tier addresses workflow, AI, and audit gaps that a core-only comparison incorrectly treated as custom builds. The team should debate verified capability, weights, contract scope, and residual engineering—not brand preference.
+This framework intentionally avoids weighted scores. The decision should be challenged through evidence, contract scope, residual engineering, and operating consequences—not debates about arbitrary decimal values.
 
 ---
 
@@ -1224,7 +1218,7 @@ Use this internal table when producing screenshots, speaker notes, and the final
 | Dynamic Form Builder           | No Form Builder plugin present                              | Not implemented; PoC gate                            |
 | Drupal migration/sync          | No migration package/ledger present                         | Not implemented; PoC gate                            |
 | Payload Enterprise AI          | Enterprise capability is not implemented in this repository | Current target entitlement; vendor demo pending      |
-| Optional Vertex extension      | No implementation present                                   | Build only for a confirmed Enterprise capability gap |
+| Future model extension         | No implementation present                                   | Build only for a confirmed Enterprise capability gap |
 | MCP                            | No MCP plugin present                                       | Not implemented; future/PoC gate                     |
 | Production SSO                 | No production IdP integration shown                         | Not implemented; PoC gate                            |
 | Payload Enterprise audit       | Vendor capability not implemented in this repository        | Current target entitlement; vendor demo pending      |
@@ -1348,7 +1342,7 @@ Use an explicit watermark with overlap, not “last successful timestamp only.�
 
 # 9. Form-engine acceptance criteria
 
-The PoC should implement one real, complex form from the existing estate and score both the editor and respondent experience.
+The PoC should implement one real, complex form from the existing estate and evaluate both the editor and respondent experience.
 
 ## Editor capabilities
 
@@ -1414,7 +1408,7 @@ Ask both vendors the same base questions and record written answers.
 ## AI
 
 - Live demonstration of the included Enterprise AI capability set using ONE-like roles, tenants, locales, and audit requirements.
-- Optional Vertex AI/Gemini extension path, including service-account/Workload Identity authentication, only where a confirmed requirement is not met by Enterprise configuration.
+- Any future external model path, including service-account/Workload Identity authentication, only where a confirmed requirement is not met by Enterprise configuration.
 - Whether prompts/content leave our GCP boundary.
 - Model/provider configuration by environment and tenant.
 - Tool/action permission enforcement and audit.
@@ -1426,7 +1420,7 @@ Ask both vendors the same base questions and record written answers.
 - Enterprise features versus MIT core and what happens without a renewed contract.
 - Exact Enterprise licensing and supported versions for Publishing Workflows, SSO, static A/B testing, AI auto-embedding/RAG, AI translation, image generation, and the writing assistant.
 - Live demonstration of multi-step approvals, inline feedback, notifications, locale-aware review, field-level access, and audit evidence using ONE-like roles.
-- Whether Enterprise AI supports Vertex AI directly or through a supported adapter, including IAM, regionality, tenant filtering, logging, safety controls, and data-retention terms.
+- Supported model providers and adapters, including IAM, regionality, tenant filtering, logging, safety controls, and data-retention terms.
 - Which A/B responsibilities Payload supplies versus ONE: variant assignment, static generation, analytics integration, experiment governance, and rollback.
 - Visual Editor delivery status, licensing, supported Next.js versions, and the contractual distinction from Live Preview; it is currently marked Coming Soon and is not a launch dependency.
 - Written confirmation of the long-term MIT and self-hosting commitment after joining Figma.
@@ -1445,8 +1439,10 @@ Ask both vendors the same base questions and record written answers.
 - Availability of a dedicated support manager and contractual private Slack or Microsoft Teams channel.
 - Directus v12.3 Environment Sync rollback and destructive-change controls.
 - Exact objects included/excluded from sync, including extensions and reference data.
-- Whether Enterprise custom LLM supports our exact Vertex endpoint and IAM model.
+- Whether Enterprise custom LLM support meets ONE's endpoint, IAM, and regionality requirements.
 - AI Assistant maturity, role controls, audit, and beta/stability roadmap.
+- Current availability and release plan for packaged multi-step approvals and scheduled releases beyond native draft/publish and versions.
+- Recommended A/B architecture, including CMS modeling, feature-flag ownership, analytics, static delivery, experiment governance, and rollback.
 - Best-practice single-instance row-level tenancy for 26 countries plus global content.
 - Recommended first-party approach for editor-defined public forms.
 - References for comparable GCP-hosted, multi-country, multilingual deployments and migrations from a multi-CMS estate.
@@ -1471,61 +1467,23 @@ Ask both vendors the same base questions and record written answers.
 | Figma ownership changes Payload’s roadmap           | Backing adds resources but concentrates strategic control   | Written MIT/self-host commitment, contract exit terms, monitor roadmap, keep migration/export path             |
 | Directus license or tier terms change               | Self-hosting does not eliminate commercial usage rights     | Written MSCL/renewal terms, multi-year price protections, exit test, preserve portable database and media      |
 | Directus comparison becomes stale                   | v12.3 and AI features are moving quickly                    | Re-verify official documentation immediately before decision meeting                                           |
-| Cost case is overstated                             | “Free core” can hide engineering and operations             | Three-/five-year TCO with actual contracts, FTE assumptions, enterprise quotes, and dual-run cost              |
+| Cost case is overstated                             | “Free core” can hide engineering and operations             | Planning-horizon TCO with actual contracts, FTE assumptions, enterprise quotes, and transition-overlap cost    |
 
 ---
 
 # 12. Appendix slide plan
 
-## Appendix A1 — Scoring method and sensitivity
-
-Show the full rubric from section 6, score definitions, and the statement that scores are internal assessments. Include a small sensitivity example: raising editorial + AI + environment promotion weight can move Directus into the lead.
-
-## Appendix A2 — Full capability maturity matrix
-
-Use the following legend:
-
-- **N** — native/core;
-- **O** — official plugin/tool;
-- **C** — configurable pattern;
-- **B** — custom build;
-- **V** — validate in PoC.
-
-Rows: self-hosting, PostgreSQL, GCS, REST, GraphQL, local API, Next.js, Admin UI framework, tenancy, localization, draft, autosave, versions, preview, trash/archive, scheduling, workflow, translation lifecycle, forms, SEO, redirects, audit, SSO, environment promotion, MCP, native AI assistant, Vertex integration, migrations, and enterprise support.
-
-## Appendix A3 — Directus strengths and watch-outs
+## Appendix A1 — Directus strengths and areas to validate
 
 Strengths: two-decade platform history, substantial GitHub/community adoption, formal Basic/Premium support, public enterprise references, v12.3 Environment Sync, Activity Log, granular policies, content versions, Flows, native AI, database/API neutrality, and existing internal knowledge.
 
-Watch-outs: MSCL rather than MIT, tier/feature limits, Enterprise renewal exposure, Vue Studio extensions, form-builder gap, exact Vertex integration, and single-instance tenancy design.
+Areas to validate: MSCL enterprise terms, tier and feature scope, renewal and long-term rights, Vue Studio extensions, headless-form implementation, and single-instance tenancy design.
 
-## Appendix A4 — Target GCP control plane
-
-Detail GKE workload identity, private Cloud SQL connectivity, GCS IAM, secrets, Pub/Sub dead-letter queues, Cloud Logging/Monitoring, autoscaling, backup, PITR, and restore drills. Keep this out of the management narrative unless platform/security asks.
-
-## Appendix A5 — Migration metadata and reconciliation
-
-Show the route-ownership registry and three delivery modes: Payload route, Drupal adapter, and tracked Drupal iframe. Keep the event contract, identity key, ledger, content hash, and reconciliation checks as a secondary path for active collection waves only.
-
-## Appendix A6 — Content-type migration waves
-
-Show only three management-level lanes, subject to inventory:
-
-1. **Pages** — low-risk global/local pages and existing Drupal iframe routes move route by route.
-2. **News** — global and local news move through repeatable collection waves, with selective deltas until cutover.
-3. **Forms** — move form by form after full behavior and integration acceptance.
-
-Each lane repeats the same visible loop: `migrate → validate → switch route ownership → monitor → retire Drupal connection`.
-
-Do not present this as a calendar until volume and staffing are known.
-
-## Appendix A7 — TCO worksheet inputs
-
-Show current, transition, and target cost categories. Include vendor, infrastructure, engineering, operations, content training, migration, testing, support, and decommissioning. Add current Acquia/Varnish costs only after finance validates them.
-
-## Appendix A8 — Vendor questions and source register
+## Appendix A2 — Vendor questions and source register
 
 Use the due-diligence questions from section 10 and the source register below. This appendix provides traceability without overloading the main slides.
+
+Detailed capability matrices, GCP controls, migration-ledger mechanics, content-type wave detail, and cost worksheets remain in this document for working sessions. They are intentionally excluded from the management presentation.
 
 ---
 
@@ -1590,14 +1548,16 @@ All non-trivial vendor claims in the eventual deck should have a `[Sources]` blo
 - Extension model: <https://docs.directus.io/extensions/introduction>
 - Permissions: <https://docs.directus.io/user-guide/user-management/permissions>
 - Multi-tenancy approaches: <https://docs.directus.io/user-guide/overview/glossary>
-- Content versions: <https://docs.directus.io/reference/system/versions>
-- Approval workflow pattern: <https://docs.directus.io/guides/headless-cms/approval-workflows>
+- v12 native draft/publish and approval-workflow status: <https://directus.com/resources/v12-built-for-the-whole-team>
+- Content versioning: <https://directus.com/docs/guides/content/content-versioning>
+- Directus and PostHog A/B testing pattern: <https://directus.com/tv/enter-the-workshop/setting-up-ab-testing-posthog>
 - Live Preview with Next.js: <https://docs.directus.io/guides/headless-cms/live-preview/nextjs>
 - Content translations: <https://docs.directus.io/guides/headless-cms/content-translations>
 - Activity Log: <https://docs.directus.io/user-guide/settings/activity-log>
 - Archive/soft-delete configuration: <https://docs.directus.io/app/data-model/collections>
 - Form + Next.js pattern: <https://docs.directus.io/blog/building-a-form-data-collection-and-email-notification-system-with-directus-and-next-js>
-- AI Assistant beta announcement: <https://community.directus.io/t/introducing-directus-ai-assistant-sidebar-now-in-beta/1699>
+- AI overview, Assistant, AI Translations, and MCP: <https://directus.com/docs/guides/ai>
+- Directus MCP server: <https://directus.com/docs/guides/ai/mcp>
 
 ## Drupal current estate and migration
 
@@ -1641,7 +1601,7 @@ All non-trivial vendor claims in the eventual deck should have a `[Sources]` blo
 - Directus is described as source-available under MSCL, not MIT or unrestricted open source.
 - Migration explicitly forbids uncontrolled bidirectional editing.
 - Coexistence shows Next.js reading both CMSs temporarily, including tracked Drupal iframe routes, with one authoritative owner per route/item and explicit connection retirement after each accepted wave.
-- Payload Enterprise AI is presented as current target scope with a pending vendor demonstration; Vertex is an optional extension path, not “future AI.”
+- Payload Enterprise AI and MCP are presented as current target scope with a pending vendor demonstration; any separate model provider is a later option for a documented gap.
 - Rich-text preservation and later normalization are both explained.
 - Forms, tenancy, workflow, translation, audit, backup, GCS, and environment sync are all addressed.
 
@@ -1677,6 +1637,6 @@ All non-trivial vendor claims in the eventual deck should have a `[Sources]` blo
 
 Use this as the closing summary, not as a text-heavy slide:
 
-> Payload is not the recommendation because Directus lacks features. Directus is stronger today in packaged environment sync, native Studio AI, and parts of the editorial experience. Both products provide activity logging and revisions/version control at the evaluated enterprise level. Payload is the recommendation because its Enterprise tier already gives us AI, workflow, and audit capabilities, while the remaining ONE-specific work—preview, governed authoring, forms, migration, observability, policy controls, and optional Vertex extensions—fits our TypeScript, React, Next.js, and GCP operating model naturally and keeps the self-hosted core MIT licensed.
+> Payload is not the recommendation because Directus lacks features. Directus is stronger today in packaged environment sync, Studio AI, and parts of the editorial experience. Both products provide serious AI and MCP workflows plus activity logging and revisions/version control at the evaluated enterprise level. Payload is the recommendation because its Enterprise portfolio and official MCP plugin add AI, workflow, and audit to an architecture where the remaining ONE-specific work—preview, governed authoring, forms, migration, observability, and policy—fits our TypeScript, React, Next.js, and GCP operating model naturally and keeps the self-hosted core MIT licensed.
 >
-> The responsible next step is a gated team PoC plus the Payload Enterprise demonstration. If Payload proves editor usability, tenancy, dynamic forms, dual-source Drupal coexistence, Enterprise AI governance, GCP operations, upgrade safety, and support, proceed to an implementation plan. If it fails a fundamental gate, move to Directus with the comparison work already complete.
+> The planned team PoC and Payload Enterprise demonstration will confirm editor usability, tenancy, dynamic forms, dual-source Drupal coexistence, Enterprise AI governance, GCP operations, upgrade safety, and support. The resulting evidence will inform the implementation plan and, if a material gap is identified, update the recommendation using the Directus comparison already completed.

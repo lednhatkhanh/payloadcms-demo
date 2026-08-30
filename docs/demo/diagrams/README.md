@@ -5,7 +5,7 @@ These diagrams are management-level abstractions for the CMS platform decision. 
 ## Files
 
 - `current-platform-context.drawio` — current GCP/Acquia CMS boundary, including the existing mix of native Next.js and direct Drupal/iframe delivery. The separate Apigee-to-CRM integration and unrelated external API are intentionally out of scope.
-- `target-cms-gcp.drawio` — vendor-neutral target on GCP with Enterprise workflow, AI, audit/version control, and an optional ONE Vertex extension path.
+- `target-cms-gcp.drawio` — vendor-neutral target on GCP with Enterprise workflow, AI, MCP, audit/version control, and a generic future model extension only if a confirmed requirement remains unmet.
 - `drupal-coexistence-migration.drawio` — temporary dual-source Next.js routing, three migration lanes, and per-wave Drupal connection retirement.
 - Matching `.png` files are rendered previews for documents and slides.
 
