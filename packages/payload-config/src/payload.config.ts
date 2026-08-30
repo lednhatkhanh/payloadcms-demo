@@ -53,7 +53,10 @@ export default buildConfig({
     ContactSubmissions,
     NewsletterSignups,
   ],
-  db: postgresAdapter({ pool: { connectionString: serverEnvironment.DATABASE_URL } }),
+  db: postgresAdapter({
+    pool: { connectionString: serverEnvironment.DATABASE_URL },
+    push: false,
+  }),
   editor: lexicalEditor(),
   globals: [Homepage],
   localization: {

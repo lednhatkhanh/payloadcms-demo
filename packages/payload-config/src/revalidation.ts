@@ -15,6 +15,8 @@ export function isPublicCacheTag(value: unknown): value is PublicCacheTag {
 }
 
 export async function revalidatePublicContent(tags: readonly PublicCacheTag[]): Promise<void> {
+  if (process.env.PAYLOAD_SEEDING === 'true') return
+
   const url = new URL('/api/revalidate', serverEnvironment.NEXT_PUBLIC_WEB_URL)
   const response = await fetch(url, {
     body: JSON.stringify({ tags }),

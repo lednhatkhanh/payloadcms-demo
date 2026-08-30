@@ -10,7 +10,7 @@
     "generate:types": "payload generate:types",
     "migrate": "payload migrate",
     "payload": "payload",
-    "seed": "payload run ../../packages/payload-config/src/seed.ts",
+    "seed": "NODE_ENV=production payload run ../../packages/payload-config/src/seed.ts",
     "start": "next start --port 3001",
     "test": "vitest run --passWithNoTests",
     "typecheck": "next typegen && tsc --noEmit"

@@ -6,6 +6,8 @@ import type { ContentLocale } from './locales'
 import config from './payload.config'
 import type { EditorialRole, WorkflowState } from './workflow'
 
+process.env.PAYLOAD_SEEDING = 'true'
+
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
 
 function lexicalBody(paragraphs: readonly string[]): News['body'] {

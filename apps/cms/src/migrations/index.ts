@@ -7,6 +7,10 @@ import * as migration_20260829_170611_add_localization_and_translation_workflow 
 import * as migration_20260830_083900_add_country_tenancy from './20260830_083900_add_country_tenancy'
 import * as migration_20260830_101900_add_form_submission_fields from './20260830_101900_add_form_submission_fields'
 import * as migration_20260830_102000_add_editorial_dashboard_and_scheduled_publishing from './20260830_102000_add_editorial_dashboard_and_scheduled_publishing'
+import * as migration_20260830_174600_add_operations_role from './20260830_174600_add_operations_role'
+import * as migration_20260830_174700_fix_user_country_row_ids from './20260830_174700_fix_user_country_row_ids'
+import * as migration_20260830_174800_add_country_lock_relations from './20260830_174800_add_country_lock_relations'
+import * as migration_20260830_174900_restore_page_titles from './20260830_174900_restore_page_titles'
 
 export const migrations = [
   {
@@ -53,5 +57,25 @@ export const migrations = [
     up: migration_20260830_102000_add_editorial_dashboard_and_scheduled_publishing.up,
     down: migration_20260830_102000_add_editorial_dashboard_and_scheduled_publishing.down,
     name: '20260830_102000_add_editorial_dashboard_and_scheduled_publishing',
+  },
+  {
+    up: migration_20260830_174600_add_operations_role.up,
+    down: migration_20260830_174600_add_operations_role.down,
+    name: '20260830_174600_add_operations_role',
+  },
+  {
+    up: migration_20260830_174700_fix_user_country_row_ids.up,
+    down: migration_20260830_174700_fix_user_country_row_ids.down,
+    name: '20260830_174700_fix_user_country_row_ids',
+  },
+  {
+    up: migration_20260830_174800_add_country_lock_relations.up,
+    down: migration_20260830_174800_add_country_lock_relations.down,
+    name: '20260830_174800_add_country_lock_relations',
+  },
+  {
+    up: migration_20260830_174900_restore_page_titles.up,
+    down: migration_20260830_174900_restore_page_titles.down,
+    name: '20260830_174900_restore_page_titles',
   },
 ]
