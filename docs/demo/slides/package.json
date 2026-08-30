@@ -6,7 +6,7 @@
     "build": "slidev build slides.md",
     "dev": "slidev slides.md --open",
     "export": "slidev export slides.md --output cms-platform-decision.pdf",
-    "export:pptx": "slidev export slides.md --format pptx --output cms-platform-decision.pptx"
+    "export:pptx": "slidev export slides.md --format pptx --scale 6 --with-clicks --output cms-platform-decision.pptx"
   },
   "devDependencies": {
     "@slidev/cli": "52.19.1",
