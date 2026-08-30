@@ -173,6 +173,45 @@
   width: 100%;
 }
 
+.closing-slide {
+  align-items: center;
+  background: var(--one-magenta) !important;
+  color: white;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.closing-slide .closing-logo {
+  filter: brightness(0) invert(1);
+  height: auto;
+  margin: 0 0 58px;
+  width: 190px;
+}
+
+.closing-slide h1 {
+  color: white;
+  font-size: 58px;
+  margin: 0;
+}
+
+.closing-slide .closing-subtitle {
+  color: rgb(255 255 255 / 90%);
+  font-size: 27px;
+  font-weight: 600;
+  margin-top: 22px;
+}
+
+.closing-slide .closing-context {
+  bottom: 38px;
+  color: rgb(255 255 255 / 72%);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  position: absolute;
+  text-transform: uppercase;
+}
+
 .eyebrow {
   color: var(--one-magenta);
   font-size: 12px;
