@@ -7,7 +7,11 @@ import {
   publishedOrAuthenticated,
 } from '../access'
 import { pagePreviewUrl } from '../preview'
-import { editorialWorkflowFields, enforceEditorialWorkflow } from '../workflow'
+import {
+  editorialWorkflowFields,
+  enforceEditorialWorkflow,
+  logEditorialActivity,
+} from '../workflow'
 
 const reservedPageSlugs = new Set([
   '_next',
@@ -213,7 +217,10 @@ export const Pages: CollectionConfig = {
     },
     ...editorialWorkflowFields,
   ],
-  hooks: { beforeChange: [enforceEditorialWorkflow] },
+  hooks: {
+    afterChange: [logEditorialActivity('pages')],
+    beforeChange: [enforceEditorialWorkflow],
+  },
   timestamps: true,
   trash: true,
   versions: { drafts: { autosave: true } },

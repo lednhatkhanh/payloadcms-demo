@@ -3,6 +3,8 @@ import { SetStepNav } from '@payloadcms/ui'
 import { redirect } from 'next/navigation'
 import type { AdminViewServerProps, Payload } from 'payload'
 
+import { contentLocales, type ContentLocale } from '../locales'
+
 type EditorialCollection = 'news' | 'pages'
 type WorkflowRequestState = 'approved' | 'changes-requested' | 'in-review' | 'translation-requested'
 
@@ -14,6 +16,46 @@ type WorkflowRequest = {
   readonly title: string
   readonly translationLocales: readonly string[]
   readonly updatedAt: string
+}
+
+type EditorialCoverage = {
+  readonly collection: EditorialCollection
+  readonly country?: string
+  readonly id: number | string
+  readonly locales: Readonly<Record<ContentLocale, boolean>>
+  readonly scheduledFor?: string
+  readonly title: string
+  readonly workflowState: string
+}
+
+type EditorialCoverageBuilder = {
+  collection: EditorialCollection
+  country?: string
+  id: number | string
+  locales: Record<ContentLocale, boolean>
+  scheduledFor?: string
+  title: string
+  workflowState: string
+}
+
+type EditorialActivity = {
+  readonly action: string
+  readonly actor: string
+  readonly collection: EditorialCollection
+  readonly createdAt: string
+  readonly documentId: number | string
+  readonly scheduledFor?: string
+  readonly title: string
+}
+
+type EditorialActivityBuilder = {
+  action: string
+  actor: string
+  collection: EditorialCollection
+  createdAt: string
+  documentId: number | string
+  scheduledFor?: string
+  title: string
 }
 
 function rolesForUser(user: unknown): readonly string[] {
@@ -45,6 +87,27 @@ function requestLocales(value: unknown): readonly string[] {
 
 function requestUpdatedAt(value: unknown): string {
   return typeof value === 'string' ? value : ''
+}
+
+function stringValue(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value : fallback
+}
+
+function recordId(value: unknown): number | string | undefined {
+  return typeof value === 'number' || typeof value === 'string' ? value : undefined
+}
+
+function countryName(value: unknown): string | undefined {
+  if (!isRecord(value)) return undefined
+  return typeof value.name === 'string' && value.name.length > 0 ? value.name : undefined
+}
+
+function workflowState(value: unknown): string {
+  return typeof value === 'string' ? value : 'draft'
+}
+
+function optionalDate(value: unknown): string | undefined {
+  return typeof value === 'string' && !Number.isNaN(new Date(value).valueOf()) ? value : undefined
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -83,6 +146,14 @@ function formatRequestDate(value: string): string {
     timeStyle: 'short',
     timeZone: 'UTC',
   }).format(date)
+}
+
+function contentHref(
+  adminPath: string,
+  collection: EditorialCollection,
+  id: number | string,
+): string {
+  return `${adminPath}/collections/${collection}/${id}`
 }
 
 async function requestsForState(
@@ -135,6 +206,137 @@ async function requestsForState(
   return requests.flat().sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
 }
 
+async function coverageRecordsForLocale(
+  payload: Payload,
+  collection: EditorialCollection,
+  locale: ContentLocale,
+  user: NonNullable<AdminViewServerProps['initPageResult']['req']['user']>,
+): Promise<readonly unknown[]> {
+  if (collection === 'news') {
+    const result = await payload.find({
+      collection,
+      depth: 1,
+      draft: true,
+      fallbackLocale: null,
+      limit: 24,
+      locale,
+      overrideAccess: false,
+      select: {
+        country: true,
+        scheduledFor: true,
+        title: true,
+        workflowState: true,
+      },
+      sort: '-updatedAt',
+      user,
+    })
+    return result.docs
+  }
+
+  const result = await payload.find({
+    collection,
+    depth: 0,
+    draft: true,
+    fallbackLocale: null,
+    limit: 24,
+    locale,
+    overrideAccess: false,
+    select: { scheduledFor: true, title: true, workflowState: true },
+    sort: '-updatedAt',
+    user,
+  })
+  return result.docs
+}
+
+async function editorialCoverage(
+  payload: Payload,
+  user: NonNullable<AdminViewServerProps['initPageResult']['req']['user']>,
+): Promise<readonly EditorialCoverage[]> {
+  const collections: readonly EditorialCollection[] = ['news', 'pages']
+  const requests = await Promise.all(
+    collections.flatMap((collection) =>
+      contentLocales.map(async (locale) => ({
+        collection,
+        locale,
+        records: await coverageRecordsForLocale(payload, collection, locale, user),
+      })),
+    ),
+  )
+  const coverage = new Map<string, EditorialCoverageBuilder>()
+
+  for (const request of requests) {
+    for (const document of request.records) {
+      if (!isRecord(document)) continue
+      const id = recordId(document.id)
+      if (id === undefined) continue
+      const key = `${request.collection}-${id}`
+      const existing = coverage.get(key)
+      const title = requestTitle(document.title)
+      const next = existing ?? {
+        collection: request.collection,
+        id,
+        locales: { en: false, es: false, jp: false },
+        title,
+        workflowState: workflowState(document.workflowState),
+      }
+      const country = countryName(document.country)
+      const scheduledFor = optionalDate(document.scheduledFor)
+      if (country) next.country = country
+      if (scheduledFor) next.scheduledFor = scheduledFor
+      next.locales[request.locale] = title !== 'Untitled content'
+      if (request.locale === 'en' && title !== 'Untitled content') next.title = title
+      coverage.set(key, next)
+    }
+  }
+
+  return [...coverage.values()].sort((left, right) => left.title.localeCompare(right.title))
+}
+
+function actorForActivity(value: unknown): string {
+  return requestRequester(value)
+}
+
+async function recentActivities(
+  payload: Payload,
+  user: NonNullable<AdminViewServerProps['initPageResult']['req']['user']>,
+): Promise<readonly EditorialActivity[]> {
+  const result = await payload.find({
+    collection: 'editorial-activities',
+    depth: 1,
+    limit: 12,
+    overrideAccess: false,
+    select: {
+      action: true,
+      actor: true,
+      collection: true,
+      createdAt: true,
+      documentId: true,
+      scheduledFor: true,
+      title: true,
+    },
+    sort: '-createdAt',
+    user,
+  })
+
+  return result.docs.flatMap((document) => {
+    if (!isRecord(document)) return []
+    const collection = document.collection
+    const documentId = recordId(document.documentId)
+    if ((collection !== 'news' && collection !== 'pages') || documentId === undefined) return []
+    const activity: EditorialActivityBuilder = {
+      action: stringValue(document.action, 'updated'),
+      actor: actorForActivity(document.actor),
+      collection,
+      createdAt: stringValue(document.createdAt),
+      documentId,
+      title: requestTitle(document.title),
+    }
+    const scheduledFor = optionalDate(document.scheduledFor)
+    if (scheduledFor) activity.scheduledFor = scheduledFor
+    return [activity]
+  })
+}
+
 function statesForRoles(roles: readonly string[]): readonly WorkflowRequestState[] {
   if (roles.includes('admin')) {
     return ['translation-requested', 'in-review', 'changes-requested', 'approved']
@@ -158,6 +360,20 @@ function stateLabel(request: WorkflowRequest): string {
   return 'Ready to publish'
 }
 
+function activityLabel(activity: EditorialActivity): string {
+  const labels: Record<string, string> = {
+    approved: 'Approved for publishing',
+    'changes-requested': 'Changes requested',
+    created: 'Created',
+    published: 'Published',
+    'review-requested': 'Review requested',
+    scheduled: 'Scheduled for publication',
+    'translation-requested': 'Translation requested',
+    'translations-submitted': 'Translations submitted for review',
+  }
+  return labels[activity.action] ?? 'Updated'
+}
+
 export async function WorkflowInbox({
   payload,
   user,
@@ -166,16 +382,20 @@ export async function WorkflowInbox({
   readonly user: NonNullable<AdminViewServerProps['initPageResult']['req']['user']>
 }) {
   const states = statesForRoles(rolesForUser(user))
-  const requests = (
-    await Promise.all(states.map((state) => requestsForState(payload, state, user)))
-  ).flat()
+  const roles = rolesForUser(user)
+  const [requests, coverage, activities] = await Promise.all([
+    Promise.all(states.map((state) => requestsForState(payload, state, user))).then((items) =>
+      items.flat(),
+    ),
+    editorialCoverage(payload, user),
+    roles.includes('admin') ? recentActivities(payload, user) : Promise.resolve([]),
+  ])
   const adminPath = payload.config.routes.admin
 
   return (
     <section aria-labelledby="workflow-inbox-title" className="workflow-inbox">
       <div className="workflow-inbox__heading">
         <div>
-          <p className="workflow-inbox__eyebrow">Editorial workflow</p>
           <h2 id="workflow-inbox-title">My requests</h2>
         </div>
         <p>Translation, review, revision, and publishing work currently waiting for your role.</p>
@@ -196,7 +416,7 @@ export async function WorkflowInbox({
               {requests.map((request) => (
                 <tr key={`${request.collection}-${request.id}-${request.state}`}>
                   <td>
-                    <a href={`${adminPath}/collections/${request.collection}/${request.id}`}>
+                    <a href={contentHref(adminPath, request.collection, request.id)}>
                       {request.title}
                     </a>
                     <small>{request.collection === 'news' ? 'News story' : 'Page'}</small>
@@ -219,6 +439,118 @@ export async function WorkflowInbox({
       ) : (
         <p className="workflow-inbox__empty">No workflow requests are waiting for you.</p>
       )}
+      <section aria-labelledby="workflow-coverage-title" className="workflow-inbox__section">
+        <div className="workflow-inbox__section-heading">
+          <div>
+            <h3 id="workflow-coverage-title">Editorial coverage</h3>
+            <p>Translation availability and release readiness across the content you can access.</p>
+          </div>
+          <p className="workflow-inbox__key">
+            <span
+              aria-hidden="true"
+              className="workflow-inbox__locale workflow-inbox__locale--ready"
+            />
+            Present
+            <span aria-hidden="true" className="workflow-inbox__locale" />
+            Missing
+          </p>
+        </div>
+        {coverage.length > 0 ? (
+          <div className="workflow-inbox__table-wrap">
+            <table className="workflow-inbox__table workflow-inbox__coverage-table">
+              <thead>
+                <tr>
+                  <th scope="col">Content</th>
+                  {contentLocales.map((locale) => (
+                    <th key={locale} scope="col">
+                      {locale.toUpperCase()}
+                    </th>
+                  ))}
+                  <th scope="col">Workflow</th>
+                  <th scope="col">Release</th>
+                </tr>
+              </thead>
+              <tbody>
+                {coverage.map((item) => (
+                  <tr key={`${item.collection}-${item.id}`}>
+                    <td>
+                      <a href={contentHref(adminPath, item.collection, item.id)}>{item.title}</a>
+                      <small>
+                        {item.collection === 'news' ? 'News story' : 'Page'}
+                        {item.country ? ` · ${item.country}` : ''}
+                      </small>
+                    </td>
+                    {contentLocales.map((locale) => (
+                      <td key={locale}>
+                        <span
+                          aria-hidden="true"
+                          className={`workflow-inbox__locale${item.locales[locale] ? ' workflow-inbox__locale--ready' : ''}`}
+                        />
+                        <span className="workflow-inbox__visually-hidden">
+                          {item.locales[locale]
+                            ? `${locale} content present`
+                            : `${locale} content missing`}
+                        </span>
+                      </td>
+                    ))}
+                    <td>{item.workflowState.replaceAll('-', ' ')}</td>
+                    <td>
+                      {item.scheduledFor ? (
+                        <time dateTime={item.scheduledFor}>
+                          Scheduled {formatRequestDate(item.scheduledFor)}
+                        </time>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="workflow-inbox__empty">No editorial content is available to summarize.</p>
+        )}
+      </section>
+      {roles.includes('admin') ? (
+        <section aria-labelledby="workflow-activity-title" className="workflow-inbox__section">
+          <div className="workflow-inbox__section-heading">
+            <div>
+              <h3 id="workflow-activity-title">Recent activity</h3>
+              <p>Every handoff, approval, scheduled release, and publication in one trace.</p>
+            </div>
+          </div>
+          {activities.length > 0 ? (
+            <ol className="workflow-inbox__activity-list">
+              {activities.map((activity) => (
+                <li key={`${activity.collection}-${activity.documentId}-${activity.createdAt}`}>
+                  <div>
+                    <a href={contentHref(adminPath, activity.collection, activity.documentId)}>
+                      {activity.title}
+                    </a>
+                    <p>
+                      {activityLabel(activity)}
+                      {activity.scheduledFor
+                        ? ` · ${formatRequestDate(activity.scheduledFor)}`
+                        : ''}
+                    </p>
+                  </div>
+                  <p>
+                    {activity.actor} ·{' '}
+                    <time dateTime={activity.createdAt}>
+                      {formatRequestDate(activity.createdAt)}
+                    </time>
+                  </p>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="workflow-inbox__empty">
+              Activity will appear after the next editorial handoff.
+            </p>
+          )}
+        </section>
+      ) : null}
     </section>
   )
 }

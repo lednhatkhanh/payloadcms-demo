@@ -9,6 +9,7 @@ import sharp from 'sharp'
 
 import { ContactSubmissions } from './collections/ContactSubmissions'
 import { Countries } from './collections/Countries'
+import { EditorialActivities } from './collections/EditorialActivities'
 import { Locations } from './collections/Locations'
 import { Media } from './collections/Media'
 import { News } from './collections/News'
@@ -18,6 +19,7 @@ import { Users } from './collections/Users'
 import { isGlobalAccount } from './access'
 import { Homepage } from './globals/Homepage'
 import { contentLocales, defaultContentLocale } from './locales'
+import { publishScheduledContent } from './scheduledPublishing'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
 export default buildConfig({
@@ -47,6 +49,7 @@ export default buildConfig({
     News,
     Locations,
     Pages,
+    EditorialActivities,
     ContactSubmissions,
     NewsletterSignups,
   ],
@@ -57,6 +60,10 @@ export default buildConfig({
     defaultLocale: defaultContentLocale,
     fallback: true,
     locales: [...contentLocales],
+  },
+  jobs: {
+    autoRun: [{ cron: '* * * * *', limit: 10, queue: 'scheduled-publication' }],
+    tasks: [publishScheduledContent],
   },
   maxDepth: 2,
   plugins: [

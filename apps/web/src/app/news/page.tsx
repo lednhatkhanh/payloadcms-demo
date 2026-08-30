@@ -3,6 +3,7 @@ import { ArrowRight, Icon } from '@repo/ui/icon'
 import {
   Cluster,
   Container,
+  FilterSet,
   FilterGroup,
   LocationToolbar,
   NewsGrid,
@@ -55,7 +56,7 @@ function hrefForFilters(category: 'all' | NewsCategory, country?: string): strin
 export default function NewsPage({ searchParams }: PageProps) {
   return (
     <>
-      <Section space="hero">
+      <Section>
         <Container>
           <Stack gap="lg">
             <Text color="brand" variant="dispatchMark">
@@ -131,12 +132,19 @@ async function NewsListing({ searchParams }: PageProps) {
   return (
     <Stack gap="2xl">
       <LocationToolbar>
-        <Text color="muted" variant="small">
-          Only published illustrative stories appear here. The Dispatch is the newsroom, not the
-          company identity or a record of real operations.
-        </Text>
+        <Stack gap="xs">
+          <Text color="muted" variant="small">
+            {selectedCountry
+              ? `Showing global stories alongside ${selectedCountry.name} newsroom updates.`
+              : 'Showing global stories alongside every available country newsroom.'}
+          </Text>
+          <Text color="muted" variant="meta">
+            Only published illustrative stories appear here. The Dispatch is the newsroom, not the
+            company identity or a record of real operations.
+          </Text>
+        </Stack>
         <FilterGroup>
-          <FilterGroup>
+          <FilterSet label="Country">
             <Link
               active={selectedCountry === undefined}
               aria-current={selectedCountry === undefined ? 'page' : undefined}
@@ -156,8 +164,8 @@ async function NewsListing({ searchParams }: PageProps) {
                 {country.name}
               </Link>
             ))}
-          </FilterGroup>
-          <FilterGroup>
+          </FilterSet>
+          <FilterSet label="Topic">
             {filters.map((filter) => (
               <Link
                 active={filter.value === selectedFilter}
@@ -169,7 +177,7 @@ async function NewsListing({ searchParams }: PageProps) {
                 {filter.label}
               </Link>
             ))}
-          </FilterGroup>
+          </FilterSet>
         </FilterGroup>
       </LocationToolbar>
 
@@ -184,7 +192,7 @@ async function NewsListing({ searchParams }: PageProps) {
       {remainingStories.length > 0 ? (
         <NewsGrid>
           {remainingStories.map((article) => (
-            <NewsCard article={article} key={article.slug} />
+            <NewsCard article={article} key={newsHref(article)} />
           ))}
         </NewsGrid>
       ) : null}

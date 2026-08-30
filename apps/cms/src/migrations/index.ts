@@ -6,6 +6,7 @@ import * as migration_20260829_162231_add_editorial_workflow from './20260829_16
 import * as migration_20260829_170611_add_localization_and_translation_workflow from './20260829_170611_add_localization_and_translation_workflow'
 import * as migration_20260830_083900_add_country_tenancy from './20260830_083900_add_country_tenancy'
 import * as migration_20260830_101900_add_form_submission_fields from './20260830_101900_add_form_submission_fields'
+import * as migration_20260830_102000_add_editorial_dashboard_and_scheduled_publishing from './20260830_102000_add_editorial_dashboard_and_scheduled_publishing'
 
 export const migrations = [
   {
@@ -47,5 +48,10 @@ export const migrations = [
     up: migration_20260830_101900_add_form_submission_fields.up,
     down: migration_20260830_101900_add_form_submission_fields.down,
     name: '20260830_101900_add_form_submission_fields',
+  },
+  {
+    up: migration_20260830_102000_add_editorial_dashboard_and_scheduled_publishing.up,
+    down: migration_20260830_102000_add_editorial_dashboard_and_scheduled_publishing.down,
+    name: '20260830_102000_add_editorial_dashboard_and_scheduled_publishing',
   },
 ]

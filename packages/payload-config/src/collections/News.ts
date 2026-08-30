@@ -15,7 +15,11 @@ import { countryField, enforceNewsCountryScope, newsScopeField } from '../countr
 import type { News as NewsRecord } from '../generated/payload-types'
 import { newsPreviewUrl } from '../preview'
 import { revalidatePublicContent } from '../revalidation'
-import { editorialWorkflowFields, enforceEditorialWorkflow } from '../workflow'
+import {
+  editorialWorkflowFields,
+  enforceEditorialWorkflow,
+  logEditorialActivity,
+} from '../workflow'
 
 function isPublished(news: NewsRecord): boolean {
   return news['_status'] === 'published'
@@ -117,7 +121,7 @@ export const News: CollectionConfig = {
     ...editorialWorkflowFields,
   ],
   hooks: {
-    afterChange: [revalidatePublishedNews],
+    afterChange: [revalidatePublishedNews, logEditorialActivity('news')],
     afterDelete: [revalidateDeletedNews],
     beforeChange: [enforceNewsCountryScope, enforceEditorialWorkflow],
   },

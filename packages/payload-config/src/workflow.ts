@@ -1,4 +1,4 @@
-import type { CollectionBeforeChangeHook, Field } from 'payload'
+import type { CollectionAfterChangeHook, CollectionBeforeChangeHook, Field } from 'payload'
 
 import { hasEditorialRole, isAdministrator } from './access'
 import { contentLocaleLabels } from './locales'
@@ -17,6 +17,17 @@ export const workflowStates = [
 
 export type WorkflowState = (typeof workflowStates)[number]
 
+type EditorialCollection = 'news' | 'pages'
+type EditorialActivityAction =
+  | 'approved'
+  | 'changes-requested'
+  | 'created'
+  | 'published'
+  | 'review-requested'
+  | 'scheduled'
+  | 'translation-requested'
+  | 'translations-submitted'
+
 const workflowStateLabels: Record<WorkflowState, string> = {
   approved: 'Approved for publishing',
   'changes-requested': 'Changes requested',
@@ -32,6 +43,108 @@ function asWorkflowState(value: unknown): WorkflowState | undefined {
 
 function originalWorkflowState(value: unknown): WorkflowState {
   return asWorkflowState(value) ?? 'draft'
+}
+
+function scheduledForValue(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const date = new Date(value)
+  return Number.isNaN(date.valueOf()) ? undefined : value
+}
+
+function actionForStateChange(
+  currentState: WorkflowState,
+  nextState: WorkflowState,
+): EditorialActivityAction | undefined {
+  if (nextState === 'translation-requested') return 'translation-requested'
+  if (nextState === 'in-review') {
+    return currentState === 'translation-requested' ? 'translations-submitted' : 'review-requested'
+  }
+  if (nextState === 'changes-requested') return 'changes-requested'
+  if (nextState === 'approved') return 'approved'
+  return undefined
+}
+
+function stringValue(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value : fallback
+}
+
+function documentId(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isSafeInteger(value) ? value : undefined
+}
+
+function optionalUserId(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isSafeInteger(value) ? value : undefined
+}
+
+function recordValue(value: unknown): Record<string, unknown> | undefined {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined
+}
+
+function hasScheduledPublishingContext(context: unknown): boolean {
+  return (
+    typeof context === 'object' &&
+    context !== null &&
+    'scheduledPublishing' in context &&
+    context.scheduledPublishing === true
+  )
+}
+
+function activityForChange(
+  doc: Record<string, unknown>,
+  previousDoc: Record<string, unknown> | undefined,
+  operation: 'create' | 'update',
+): { readonly action: EditorialActivityAction; readonly scheduledFor?: string } | undefined {
+  const nextState = originalWorkflowState(doc.workflowState)
+  const currentState = originalWorkflowState(previousDoc?.workflowState)
+  const nextStatus = stringValue(doc['_status'])
+  const currentStatus = stringValue(previousDoc?.['_status'])
+  const nextScheduledFor = scheduledForValue(doc.scheduledFor)
+  const currentScheduledFor = scheduledForValue(previousDoc?.scheduledFor)
+
+  if (operation === 'create') return { action: 'created' }
+  if (nextStatus === 'published' && currentStatus !== 'published') {
+    return {
+      action: 'published',
+      ...(currentScheduledFor ? { scheduledFor: currentScheduledFor } : {}),
+    }
+  }
+  if (nextScheduledFor !== currentScheduledFor && nextScheduledFor) {
+    return { action: 'scheduled', scheduledFor: nextScheduledFor }
+  }
+  const action = actionForStateChange(currentState, nextState)
+  return action ? { action } : undefined
+}
+
+export function logEditorialActivity(collection: EditorialCollection): CollectionAfterChangeHook {
+  return async ({ doc, operation, previousDoc, req }) => {
+    const current = recordValue(doc)
+    if (!current) return doc
+    const previous = recordValue(previousDoc)
+    const activity = activityForChange(current, previous, operation)
+    const id = documentId(current.id)
+    if (!activity || id === undefined) return doc
+
+    const actor = hasScheduledPublishingContext(req.context)
+      ? undefined
+      : optionalUserId(req.user?.id)
+    await req.payload.create({
+      collection: 'editorial-activities',
+      data: {
+        action: activity.action,
+        ...(actor === undefined ? {} : { actor }),
+        collection,
+        documentId: id,
+        ...(activity.scheduledFor ? { scheduledFor: activity.scheduledFor } : {}),
+        title: stringValue(current.title, 'Untitled content'),
+        workflowState: originalWorkflowState(current.workflowState),
+      },
+      overrideAccess: true,
+      req,
+    })
+    return doc
+  }
 }
 
 export const editorialWorkflowFields: Field[] = [
@@ -55,6 +168,16 @@ export const editorialWorkflowFields: Field[] = [
     maxLength: 320,
     admin: {
       description: 'Optional context from the reviewer for the editor or publisher.',
+    },
+  },
+  {
+    name: 'scheduledFor',
+    type: 'date',
+    admin: {
+      date: { pickerAppearance: 'dayAndTime' },
+      description:
+        'Publish at this future date and time. Only a publisher can schedule or clear a release.',
+      position: 'sidebar',
     },
   },
   {
@@ -125,7 +248,12 @@ export const enforceEditorialWorkflow: CollectionBeforeChangeHook = ({
   const nextState = originalWorkflowState(data.workflowState ?? currentState)
   const currentStatus = originalDoc?.['_status']
   const nextStatus = data['_status'] ?? currentStatus
+  const currentScheduledFor = scheduledForValue(originalDoc?.scheduledFor)
+  const nextScheduledFor = scheduledForValue(
+    Object.hasOwn(data, 'scheduledFor') ? data.scheduledFor : originalDoc?.scheduledFor,
+  )
   const isPublishing = currentStatus !== 'published' && nextStatus === 'published'
+  const isScheduledPublishing = hasScheduledPublishingContext(req.context)
   const requestedLocales = Array.isArray(data.translationLocales)
     ? data.translationLocales
     : Array.isArray(originalDoc?.translationLocales)
@@ -152,12 +280,27 @@ export const enforceEditorialWorkflow: CollectionBeforeChangeHook = ({
   }
 
   if (isPublishing) {
-    if (!hasEditorialRole(req.user, 'publisher')) {
+    if (!isScheduledPublishing && !hasEditorialRole(req.user, 'publisher')) {
       throw new Error('Only publishers can publish editorial content.')
     }
 
     if (nextState !== 'approved') {
       throw new Error('Content must be approved before it can be published.')
+    }
+  }
+
+  if (nextScheduledFor !== currentScheduledFor && !isScheduledPublishing) {
+    if (!hasEditorialRole(req.user, 'publisher')) {
+      throw new Error('Only publishers can schedule or clear a publication date.')
+    }
+    if (nextScheduledFor && nextState !== 'approved') {
+      throw new Error('Content must be approved before it can be scheduled.')
+    }
+    if (nextScheduledFor && nextStatus === 'published') {
+      throw new Error('Use the scheduled publication action instead of publishing immediately.')
+    }
+    if (nextScheduledFor && new Date(nextScheduledFor).valueOf() <= Date.now()) {
+      throw new Error('Choose a future date and time for scheduled publication.')
     }
   }
 

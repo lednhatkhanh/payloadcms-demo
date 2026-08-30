@@ -73,9 +73,11 @@ export interface Config {
     news: News;
     locations: Location;
     pages: Page;
+    'editorial-activities': EditorialActivity;
     'contact-submissions': ContactSubmission;
     'newsletter-signups': NewsletterSignup;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -88,9 +90,11 @@ export interface Config {
     news: NewsSelect<false> | NewsSelect<true>;
     locations: LocationsSelect<false> | LocationsSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    'editorial-activities': EditorialActivitiesSelect<false> | EditorialActivitiesSelect<true>;
     'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     'newsletter-signups': NewsletterSignupsSelect<false> | NewsletterSignupsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -101,9 +105,11 @@ export interface Config {
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'jp' | 'es') | ('en' | 'jp' | 'es')[];
   globals: {
     homepage: Homepage;
+    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: 'en' | 'jp' | 'es';
   widgets: {
@@ -111,7 +117,13 @@ export interface Config {
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      'publish-scheduled-content': TaskPublishScheduledContent;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -277,6 +289,10 @@ export interface News {
    * Optional context from the reviewer for the editor or publisher.
    */
   reviewNote?: string | null;
+  /**
+   * Publish at this future date and time. Only a publisher can schedule or clear a release.
+   */
+  scheduledFor?: string | null;
   /**
    * Set automatically when an editor requests review.
    */
@@ -447,6 +463,10 @@ export interface Page {
    */
   reviewNote?: string | null;
   /**
+   * Publish at this future date and time. Only a publisher can schedule or clear a release.
+   */
+  scheduledFor?: string | null;
+  /**
    * Set automatically when an editor requests review.
    */
   reviewRequestedBy?: (number | null) | User;
@@ -470,6 +490,31 @@ export interface Page {
   createdAt: string;
   deletedAt?: string | null;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "editorial-activities".
+ */
+export interface EditorialActivity {
+  id: number;
+  title: string;
+  collection: 'news' | 'pages';
+  documentId: number;
+  action:
+    | 'created'
+    | 'translation-requested'
+    | 'translations-submitted'
+    | 'review-requested'
+    | 'changes-requested'
+    | 'approved'
+    | 'scheduled'
+    | 'published';
+  workflowState: 'draft' | 'translation-requested' | 'in-review' | 'changes-requested' | 'approved';
+  actor?: (number | null) | User;
+  scheduledFor?: string | null;
+  note?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -522,6 +567,107 @@ export interface PayloadKv {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'publish-scheduled-content';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'publish-scheduled-content') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -550,6 +696,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'editorial-activities';
+        value: number | EditorialActivity;
       } | null)
     | ({
         relationTo: 'contact-submissions';
@@ -705,6 +855,7 @@ export interface NewsSelect<T extends boolean = true> {
   featured?: T;
   workflowState?: T;
   reviewNote?: T;
+  scheduledFor?: T;
   reviewRequestedBy?: T;
   translationLocales?: T;
   translationRequestedBy?: T;
@@ -801,6 +952,7 @@ export interface PagesSelect<T extends boolean = true> {
       };
   workflowState?: T;
   reviewNote?: T;
+  scheduledFor?: T;
   reviewRequestedBy?: T;
   translationLocales?: T;
   translationRequestedBy?: T;
@@ -810,6 +962,22 @@ export interface PagesSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "editorial-activities_select".
+ */
+export interface EditorialActivitiesSelect<T extends boolean = true> {
+  title?: T;
+  collection?: T;
+  documentId?: T;
+  action?: T;
+  workflowState?: T;
+  actor?: T;
+  scheduledFor?: T;
+  note?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -848,6 +1016,38 @@ export interface NewsletterSignupsSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  meta?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -915,6 +1115,24 @@ export interface Homepage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: number;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
 export interface HomepageSelect<T extends boolean = true> {
@@ -948,6 +1166,16 @@ export interface HomepageSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -955,6 +1183,14 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPublish-scheduled-content".
+ */
+export interface TaskPublishScheduledContent {
+  input?: unknown;
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

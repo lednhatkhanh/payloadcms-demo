@@ -55,7 +55,7 @@ async function ManagedPageContent({ params, searchParams }: PageProps) {
       {previewActive ? (
         <LivePreviewRefresh sourceOrigin={new URL(publicEnvironment.cmsUrl).origin} />
       ) : null}
-      <Section space="hero">
+      <Section>
         <Container size="content">
           <Stack gap="lg">
             <Text as="h1" variant="h1">
@@ -78,7 +78,7 @@ async function ManagedPageContent({ params, searchParams }: PageProps) {
 
 function ManagedPageLoadingState() {
   return (
-    <Section space="hero">
+    <Section>
       <Container size="content">
         <Text color="muted" variant="lead">
           Loading page…

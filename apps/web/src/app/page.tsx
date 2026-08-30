@@ -73,9 +73,9 @@ const services = [
     title: 'Ocean freight',
   },
   {
-    description: 'A companion route that explains how a wider logistics question can be framed.',
-    href: '/shipping/logistics-solutions',
-    label: 'See the route',
+    description: 'A companion route to illustrative logistics locations and their service context.',
+    href: '/locations?service=logistics-solutions',
+    label: 'Browse locations',
     number: '03 / Detail',
     title: 'Logistics solutions',
   },

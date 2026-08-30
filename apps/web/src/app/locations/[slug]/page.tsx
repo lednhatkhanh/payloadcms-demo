@@ -23,8 +23,8 @@ const locationServicePaths: Record<
   { readonly href: string; readonly label: string }
 > = {
   'logistics-solutions': {
-    href: '/shipping/logistics-solutions',
-    label: 'Explore logistics solutions',
+    href: '/locations?service=logistics-solutions',
+    label: 'Browse logistics locations',
   },
   'ocean-freight': { href: '/#services', label: 'Explore ocean freight' },
 }

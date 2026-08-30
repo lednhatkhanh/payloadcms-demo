@@ -193,6 +193,21 @@ export function FilterGroup({ children }: { readonly children: ReactNode }) {
   return <div className="flex flex-wrap gap-space-sm">{children}</div>
 }
 
+export function FilterSet({
+  children,
+  label,
+}: {
+  readonly children: ReactNode
+  readonly label: string
+}) {
+  return (
+    <div className="flex flex-col gap-space-xs">
+      <span className="text-label font-semibold tracking-label text-muted uppercase">{label}</span>
+      <FilterGroup>{children}</FilterGroup>
+    </div>
+  )
+}
+
 export function LocationDetailGrid({ children }: { readonly children: ReactNode }) {
   return (
     <div className="grid items-start gap-space-2xl lg:grid-cols-location-detail lg:gap-space-3xl">

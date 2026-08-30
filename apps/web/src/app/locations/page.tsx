@@ -56,7 +56,7 @@ function hrefForFilter(filter: 'all' | LocationService): string {
 export default function LocationsPage({ searchParams }: PageProps) {
   return (
     <>
-      <Section space="hero">
+      <Section>
         <Container>
           <Stack gap="lg">
             <Text color="brand" variant="label">

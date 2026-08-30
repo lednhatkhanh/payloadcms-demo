@@ -59,6 +59,12 @@ function includesRole(roles: readonly string[], role: string): boolean {
   return roles.includes('admin') || roles.includes(role)
 }
 
+function isFutureDate(value: unknown): boolean {
+  if (typeof value !== 'string') return false
+  const date = new Date(value)
+  return !Number.isNaN(date.valueOf()) && date.valueOf() > Date.now()
+}
+
 function isWorkflowActionKey(value: unknown): value is WorkflowAction['key'] {
   return (
     value === 'approve' ||
@@ -97,6 +103,7 @@ export function WorkflowActionButton() {
   const { collectionSlug, id } = useDocumentInfo()
   const { submit } = useForm()
   const workflowState = useFormFields(([fields]) => workflowStateFrom(fields.workflowState?.value))
+  const scheduledFor = useFormFields(([fields]) => fields.scheduledFor?.value)
   const roles = rolesFrom(user)
   const [selectedActionKey, setSelectedActionKey] = useState<WorkflowAction['key']>()
 
@@ -150,7 +157,12 @@ export function WorkflowActionButton() {
     }
 
     if (workflowState === 'approved' && includesRole(roles, 'publisher')) {
-      return [{ key: 'publish', label: 'Publish changes', publish: true, state: 'approved' }]
+      return isFutureDate(scheduledFor)
+        ? [
+            { key: 'publish', label: 'Publish now', publish: true, state: 'approved' },
+            { key: 'save-draft', label: 'Schedule publication', state: 'approved' },
+          ]
+        : [{ key: 'publish', label: 'Publish changes', publish: true, state: 'approved' }]
     }
 
     return []

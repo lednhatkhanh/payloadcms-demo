@@ -488,6 +488,7 @@ export async function getLocationBySlug(
     select: {
       city: true,
       country: true,
+      countryName: true,
       description: true,
       heroMedia: true,
       serviceTags: true,

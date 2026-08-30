@@ -261,6 +261,7 @@ export function FeaturedStoryCard({
             alt={alt}
             className="object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none"
             fill
+            loading="eager"
             sizes="(min-width: 1024px) 42vw, 100vw"
             src={src}
           />
