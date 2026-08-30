@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   testDir: './tests/e2e',
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://payload-newsroom.localhost',
     trace: 'retain-on-failure',
   },
 })

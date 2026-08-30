@@ -19,8 +19,11 @@ pnpm seed
 pnpm dev
 ```
 
-- Web: http://localhost:3000
-- Payload Admin: http://localhost:3001/admin
+- Web: http://payload-newsroom.localhost
+- Payload Admin: http://cms.payload-newsroom.localhost/admin
+
+Portless starts both apps on stable local domains and chooses their internal ports automatically.
+The first `pnpm dev` may ask for permission to bind its HTTP proxy to port 80.
 
 The first visit to Payload Admin creates the initial administrator account.
 

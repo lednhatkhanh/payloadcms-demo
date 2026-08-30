@@ -13,7 +13,7 @@ if (existsSync(rootEnvironmentPath)) {
 const serverEnvironmentSchema = z.object({
   DATABASE_URL: z.url(),
   NEXT_PUBLIC_CMS_URL: z.url(),
-  NEXT_PUBLIC_WEB_URL: z.url().default('http://localhost:3000'),
+  NEXT_PUBLIC_WEB_URL: z.url(),
   PAYLOAD_PUBLIC_SERVER_URL: z.url(),
   PAYLOAD_SECRET: z.string().min(32),
 })

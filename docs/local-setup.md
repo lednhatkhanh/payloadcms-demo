@@ -11,7 +11,13 @@ pnpm seed
 pnpm dev
 ```
 
-Open the public site at `http://localhost:3000` and Payload Admin at `http://localhost:3001/admin`.
+Portless starts both apps with stable HTTP addresses:
+
+- Public site: `http://payload-newsroom.localhost`
+- Payload Admin: `http://cms.payload-newsroom.localhost/admin`
+
+The first start may ask for permission to bind Portless's HTTP proxy to port 80.
+The application ports are assigned automatically and do not need to be remembered.
 
 ## Refresh content after a pull
 

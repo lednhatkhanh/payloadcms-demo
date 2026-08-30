@@ -36,12 +36,12 @@ export function LanguageSelector() {
   return (
     <SelectField
       label="Language"
-      onSelectionChange={changeLanguage}
+      onChange={changeLanguage}
       options={contentLocales.map((optionLocale) => ({
         label: contentLocaleLabels[optionLocale],
         value: optionLocale,
       }))}
-      selectedKey={locale}
+      value={locale}
       size="compact"
     />
   )

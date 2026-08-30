@@ -101,9 +101,9 @@ export function ContactForm() {
       <SelectField
         label="What can we help with?"
         name="requestType"
-        onSelectionChange={selectRequestType}
+        onChange={selectRequestType}
         options={requestTypeOptions}
-        selectedKey={requestType}
+        value={requestType}
       />
       <TextField isRequired label="Name" maxLength={100} name="name" />
       <TextField isRequired label="Email" maxLength={200} name="email" type="email" />

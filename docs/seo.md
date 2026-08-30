@@ -22,9 +22,9 @@ Set **Allow indexing** to off for a private preview environment. It switches pub
 The public canonical URL comes from `NEXT_PUBLIC_WEB_URL`; set it to the deployed public origin before going live. After a change, publish the record and inspect a page source or run:
 
 ```sh
-curl -s http://localhost:3000/en | rg 'canonical|description|og:'
-curl http://localhost:3000/robots.txt
-curl http://localhost:3000/sitemap.xml
+curl -s http://payload-newsroom.localhost/en | rg 'canonical|description|og:'
+curl http://payload-newsroom.localhost/robots.txt
+curl http://payload-newsroom.localhost/sitemap.xml
 ```
 
 Check that the canonical URL uses the public domain, the title/description are present, and the sitemap contains only routes that should be discoverable.

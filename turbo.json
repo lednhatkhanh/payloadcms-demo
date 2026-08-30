@@ -3,6 +3,7 @@
   "globalEnv": [
     "DATABASE_URL",
     "NEXT_PUBLIC_CMS_URL",
+    "NEXT_PUBLIC_WEB_URL",
     "PAYLOAD_SECRET",
     "PAYLOAD_PUBLIC_SERVER_URL"
   ],

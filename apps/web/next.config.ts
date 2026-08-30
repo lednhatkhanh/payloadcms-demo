@@ -1,10 +1,11 @@
 import { withPayload } from '@payloadcms/next/withPayload'
+import { serverEnvironment } from '@repo/contracts/env'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { NextConfig } from 'next'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
-const cmsUrl = new URL(process.env.NEXT_PUBLIC_CMS_URL ?? 'http://localhost:3001')
+const cmsUrl = new URL(serverEnvironment.NEXT_PUBLIC_CMS_URL)
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
