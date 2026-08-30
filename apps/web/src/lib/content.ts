@@ -301,7 +301,7 @@ export async function getPublishedNews(
   includeCountryNews = false,
 ): Promise<readonly NewsSummary[]> {
   'use cache'
-  cacheLife('minutes')
+  cacheLife('hours')
   cacheTag('news', ...(countryCode ? [`country:${countryCode}`] : []))
   const payload = await getPayload({ config })
   const [countryId, countryIds] = await Promise.all([
@@ -356,7 +356,7 @@ export async function getNewsBySlug(
   countryCode?: string,
 ): Promise<NewsArticle | undefined> {
   'use cache'
-  cacheLife('minutes')
+  cacheLife('hours')
   cacheTag('news', `news:${slug}`, ...(countryCode ? [`country:${countryCode}`] : []))
   const payload = await getPayload({ config })
   const countryId = countryCode ? await countryIdForCode(countryCode, locale) : undefined

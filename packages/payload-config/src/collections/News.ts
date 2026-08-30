@@ -1,4 +1,9 @@
-import { slugField, type CollectionConfig } from 'payload'
+import {
+  slugField,
+  type CollectionAfterChangeHook,
+  type CollectionAfterDeleteHook,
+  type CollectionConfig,
+} from 'payload'
 
 import {
   administrator,
@@ -7,8 +12,33 @@ import {
   publishedCountryNewsOrParticipant,
 } from '../access'
 import { countryField, enforceNewsCountryScope, newsScopeField } from '../country'
+import type { News as NewsRecord } from '../generated/payload-types'
 import { newsPreviewUrl } from '../preview'
+import { revalidatePublicContent } from '../revalidation'
 import { editorialWorkflowFields, enforceEditorialWorkflow } from '../workflow'
+
+function isPublished(news: NewsRecord): boolean {
+  return news['_status'] === 'published'
+}
+
+const revalidatePublishedNews: CollectionAfterChangeHook<NewsRecord> = async ({
+  doc,
+  previousDoc,
+}) => {
+  if (isPublished(doc) || isPublished(previousDoc)) {
+    await revalidatePublicContent(['news'])
+  }
+
+  return doc
+}
+
+const revalidateDeletedNews: CollectionAfterDeleteHook<NewsRecord> = async ({ doc }) => {
+  if (isPublished(doc)) {
+    await revalidatePublicContent(['news'])
+  }
+
+  return doc
+}
 
 export const News: CollectionConfig = {
   slug: 'news',
@@ -86,7 +116,11 @@ export const News: CollectionConfig = {
     { name: 'featured', type: 'checkbox', defaultValue: false, admin: { position: 'sidebar' } },
     ...editorialWorkflowFields,
   ],
-  hooks: { beforeChange: [enforceNewsCountryScope, enforceEditorialWorkflow] },
+  hooks: {
+    afterChange: [revalidatePublishedNews],
+    afterDelete: [revalidateDeletedNews],
+    beforeChange: [enforceNewsCountryScope, enforceEditorialWorkflow],
+  },
   timestamps: true,
   versions: { drafts: { autosave: true } },
 }
