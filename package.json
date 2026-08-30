@@ -16,6 +16,8 @@
     "format:check": "oxfmt --check .",
     "lint": "oxlint . --deny-warnings",
     "seed": "pnpm --filter @repo/cms seed",
+    "slides:dev": "pnpm --filter @repo/slides dev",
+    "slides:export": "pnpm --filter @repo/slides export",
     "style:check": "node scripts/check-style-policy.mjs",
     "test": "turbo test",
     "typecheck": "turbo typecheck"

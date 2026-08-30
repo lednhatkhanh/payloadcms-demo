@@ -1,6 +1,7 @@
 # Payload Newsroom
 
-A Turborepo containing a standalone Payload CMS app and a separate Next.js public site that consumes Payload through the Local API.
+A Turborepo containing three applications: a standalone Payload CMS, a separate Next.js
+public site that consumes Payload through the Local API, and the Slidev platform-decision deck.
 
 ## Requirements
 
@@ -21,11 +22,21 @@ pnpm dev
 
 - Web: http://payload-newsroom.localhost
 - Payload Admin: http://cms.payload-newsroom.localhost/admin
+- Platform-decision slides: http://slides.payload-newsroom.localhost
 
-Portless starts both apps on stable local domains and chooses their internal ports automatically.
+Portless starts all three apps on stable local domains.
 The first `pnpm dev` may ask for permission to bind its HTTP proxy to port 80.
 
 The first visit to Payload Admin creates the initial administrator account.
+
+The slide deck can also run independently without the database:
+
+```bash
+pnpm slides:dev
+```
+
+Its source and generated PDF live in [`apps/slides`](apps/slides). Regenerate the PDF with
+`pnpm slides:export`.
 
 ## Rebuild the demo database
 
@@ -61,6 +72,7 @@ The CMS build already generates both Payload types and the import map before run
 ```bash
 pnpm check
 pnpm --filter @repo/cms build
+pnpm --filter @repo/slides build
 pnpm --filter @repo/web build
 ```
 

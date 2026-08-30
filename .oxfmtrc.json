@@ -8,7 +8,7 @@
     ".agents/**",
     ".next/**",
     "apps/*/next-env.d.ts",
-    "docs/demo/slides/slides.md",
+    "apps/slides/slides.md",
     "node_modules/**",
     "packages/payload-config/src/generated/**"
   ]

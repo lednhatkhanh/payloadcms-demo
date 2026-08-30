@@ -187,6 +187,18 @@ importers:
         specifier: 4.1.11
         version: 4.1.11(@types/node@24.12.3)(happy-dom@20.11.12)(jsdom@28.0.0)(vite@8.2.2(@types/node@24.12.3)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.77.4)(tsx@4.22.4)(yaml@2.9.0))
 
+  apps/slides:
+    devDependencies:
+      '@slidev/cli':
+        specifier: 52.19.1
+        version: 52.19.1(@nuxt/kit@3.21.11)(@oxc-project/types@0.147.0)(@types/markdown-it@14.2.0)(@types/node@24.12.3)(@vitejs/devtools-kit@0.4.12(@modelcontextprotocol/server@2.0.0)(cac@7.0.0)(srvx@0.12.7)(vite@8.2.2(@types/node@24.12.3)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.77.4)(tsx@4.22.4)(yaml@2.9.0)))(@vue/compiler-sfc@3.5.42)(cac@7.0.0)(esbuild@0.28.2)(hono@4.13.5)(lightningcss@1.33.0)(markdown-it@14.3.1)(oxc-parser@0.131.0)(playwright-chromium@1.62.1)(postcss@8.5.26)(react@19.2.8)(rolldown@1.2.6)(sass@1.77.4)(srvx@0.12.7)(tsx@4.22.4)
+      '@slidev/theme-default':
+        specifier: 0.25.0
+        version: 0.25.0
+      playwright-chromium:
+        specifier: 1.62.1
+        version: 1.62.1
+
   apps/web:
     dependencies:
       '@payloadcms/next':
@@ -262,18 +274,6 @@ importers:
       vitest:
         specifier: 4.1.11
         version: 4.1.11(@types/node@24.12.3)(happy-dom@20.11.12)(jsdom@28.0.0)(vite@8.2.2(@types/node@24.12.3)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.77.4)(tsx@4.22.4)(yaml@2.9.0))
-
-  docs/demo/slides:
-    devDependencies:
-      '@slidev/cli':
-        specifier: 52.19.1
-        version: 52.19.1(@nuxt/kit@3.21.11)(@oxc-project/types@0.147.0)(@types/markdown-it@14.2.0)(@types/node@24.12.3)(@vitejs/devtools-kit@0.4.12(@modelcontextprotocol/server@2.0.0)(cac@7.0.0)(srvx@0.12.7)(vite@8.2.2(@types/node@24.12.3)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.77.4)(tsx@4.22.4)(yaml@2.9.0)))(@vue/compiler-sfc@3.5.42)(cac@7.0.0)(esbuild@0.28.2)(hono@4.13.5)(lightningcss@1.33.0)(markdown-it@14.3.1)(oxc-parser@0.131.0)(playwright-chromium@1.62.1)(postcss@8.5.26)(react@19.2.8)(rolldown@1.2.6)(sass@1.77.4)(srvx@0.12.7)(tsx@4.22.4)
-      '@slidev/theme-default':
-        specifier: 0.25.0
-        version: 0.25.0
-      playwright-chromium:
-        specifier: 1.62.1
-        version: 1.62.1
 
   packages/contracts:
     dependencies:
@@ -10816,7 +10816,7 @@ snapshots:
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.2
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
       micromark-util-normalize-identifier: 2.0.1
     transitivePeerDependencies:
@@ -10825,7 +10825,7 @@ snapshots:
   mdast-util-gfm-strikethrough@2.0.0:
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-from-markdown: 2.0.2
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
@@ -10835,7 +10835,7 @@ snapshots:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       markdown-table: 3.0.4
-      mdast-util-from-markdown: 2.0.2
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
@@ -10844,14 +10844,14 @@ snapshots:
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.2
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
   mdast-util-gfm@3.1.0:
     dependencies:
-      mdast-util-from-markdown: 2.0.2
+      mdast-util-from-markdown: 2.0.3
       mdast-util-gfm-autolink-literal: 2.0.1
       mdast-util-gfm-footnote: 2.1.0
       mdast-util-gfm-strikethrough: 2.0.0

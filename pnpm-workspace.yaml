@@ -1,6 +1,5 @@
 packages:
   - apps/*
-  - docs/demo/slides
   - packages/*
 
 allowBuilds:
